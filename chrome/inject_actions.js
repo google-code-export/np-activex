@@ -100,6 +100,12 @@ function getClsid(obj) {
 function process(obj) {
   if (obj.type != "" || !obj.hasAttribute("classid"))
     return;
+  if (config == null) {
+    // Delay the process of this object.
+    // Hope config will be load soon.
+    pendingObjects.push(obj);
+    return;
+  }
   if (pageEnabled === undefined)
     pageEnabled = config.isUrlMatched(location.href);
   var clsid = getClsid(obj);

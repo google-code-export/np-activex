@@ -41,6 +41,7 @@ function injectScript(filename) {
 
 var config = null;
 var logid = -2;
+var pendingObjects = [];
 function init(response) {
   config = new ActiveXConfig(response);
   if (config.isUrlMatched(location.href)) {
@@ -52,6 +53,10 @@ function init(response) {
     // injectScript(chrome.extension.getURL("inject_log.js"));
     window.addEventListener(controlLogEvent, onControlLog, false);
   }
+  for (var i = 0; i < pendingObjects.length; ++i) {
+    process(pendingObjects[i]);
+  }
+  delete pendingObjects;
 }
 
 chrome.extension.sendRequest(

@@ -1,3 +1,6 @@
+Version 1.1.5 -----
+Fix: Some objects failed to load because config is not initialized.
+
 Version 1.1.4 -----
 Make name shorter.
 
