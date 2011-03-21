@@ -1,0 +1,18 @@
+syntax: glob
+
+*~
+Debug/*
+Release/*
+*.ncb
+*.suo
+*.user
+*.exe
+
+.svn/*
+glob:*.pem
+glob:*.sdf
+glob:*.vcxproj.filters
+glob:*.aps
+glob:*.opensdf
+glob:*.ipch
+glob:*.swp

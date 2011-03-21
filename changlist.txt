@@ -1,0 +1,51 @@
+Version 1.1.4 -----
+Make name shorter.
+
+Version 1.1.3 -----
+Fix: Cannot save CLISD list if URL list is empty.
+
+Version 1.1.2 -----
+Fix: save setting to localStorage of every visited site.
+
+Version 1.1.1 -----
+Fix some bugs.
+
+Version 1.1 -----
+First publish at Chrome Web Store
+Fix: Setting error if no previous setting exists.
+New: Partial log support.
+
+Version 1.0.2 -------
+Add: Enable object at creation time.
+Add: i18n support
+Change: Direct configure access.
+
+Version 1.0.1.1 -------
+Add: Support CMBChina on payment
+Fix: Cannot get Internal object in new version of Chrome.
+
+Version 1.0.1.0 -------
+Support X64 operation system.
+Add: Some grease-monkey scripts to support more sites specially.
+Fix: Cannot get the wrong IUnknown of internal object.
+
+Version 1.0.0.4 -------
+Thread atl thunk support
+some script compaticity support
+
+Version 1.0.0.3 -------
+Use wildchar patterns as default.
+Support settings auto-save.
+
+Version 1.0.0.2 -------
+Support filter by CLSIDs.
+
+Version 1.0.0.1 -------
+Cover ATL tunk enumeration on object creation to support more controls.
+
+Version 1.0 -------
+First alpha publish, base on project ffactivex.
+Support ATL thunk enumeration, doesn't need to disable DEP in usual cases.
+Support the plugin interaction with JavaScript trough IDispatcher.
+The object will be treated as a form element for compaticity with script only for IE.
+Support a Trusted Sites list

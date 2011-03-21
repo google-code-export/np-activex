@@ -1,0 +1,33 @@
+﻿{
+  "name": "ActiveX for Chrome",
+  "version": "1.1.4",
+  "description": "__MSG_plug_desp__",
+  "permissions": [
+    "http://*/*", "https://*/*", "tabs"
+  ],
+  "default_locale": "en",
+  "background_page": "background.html",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "all_frames": true,
+      "js": ["configure.js", "inject_actions.js", "inject_start.js"],
+      "run_at":"document_start"
+    },
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "all_frames": true,
+      "js": ["inject_doreplace.js"],
+      "run_at":"document_end"
+    }
+  ],
+  "icons": { "16": "icon16.png",
+             "48": "icon48.png",
+             "128": "icon128.png" 
+           },
+  "options_page": "options.html",
+  "plugins": [{
+     "path": "npactivex.dll",
+     "public": true
+  }]
+}

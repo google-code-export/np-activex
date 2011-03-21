@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <style>
+      .urllist { width:40em; height:18em; } .clsidlist { width:40em; height:12em;
+      } .description { width:1000; padding-bottom:30px }
+    </style>
+    <script src="/i18n.js">
+    </script>
+    <script>
+      var setting = chrome.extension.getBackgroundPage().setting;
+      function loadSettings() {
+        urllist.value = setting.getUrlPlain();
+        clsidlist.value = setting.getTrustedClsids();
+        log_enable.checked = setting.getLogEnabled();
+      }
+      function saveUrls() {
+        setting.setUrlMatches(urllist.value);
+      }
+      function saveClsids() {
+        setting.setTrustedClsids(clsidlist.value);
+      }
+      function setLog() {
+        setting.setLogEnabled(log_enable.checked);
+      }
+      function saveSettings() {
+        saveUrls();
+        saveClsids();
+        setLog();
+        setting.save();
+      }
+    </script>
+  </head>
+
+  <body onload="loadSettings()" onunload="saveSettings()">
+    <div class="description">
+      <p><span i18n="given_setting"></span></p>
+    </div>
+    <div class="description">
+      <p><span i18n="url_desp"></span></p>
+      <p><span i18n="url_format"></span></p>
+      <p><span i18n="url_regex"></span></p>
+    </div>
+    <textarea class="urllist" id="urllist" onchange="saveSettings()">
+    </textarea>
+    <br/>
+    <div class="description">
+      <p><span i18n="clsid_desp"></span></p>
+      <p><span i18n="clsid_format"></span></p>
+    </div>
+    <textarea class="clsidlist" id="clsidlist" onchange="saveSettings()">
+    </textarea>
+    <br/>
+    <input id="log_enable" type="checkbox" onclick="setLog()">
+    <span i18n="log_enable">
+    </span>
+    </input>
+    <br />
+    <a href="/log.html">
+      <span i18n="log_link">
+      </span>
+    </a>
+  </body>
+
+</html>
