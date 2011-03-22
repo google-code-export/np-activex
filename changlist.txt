@@ -1,3 +1,7 @@
+Version 1.1.6 -----
+Fix: Creation failed if the object is not marked script safe without any warning.
+New: Support get container class (document) for objects.
+
 Version 1.1.5 -----
 Fix: Some objects failed to load because config is not initialized.
 

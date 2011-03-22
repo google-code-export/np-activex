@@ -45,6 +45,8 @@
 
 #include "authorize.h"
 #include "common\PropertyList.h"
+#include "common\ControlSite.h"
+#include "HTMLDocumentContainer.h"
 
 #include "ObjectManager.h"
 
@@ -483,6 +485,10 @@ NPP_New(NPMIMEType pluginType,
 			}
 		}
 		if (host) {
+			NPObject *npDocument;
+			NPNFuncs.getvalue(instance, NPNVWindowNPObject, &npDocument);
+			IOleContainer *document = new HTMLDocumentContainer(instance, pHtmlLib, npDocument);
+			host->Site->SetContainer(document);
 			host->RegisterObject();
 			instance->pdata = host;
 		}

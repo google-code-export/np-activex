@@ -29,56 +29,58 @@
  * ***** END LICENSE BLOCK ***** */
 
 #pragma once
+#include "oleidl.h"
 #include <npapi.h>
 #include <npruntime.h>
-#include <map>
-#include <vector>
-#include "Host.h"
-class CAxHost;
-class ObjectManager : public CHost
+#include "npactivex.h"
+#include "objectProxy.h"
+#include "FakeDispatcher.h"
+class HTMLDocumentContainer :
+	public FakeDispatcher,
+	public IOleContainer
 {
 public:
-	ObjectManager(NPP npp2);
+	HTMLDocumentContainer(NPP instance, ITypeLib *htmlLib, NPObject *document);
+	~HTMLDocumentContainer(void);
+	virtual HRESULT STDMETHODCALLTYPE EnumObjects( 
+		/* [in] */ DWORD grfFlags,
+		/* [out] */ __RPC__deref_out_opt IEnumUnknown **ppenum) {
+		return E_NOTIMPL;
+	}
+    virtual HRESULT STDMETHODCALLTYPE ParseDisplayName( 
+		/* [unique][in] */ __RPC__in_opt IBindCtx *pbc,
+		/* [in] */ __RPC__in LPOLESTR pszDisplayName,
+		/* [out] */ __RPC__out ULONG *pchEaten,
+		/* [out] */ __RPC__deref_out_opt IMoniker **ppmkOut) {
+		return E_NOTIMPL;
+	}
+        
+    virtual HRESULT STDMETHODCALLTYPE LockContainer( 
+		/* [in] */ BOOL fLock) {
+		return E_NOTIMPL;
+	}
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface( 
+        /* [in] */ REFIID riid,
+        /* [iid_is][out] */ __RPC__deref_out void __RPC_FAR *__RPC_FAR *ppvObject) {
+		if (riid == IID_IOleContainer || riid == IID_IParseDisplayName || riid == IID_IUnknown)
+		{
+			*ppvObject = (void*)this;
+			AddRef();
+			return S_OK;
+		}
+		return FakeDispatcher::QueryInterface(riid, ppvObject);
+	}
 
-	~ObjectManager(void);
-	static NPClass npClass;
-	CHost* GetPreviousObject(NPP npp);
-	static ObjectManager* GetManager(NPP npp);
+    virtual ULONG STDMETHODCALLTYPE AddRef( void) {
+		return FakeDispatcher::AddRef();
+	}
 
-	virtual ScriptBase *CreateScriptableObject();
-
-	void RetainOwnership(CAxHost *obj);
-
-	bool RequestObjectOwnership(NPP newNpp, CAxHost* obj);
+    virtual ULONG STDMETHODCALLTYPE Release( void) {
+		return FakeDispatcher::Release();
+	}
 
 private:
-
-	struct ScriptManager : public ScriptBase {
-		ScriptManager(NPP npp) : ScriptBase(npp) {
-		}
-	};
-
-	std::vector<CHost*> hosts;
-	std::vector<CHost*> dynamic_hosts;
-	static NPObject* _Allocate(NPP npp, NPClass *aClass) {
-		ScriptManager *obj = new ScriptManager(npp);
-		return obj;
-	}
-	
-	static bool Invoke(NPObject *obj, NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result);
-	
-	static bool HasMethod(NPObject *obj, NPIdentifier name);
-	
-	static bool HasProperty(NPObject *obj, NPIdentifier name);
-	
-	static bool GetProperty(NPObject *obj, NPIdentifier name, NPVariant *value);
-	
-	static bool SetProperty(NPObject *obj, NPIdentifier name, const NPVariant *value);
-
-	static void	_Deallocate(NPObject *obj)
-	{
-		delete obj;
-	}
-	
+	int ref_cnt_;
+	NPObjectProxy document_;
 };
 

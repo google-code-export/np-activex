@@ -38,7 +38,7 @@
 #include "npactivex.h"
 #include "axhost.h"
 #include "atlthunk.h"
-
+#include "FakeDispatcher.h"
 CComModule _Module;
 
 NPNetscapeFuncs NPNFuncs;
@@ -212,7 +212,6 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 
 #define MIN(x, y)	((x) < (y)) ? (x) : (y)
 
-extern ITypeLib *pHtmlLib;
 /*
  * Initialize the plugin. Called the first time the browser comes across a
  * MIME Type this plugin is registered to handle.

@@ -340,11 +340,7 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
         hr = CoCreateInstance(clsid, NULL, CLSCTX_ALL, IID_IUnknown, (void **) &spObject);
         if (SUCCEEDED(hr) && checkForObjectSafety)
         {
-            // Assume scripting via IDispatch
-            if (!m_pSecurityPolicy->IsObjectSafeForScripting(spObject, __uuidof(IDispatch)))
-            {
-                return E_FAIL;
-            }
+			m_bSafeForScriptingObjectsOnly = m_pSecurityPolicy->IsObjectSafeForScripting(spObject,  __uuidof(IDispatch));
             // Drop through, success!
         }
     }

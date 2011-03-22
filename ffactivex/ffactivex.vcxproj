@@ -141,6 +141,7 @@
     </ClCompile>
     <ClCompile Include="FakeDispatcher.cpp" />
     <ClCompile Include="Host.cpp" />
+    <ClCompile Include="HTMLDocumentContainer.cpp" />
     <ClCompile Include="npactivex.cpp" />
     <ClCompile Include="GenericNPObject.cpp" />
     <ClCompile Include="common\ItemContainer.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="common\ControlSiteIPFrame.h" />
     <ClInclude Include="FakeDispatcher.h" />
     <ClInclude Include="Host.h" />
+    <ClInclude Include="HTMLDocumentContainer.h" />
     <ClInclude Include="npactivex.h" />
     <ClInclude Include="GenericNPObject.h" />
     <ClInclude Include="common\IOleCommandTargetImpl.h" />

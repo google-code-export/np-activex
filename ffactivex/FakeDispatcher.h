@@ -36,6 +36,7 @@
 
 #include <npapi.h>
 #include <npruntime.h>
+extern ITypeLib *pHtmlLib;
 class CAxHost;
 class FakeDispatcher :
 	public IDispatch
