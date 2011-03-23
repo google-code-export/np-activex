@@ -222,7 +222,7 @@ BOOL CheckDEPReqiured()
 		// This is likely to fail, but we set it first.
 		setProc(PROCESS_DEP_ENABLE);
 	}
-	BOOL enabled = TRUE;
+	BOOL enabled = FALSE;
 	DWORD lpFlags;
 	BOOL lpPermanent;
 	if (getProc && getProc(GetCurrentProcess(), &lpFlags, &lpPermanent))

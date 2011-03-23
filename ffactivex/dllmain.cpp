@@ -221,19 +221,14 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 #ifdef DEBUG
 	_asm {int 3};
 #endif
+
+	CoInitialize(NULL);
 	
 	InstallAtlThunkEnumeration();
 	if (pHtmlLib == NULL) {
 		OLECHAR path[MAX_PATH];
-		BOOL bit64 = FALSE;
-		if (IsWow64Process(GetCurrentProcess(), &bit64))
-			bit64 = FALSE;
 		GetEnvironmentVariableW(OLESTR("SYSTEMROOT"), path, MAX_PATH - 30);
-		if (!bit64) {
-			StrCatW(path, L"\\system32\\mshtml.tlb");
-		} else {
-			StrCatW(path, L"\\SysWow64\\mshtml.tlb");
-		}
+		StrCatW(path, L"\\system32\\mshtml.tlb");
 		HRESULT hr = LoadTypeLib(path, &pHtmlLib);
 	}
 
@@ -253,8 +248,6 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 
 		return NPERR_GENERIC_ERROR;
 	}
-
-	CoInitialize(NULL);
 
 	_pAtlModule = &_Module;
 

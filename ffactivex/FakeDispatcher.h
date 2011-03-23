@@ -60,14 +60,14 @@ public:
 	}
 	virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount( 
 			/* [out] */ __RPC__out UINT *pctinfo) {
-		return E_FAIL; // doesn't support now
+		return E_NOTIMPL; // doesn't support now
 	}
         
 	virtual HRESULT STDMETHODCALLTYPE GetTypeInfo( 
 		/* [in] */ UINT iTInfo,
 		/* [in] */ LCID lcid,
 		/* [out] */ __RPC__deref_out_opt ITypeInfo **ppTInfo){
-		return E_FAIL; // doesn't support now
+		return E_NOTIMPL; // doesn't support now
 	}
         
 	virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames( 
@@ -76,7 +76,7 @@ public:
 		/* [range][in] */ __RPC__in_range(0,16384) UINT cNames,
 		/* [in] */ LCID lcid,
 		/* [size_is][out] */ __RPC__out_ecount_full(cNames) DISPID *rgDispId){
-		return E_FAIL; // doesn't support now
+		return E_NOTIMPL; // doesn't support now
 	}
 
 	virtual /* [local] */ HRESULT STDMETHODCALLTYPE Invoke( 
@@ -98,6 +98,10 @@ public:
 	}
 	FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *object);
 	~FakeDispatcher(void);
+	
+protected:
+	HRESULT virtual ProcessCommand(int ID, va_list &list);
+
 private:
 	
     const static DWORD MAGIC_NUMBER = 0xFF101243;
@@ -107,8 +111,9 @@ private:
 	ITypeInfo *typeInfo;
 	CAxHost *internalObj;
 
-	HRESULT GetIndexFromDispID(DISPID dispID, INVOKEKIND invKind, UINT *index, BOOL *isVariant);
 	int ref;
 	DWORD magic;
+
+	UINT FindFuncByVirtualId(int vtbId);
 };
 

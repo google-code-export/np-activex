@@ -1,3 +1,8 @@
+Version 1.1.9 -----
+Fix: Heap error occurs sometimes because OLE is not initialized.
+Fix: ATL thunk enumeration is not loaded by default.
+Add: (Unfinished) Allow invoke with dual interface.
+
 Version 1.1.8 -----
 Load the mshtml.tlb of SysWow64 when running at 64bit system.
 

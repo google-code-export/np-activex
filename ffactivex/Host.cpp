@@ -66,6 +66,8 @@ NPObject *CHost::GetScriptableObject() {
 
 NPObject *CHost::RegisterObject() {
 	lastObj = CreateScriptableObject();
+	if (!lastObj)
+		return NULL;
 	lastObj->host = this;
 	NPObjectProxy embed;
 	NPNFuncs.getvalue(instance, NPNVPluginElementNPObject, &embed);
@@ -97,6 +99,8 @@ void CHost::UnRegisterObject() {
 }
 
 NPP CHost::ResetNPP(NPP newNPP) {
+	// Doesn't support now..
+	_asm{int 3};
 	NPP ret = instance;
 	UnRegisterObject();
 	instance = newNPP;

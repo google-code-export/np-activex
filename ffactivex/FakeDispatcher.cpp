@@ -139,3 +139,61 @@ FakeDispatcher::~FakeDispatcher(void)
 	NPNFuncs.releaseobject(npObject);
 	typeLib->Release();
 }
+
+HRESULT FakeDispatcher::ProcessCommand(int vfid, va_list &args)
+{
+	if (!typeInfo)
+		return E_FAIL;
+	UINT index = FindFuncByVirtualId(vfid);
+	if (index == (UINT)-1)
+		return E_NOTIMPL;
+	FUNCDESC *func;
+	typeInfo->GetFuncDesc(index, &func);
+	DISPPARAMS varlist;
+	VARIANT *list = new VARIANT[func->cParams];
+	varlist.cArgs = func->cParams;
+	varlist.cNamedArgs = 0;
+	varlist.rgdispidNamedArgs = NULL;
+	varlist.rgvarg = list;
+	// Thanks that there won't be any out variants in HTML.
+	for (int i = 0; i < func->cParams; ++i) {
+		ELEMDESC *desc = &func->lprgelemdescParam[i];
+		memset(&list[i], 0, sizeof(list[i]));
+		list[i].vt = desc->tdesc.vt;
+		size_t varsize = VariantSize(desc->tdesc.vt);
+		memcpy(&list[i].boolVal, args, varsize);
+		args += varsize;
+	}
+	VARIANT result;
+	HRESULT ret = Invoke(func->memid, IID_NULL, NULL, func->invkind, &varlist, &result, NULL, NULL);
+
+	// Provide the appropriate interface
+	IUnknown *unk = result.punkVal;
+	GUID riid = IID_NULL;
+	switch (func->elemdescFunc.tdesc.vt) {
+	case VT_DISPATCH:
+		riid = IID_IDispatch;
+		break;
+	case VT_USERDEFINED:
+		ITypeInfo *info;
+		typeInfo->GetRefTypeInfo(func->elemdescFunc.tdesc.hreftype, &info);
+		TYPEATTR *attr;
+		info->GetTypeAttr(&attr);
+		riid = attr->guid;
+		info->ReleaseTypeAttr(attr);
+		info->Release();
+		break;
+	default:
+		size_t resultsize = VariantSize(func->elemdescFunc.tdesc.vt);
+		if (resultsize) {
+			LPVOID dest = *(LPVOID*)args;
+			memcpy(dest, &result.boolVal, resultsize);
+		}
+		break;
+	}
+	return ret;
+}
+
+UINT FakeDispatcher::FindFuncByVirtualId(int vtbId) {
+	return -1;
+}

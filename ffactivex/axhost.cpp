@@ -427,7 +427,6 @@ CAxHost::CreateControl(bool subscribeToEvents)
 
 	// Create the event sink
 	CComObject<CControlEventSink>::CreateInstance(&Sink);
-	Sink->AddRef();
 	Sink->instance = instance;
 	hr = Sink->SubscribeToEvents(control);
 	control->Release();
