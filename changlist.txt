@@ -1,3 +1,6 @@
+Version 1.2 -----
+Use a new approach of ATL thunk
+
 Version 1.1.9 -----
 Fix: Heap error occurs sometimes because OLE is not initialized.
 Fix: ATL thunk enumeration is not loaded by default.

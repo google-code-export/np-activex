@@ -426,3 +426,59 @@ size_t VariantSize(VARTYPE vt) {
 		return 0;
 	}
 }
+
+
+void ConvertVariantToGivenType(VARTYPE vt, const VARIANT &var, char* dest) {
+	// var is converted from NPVariant, so only limited types are possible.
+	
+	switch (vt)
+	{
+	case VT_EMPTY:
+	case VT_VOID:
+	case VT_NULL:
+		return;
+	case VT_I1:
+	case VT_UI1:
+	case VT_I2:
+	case VT_UI2:
+	case VT_I4:
+	case VT_R4:
+	case VT_UI4:
+	case VT_BOOL:
+		int intvalue;
+		intvalue = NULL;
+		if (var.vt == VT_R8)
+			intvalue = (int)var.dblVal;
+		else if (var.vt == VT_BOOL)
+			intvalue = (int)var.boolVal;
+		else if (var.vt == VT_UI4)
+			intvalue = var.intVal;
+		*(int*)dest = intvalue;
+	case VT_R8:
+	case VT_DATE:
+	case VT_I8:
+	case VT_UI8:
+	case VT_CY:
+		//return 8;
+	case VT_BSTR:
+	case VT_DISPATCH:
+	case VT_ERROR:
+	case VT_VARIANT:
+	case VT_UNKNOWN:
+	case VT_DECIMAL:
+	case VT_INT:
+	case VT_UINT:
+	case VT_HRESULT:
+	case VT_PTR:
+	case VT_SAFEARRAY:
+	case VT_CARRAY:
+	case VT_USERDEFINED:
+	case VT_LPSTR:
+	case VT_LPWSTR:
+	case VT_INT_PTR:
+	case VT_UINT_PTR:
+		*(ULONG**)dest = var.pulVal;
+	default:
+		_asm{int 3}
+	}
+}

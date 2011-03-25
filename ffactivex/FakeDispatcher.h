@@ -36,10 +36,11 @@
 
 #include <npapi.h>
 #include <npruntime.h>
+#include "FakeDispatcherBase.h"
 extern ITypeLib *pHtmlLib;
 class CAxHost;
 class FakeDispatcher :
-	public IDispatch
+	public FakeDispatcherBase
 {
 public:
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface( 
@@ -105,6 +106,7 @@ protected:
 private:
 	
     const static DWORD MAGIC_NUMBER = 0xFF101243;
+	const static int DISPATCH_VTABLE = 7;
 	NPP npInstance;
 	NPObject *npObject;
 	ITypeLib *typeLib;

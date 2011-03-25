@@ -28,10 +28,30 @@ comment ?
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
-?
+
 
 .386
 .model  flat
 __except_handler   proto
 .safeseh    __except_handler
+?
+.386
+.model flat
+PUBLIC __KiUserExceptionDispatcher_hook
+.data
+public __KiUserExceptionDispatcher_origin
+__KiUserExceptionDispatcher_origin dd 0
+
+public __KiUserExceptionDispatcher_ATL_p 
+__KiUserExceptionDispatcher_ATL_p dd 0
+.code
+__KiUserExceptionDispatcher_hook proc
+  push [esp + 4]
+  push [esp + 4]
+  call __KiUserExceptionDispatcher_ATL_p
+  add esp, 8
+  push __KiUserExceptionDispatcher_origin
+  ret
+__KiUserExceptionDispatcher_hook   endp 
+
 end

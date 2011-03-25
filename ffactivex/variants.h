@@ -36,3 +36,4 @@
 void Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance);
 void NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance);
 size_t VariantSize(VARTYPE vt);
+void ConvertVariantToGivenType(VARTYPE vt, const VARIANT &var, char* dest);

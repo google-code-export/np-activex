@@ -144,7 +144,7 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, va_list &args)
 {
 	if (!typeInfo)
 		return E_FAIL;
-	UINT index = FindFuncByVirtualId(vfid);
+	UINT index = FindFuncByVirtualId(vfid + DISPATCH_VTABLE);
 	if (index == (UINT)-1)
 		return E_NOTIMPL;
 	FUNCDESC *func;
@@ -162,35 +162,29 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, va_list &args)
 		list[i].vt = desc->tdesc.vt;
 		size_t varsize = VariantSize(desc->tdesc.vt);
 		memcpy(&list[i].boolVal, args, varsize);
-		args += varsize;
+		args += (varsize + sizeof(int) - 1) & (~(sizeof(int) - 1));
 	}
 	VARIANT result;
 	HRESULT ret = Invoke(func->memid, IID_NULL, NULL, func->invkind, &varlist, &result, NULL, NULL);
 
 	// Provide the appropriate interface
 	IUnknown *unk = result.punkVal;
-	GUID riid = IID_NULL;
 	switch (func->elemdescFunc.tdesc.vt) {
-	case VT_DISPATCH:
-		riid = IID_IDispatch;
-		break;
 	case VT_USERDEFINED:
 		ITypeInfo *info;
 		typeInfo->GetRefTypeInfo(func->elemdescFunc.tdesc.hreftype, &info);
 		TYPEATTR *attr;
 		info->GetTypeAttr(&attr);
+		GUID riid;
 		riid = attr->guid;
 		info->ReleaseTypeAttr(attr);
 		info->Release();
 		break;
 	default:
-		size_t resultsize = VariantSize(func->elemdescFunc.tdesc.vt);
-		if (resultsize) {
-			LPVOID dest = *(LPVOID*)args;
-			memcpy(dest, &result.boolVal, resultsize);
-		}
+		ConvertVariantToGivenType(func->elemdescFunc.tdesc.vt, result, args);
 		break;
 	}
+	delete list;
 	return ret;
 }
 

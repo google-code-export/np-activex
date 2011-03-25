@@ -31,7 +31,7 @@
 #pragma once
 
 #include <Windows.h>
-
+#define ATL_THUNK_APIHOOK
 EXCEPTION_DISPOSITION
 __cdecl
 _except_handler(
@@ -53,26 +53,6 @@ typedef struct tagATL_THUNK_PATTERN
 	int pattern_size;
 	(void)(*enumerator)(struct _CONTEXT *);
 }ATL_THUNK_PATTERN;
-/*
-{
-DWORD handler = (DWORD)_except_handler;
-     __asm
-     {                         
-         push    handler       
-         push    FS:[0]        
-         mov     FS:[0],ESP    
-	 }}
-*/
-#define BEGIN_ATL_THUNK // {__asm push _except_handler __asm push FS:[0] __asm mov FS:[0],ESP}
 
 void InstallAtlThunkEnumeration();
 
-	 /*
-	 __asm
-     {                           // Remove our EXECEPTION_REGISTRATION record
-         mov     eax,[ESP]       // Get pointer to previous record
-         mov     FS:[0], EAX     // Install previous record
-         add     esp, 8          // Clean our EXECEPTION_REGISTRATION off stack
-     }
-	 */
-#define END_ATL_THUNK //{	 __asm mov eax, [esp] __asm mov FS:[0], EAX  __asm add esp, 8}

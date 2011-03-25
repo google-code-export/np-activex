@@ -34,7 +34,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <stdio.h>
-
+#include "ApiHook\Hook.h"
 
 typedef struct tagEXCEPTION_REGISTER
 {
@@ -154,16 +154,13 @@ ATL_THUNK_PATTERN *match_patterns(LPVOID eip)
 	return NULL;
 }
 
-static _except_handler_type original_handler;
-
-
 EXCEPTION_DISPOSITION
 __cdecl
 _except_handler_atl_thunk(
-    struct _EXCEPTION_RECORD *ExceptionRecord,
-    void * EstablisherFrame,
-    struct _CONTEXT *ContextRecord,
-    void * DispatcherContext )
+struct _EXCEPTION_RECORD *ExceptionRecord,
+void * EstablisherFrame,
+struct _CONTEXT *ContextRecord,
+void * DispatcherContext )
 {
 	if ((ExceptionRecord->ExceptionFlags)
 		|| ExceptionRecord->ExceptionCode != STATUS_ACCESS_VIOLATION
@@ -185,10 +182,15 @@ _except_handler_atl_thunk(
 		return ExceptionContinueSearch;
 	}
 }
-	
+#ifndef ATL_THUNK_APIHOOK
+_except_handler_type original_handler4;
+#else
+HOOKINFO hook_handler;
+#endif
+#if 0
 EXCEPTION_DISPOSITION
 __cdecl
-_except_handler(
+my_except_handler4(
     struct _EXCEPTION_RECORD *ExceptionRecord,
     void * EstablisherFrame,
     struct _CONTEXT *ContextRecord,
@@ -201,10 +203,40 @@ _except_handler(
 		DispatcherContext);
 	if (step1 == ExceptionContinueExecution)
 		return step1;
+#ifndef ATL_THUNK_APIHOOK
+	_except_handler_type original_handler = original_handler4;
+#else
+	_except_handler_type original_handler = (_except_handler_type)hook_handler4.Stub;
+#endif
 	return original_handler(ExceptionRecord, EstablisherFrame, ContextRecord, DispatcherContext);
 }
 
-BOOL CheckDEPReqiured()
+EXCEPTION_DISPOSITION
+__cdecl
+my_except_handler3(
+    struct _EXCEPTION_RECORD *ExceptionRecord,
+    void * EstablisherFrame,
+    struct _CONTEXT *ContextRecord,
+    void * DispatcherContext )
+{
+	//assert(original_handler);
+	EXCEPTION_DISPOSITION step1 = _except_handler_atl_thunk(ExceptionRecord, 
+		EstablisherFrame,
+		ContextRecord,
+		DispatcherContext);
+	if (step1 == ExceptionContinueExecution)
+		return step1;
+#ifndef ATL_THUNK_APIHOOK
+	// We won't wrap handler3, this shouldn't be used..
+	_except_handler_type original_handler = original_handler3;
+#else
+	_except_handler_type original_handler = (_except_handler_type)hook_handler4.Stub;
+#endif
+	return original_handler(ExceptionRecord, EstablisherFrame, ContextRecord, DispatcherContext);
+}
+#endif
+
+BOOL CheckDEPEnabled()
 {
 	// In case of running in a XP SP2.
 	HMODULE hInst = LoadLibrary(TEXT("Kernel32.dll"));
@@ -231,11 +263,28 @@ BOOL CheckDEPReqiured()
 	}
 	return enabled;
 }
+extern "C" void _KiUserExceptionDispatcher_hook();
+extern "C" DWORD _KiUserExceptionDispatcher_origin;
+extern "C" DWORD _KiUserExceptionDispatcher_ATL_p;
+typedef void  (__stdcall *ZwContinueType)(struct _CONTEXT *, int);
+ZwContinueType ZwContinue;
+int __cdecl
+_KiUserExceptionDispatcher_ATL(
+struct _EXCEPTION_RECORD *ExceptionRecord,
+struct _CONTEXT *ContextRecord) {
+	if (_except_handler_atl_thunk(ExceptionRecord, NULL, ContextRecord, NULL) == ExceptionContinueExecution) {
+		ZwContinue(ContextRecord, 0);
+	}
+	return 0;
+}
 
 void InstallAtlThunkEnumeration() {
-	if (original_handler)
+	static bool installed = false;
+	if (installed)
 		return;
-	if (CheckDEPReqiured()) {
+	installed = true;
+	if (CheckDEPEnabled()) {
+#ifndef ATL_THUNK_APIHOOK
 		// Chrome is protected by DEP.
 		EXCEPTION_REGISTER *reg;
 		__asm {
@@ -247,5 +296,12 @@ void InstallAtlThunkEnumeration() {
 		// replace the old handler
 		original_handler = reg->handler;
 		reg->handler = _except_handler;
+#else
+		_KiUserExceptionDispatcher_ATL_p = (DWORD)_KiUserExceptionDispatcher_ATL;
+		ZwContinue = (ZwContinueType) GetProcAddress(GetModuleHandle(TEXT("ntdll")), "ZwContinue");
+		HEInitHook(&hook_handler, GetProcAddress(GetModuleHandle(TEXT("ntdll")), "KiUserExceptionDispatcher") , _KiUserExceptionDispatcher_hook);
+		HEStartHook(&hook_handler);
+		_KiUserExceptionDispatcher_origin = (DWORD)hook_handler.Stub;
+#endif
 	}
 }

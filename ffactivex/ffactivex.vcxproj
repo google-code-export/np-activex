@@ -125,6 +125,8 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ApiHook\ADE.cpp" />
+    <ClCompile Include="ApiHook\Hook.cpp" />
     <ClCompile Include="AtlThunk.cpp" />
     <ClCompile Include="authorize.cpp" />
     <ClCompile Include="axhost.cpp" />
@@ -156,6 +158,8 @@
     <ClCompile Include="variants.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ApiHook\ADE.h" />
+    <ClInclude Include="ApiHook\Hook.h" />
     <ClInclude Include="atlthunk.h" />
     <ClInclude Include="axhost.h" />
     <ClInclude Include="authorize.h" />
@@ -163,6 +167,7 @@
     <ClInclude Include="common\ControlSite.h" />
     <ClInclude Include="common\ControlSiteIPFrame.h" />
     <ClInclude Include="FakeDispatcher.h" />
+    <ClInclude Include="FakeDispatcherBase.h" />
     <ClInclude Include="Host.h" />
     <ClInclude Include="HTMLDocumentContainer.h" />
     <ClInclude Include="npactivex.h" />
@@ -184,18 +189,12 @@
     <None Include="npactivex.def">
       <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
     </None>
-    <MASM Include="safeseh.asm">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ml.exe /nologo /coff /Zf /c /Sa %(Identity) </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename).obj</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAssembly</Message>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-      </AdditionalInputs>
-      <FileType>Document</FileType>
-      <UseSafeExceptionHandlers Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</UseSafeExceptionHandlers>
-    </MASM>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="npactivex.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="atlthunk_asm.asm" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
