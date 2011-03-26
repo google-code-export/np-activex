@@ -1,3 +1,4 @@
+comment ?
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
@@ -11,11 +12,8 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is itstructures.com code.
- *
- * The Initial Developer of the Original Code is IT Structures.
- * Portions created by the Initial Developer are Copyright (C) 2008
- * the Initial Developer. All Rights Reserved.
+ * Contributor:
+ *                Chuan Qiu <qiuc12@gmail.com>
  *
  * Alternatively, the contents of this file may be used under the terms of
  * either the GNU General Public License Version 2 or later (the "GPL"), or
@@ -30,11 +28,21 @@
  * the terms of any one of the MPL, the GPL or the LGPL.
  *
  * ***** END LICENSE BLOCK ***** */
+ ?
+.386
+.model flat
+PUBLIC _DualProcessCommandWrap
+_DualProcessCommand proto
+.code
+_DualProcessCommandWrap proc
+  push 0
+  call _DualProcessCommand
+  ; Thanks god we can use ecx, edx for free
+  pop ecx ; length of par
+  pop edx ; command id
+  pop edx ; return address
+  add esp, ecx
+  jmp edx
+_DualProcessCommandWrap   endp 
 
-#pragma once
-struct ITypeInfo;
-void Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance);
-void NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance);
-size_t VariantSize(VARTYPE vt);
-void ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const VARIANT &var, LPVOID dest);
-void RawTypeToVariant(const TYPEDESC &desc, LPVOID source, VARIANT* var);
+end

@@ -1,3 +1,7 @@
+Version 1.2.1 -----
+Support Dual interface.
+Set the reference webpage of ChinaList to wiki.
+
 Version 1.2 -----
 Use a new approach of ATL thunk
 

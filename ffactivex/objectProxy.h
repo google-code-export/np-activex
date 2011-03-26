@@ -32,6 +32,7 @@
 
 #include <npruntime.h>
 #include <npapi.h>
+#include "npactivex.h"
 class NPVariantProxy : public NPVariant
 {
 public:

@@ -42,6 +42,7 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 	ref = 1;
 	typeLib->AddRef();
 	NPNFuncs.retainobject(object);
+	NPNFuncs.getproperty(npInstance, object, NPNFuncs.getstringidentifier("name"), &npName);
 	ScriptBase *base = ObjectManager::GetInternalObject(npInstance, object);
 	if (base)
 		internalObj = dynamic_cast<CAxHost*>(base->host);
@@ -66,16 +67,27 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 	typeInfo->GetDocumentation(dispIdMember, &pBstrName, NULL, NULL, NULL);
 	LPSTR str = OLE2A(pBstrName);
 	SysFreeString(pBstrName);
+
 	NPIdentifier identifier = NPNFuncs.getstringidentifier(str);
-	
 	// Convert variants
 	int nArgs = pDispParams->cArgs;
-	NPVariant *npvars = new NPVariant[nArgs];
+	NPVariantProxy *npvars = new NPVariantProxy[nArgs];
 	for (int i = 0; i < nArgs; ++i) {
 		Variant2NPVar(&pDispParams->rgvarg[nArgs - 1 - i], &npvars[i], npInstance);
 	}
-	NPVariant result;
-	if (wFlags & DISPATCH_METHOD) {
+	NPVariantProxy result;
+	if (dispIdMember == 0 && (wFlags & DISPATCH_METHOD) && strcmp(str, "item") == 0) {
+		// Item can be evaluated as the default property.
+		NPIdentifier id = NULL;
+		if (NPVARIANT_IS_INT32(npvars[0]))
+			id = NPNFuncs.getintidentifier(npvars[0].value.intValue);
+		else if (NPVARIANT_IS_STRING(npvars[0]))
+			id = NPNFuncs.getstringidentifier(npvars[0].value.stringValue.UTF8Characters);
+		// Because Chrome doesn't support the index in item(name, index), we'll ignore it here.
+		if (id && NPNFuncs.getproperty(npInstance, npObject, id, &result))
+			hr = S_OK;
+	}
+	if (!SUCCEEDED(hr) && (wFlags & DISPATCH_METHOD)) {
 		if (NPNFuncs.invoke(npInstance, npObject, identifier, npvars, nArgs, &result)) {
 			hr = S_OK;
 		}
@@ -90,6 +102,7 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 	}
 	if (SUCCEEDED(hr))
 		NPVar2Variant(&result, pVarResult, npInstance);
+
 	delete [] npvars;
 	return hr;
 }
@@ -107,6 +120,7 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 		hr = typeLib->GetTypeInfoOfGuid(riid, &typeInfo);
 		if (SUCCEEDED(hr)) {
 			*ppvObject = this;
+			AddRef();
 		}
 	} else {
 		FakeDispatcher *another_obj = new FakeDispatcher(npInstance, typeLib, npObject);
@@ -116,7 +130,7 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 		IUnknown *unk;
 		internalObj->GetControlUnknown(&unk);
 		hr = unk->QueryInterface(riid, ppvObject);
-		unk->Release();
+		unk->Release(); 
 		/*			
 		// Try to find the internal object
 		NPIdentifier object_id = NPNFuncs.getstringidentifier(object_property);
@@ -135,12 +149,25 @@ FakeDispatcher::~FakeDispatcher(void)
 	if (typeInfo) {
 		typeInfo->Release();
 	}
-	
+	if (npName.value.stringValue.UTF8Characters) {
+		ATLTRACE2("Destroy %s\n", npName.value.stringValue.UTF8Characters);
+	}
 	NPNFuncs.releaseobject(npObject);
 	typeLib->Release();
 }
 
-HRESULT FakeDispatcher::ProcessCommand(int vfid, va_list &args)
+// This function is used because the symbol of FakeDispatcher::ProcessCommand is not determined in asm file.
+extern "C" HRESULT __cdecl DualProcessCommand(int parlength, int commandId, int returnAddr, FakeDispatcher *disp, ...){
+	// returnAddr is a placeholder for the calling proc.
+	va_list va;
+	va_start(va, disp);
+	// The parlength is on the stack, the modification will be reflect.
+	HRESULT ret = disp->ProcessCommand(commandId, &parlength, va);
+	va_end(va);
+	return ret;
+}
+
+HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 {
 	if (!typeInfo)
 		return E_FAIL;
@@ -148,6 +175,8 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, va_list &args)
 	if (index == (UINT)-1)
 		return E_NOTIMPL;
 	FUNCDESC *func;
+	// We should count this first.
+	*parlength = sizeof(LPVOID);
 	typeInfo->GetFuncDesc(index, &func);
 	DISPPARAMS varlist;
 	VARIANT *list = new VARIANT[func->cParams];
@@ -157,37 +186,27 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, va_list &args)
 	varlist.rgvarg = list;
 	// Thanks that there won't be any out variants in HTML.
 	for (int i = 0; i < func->cParams; ++i) {
-		ELEMDESC *desc = &func->lprgelemdescParam[i];
-		memset(&list[i], 0, sizeof(list[i]));
-		list[i].vt = desc->tdesc.vt;
+		int listPos = func->cParams - 1 - i;
+		ELEMDESC *desc = &func->lprgelemdescParam[listPos];
+		memset(&list[listPos], 0, sizeof(list[listPos]));
+		RawTypeToVariant(desc->tdesc, args, &list[listPos]);
 		size_t varsize = VariantSize(desc->tdesc.vt);
-		memcpy(&list[i].boolVal, args, varsize);
-		args += (varsize + sizeof(int) - 1) & (~(sizeof(int) - 1));
+		size_t intvarsz = (varsize + sizeof(int) - 1) & (~(sizeof(int) - 1));
+		args += intvarsz;
+		*parlength += intvarsz;
 	}
 	VARIANT result;
 	HRESULT ret = Invoke(func->memid, IID_NULL, NULL, func->invkind, &varlist, &result, NULL, NULL);
-
-	// Provide the appropriate interface
-	IUnknown *unk = result.punkVal;
-	switch (func->elemdescFunc.tdesc.vt) {
-	case VT_USERDEFINED:
-		ITypeInfo *info;
-		typeInfo->GetRefTypeInfo(func->elemdescFunc.tdesc.hreftype, &info);
-		TYPEATTR *attr;
-		info->GetTypeAttr(&attr);
-		GUID riid;
-		riid = attr->guid;
-		info->ReleaseTypeAttr(attr);
-		info->Release();
-		break;
-	default:
-		ConvertVariantToGivenType(func->elemdescFunc.tdesc.vt, result, args);
-		break;
-	}
+	
+	ConvertVariantToGivenType(typeInfo, func->elemdescFunc.tdesc, result, args);
+	size_t varsize = VariantSize(func->elemdescFunc.tdesc.vt);
+	// It should always be a pointer.
+	size_t intvarsz = varsize ? sizeof(LPVOID) : 0;
+	*parlength += intvarsz;
 	delete list;
 	return ret;
 }
 
 UINT FakeDispatcher::FindFuncByVirtualId(int vtbId) {
-	return -1;
+	return vtbId;
 }

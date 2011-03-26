@@ -80,7 +80,6 @@ public:
 	}
 
 private:
-	int ref_cnt_;
 	NPObjectProxy document_;
 };
 

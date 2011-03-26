@@ -268,6 +268,7 @@ extern "C" DWORD _KiUserExceptionDispatcher_origin;
 extern "C" DWORD _KiUserExceptionDispatcher_ATL_p;
 typedef void  (__stdcall *ZwContinueType)(struct _CONTEXT *, int);
 ZwContinueType ZwContinue;
+
 int __cdecl
 _KiUserExceptionDispatcher_ATL(
 struct _EXCEPTION_RECORD *ExceptionRecord,

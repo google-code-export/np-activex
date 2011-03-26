@@ -34,6 +34,7 @@
 HTMLDocumentContainer::HTMLDocumentContainer(NPP instance, ITypeLib *htmlLib, NPObject *document)
 	:FakeDispatcher(instance, htmlLib, document)
 {
+	NPNFuncs.retainobject(document);
 }
 
 

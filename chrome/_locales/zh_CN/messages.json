@@ -21,6 +21,6 @@
     "message": "输入时不能省略{}及连接符 - 。例如： {ACACC6EB-1FBA-4E13-A729-1234567854F8} 。"
   },
   "given_setting": {
-    "message": "你可以在http://qiuc12-chrome-adapt.googlecode.com/hg/ff-activex-host/helper/cnlist.html处查看提供的预定义选项。"
+    "message": "你可以在http://code.google.com/p/np-activex/wiki/ChinaSettings查看提供的预定义选项。"
   }
 }

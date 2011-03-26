@@ -485,10 +485,15 @@ NPP_New(NPMIMEType pluginType,
 			}
 		}
 		if (host) {
-			NPObject *npDocument;
-			NPNFuncs.getvalue(instance, NPNVWindowNPObject, &npDocument);
-			IOleContainer *document = new HTMLDocumentContainer(instance, pHtmlLib, npDocument);
-			host->Site->SetContainer(document);
+			NPObjectProxy npWindow;
+			NPNFuncs.getvalue(instance, NPNVWindowNPObject, &npWindow);
+			NPVariantProxy documentVariant;
+			if (NPNFuncs.getproperty(instance, npWindow, NPNFuncs.getstringidentifier("document"), &documentVariant)
+				&& NPVARIANT_IS_OBJECT(documentVariant)) {
+				NPObject *npDocument = NPVARIANT_TO_OBJECT(documentVariant);
+				IOleContainer *document = new HTMLDocumentContainer(instance, pHtmlLib, npDocument);
+				host->Site->SetContainer(document);
+			}
 			host->RegisterObject();
 			instance->pdata = host;
 		}

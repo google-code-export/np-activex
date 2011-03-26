@@ -80,6 +80,12 @@ function createReplaceObj(obj) {
 var pageEnabled = undefined;
 var hostElement = null;
 function enableobj(obj) {
+  var command = "";
+  if (obj.id) {
+    command = "document.all." + obj.id + '.classid = "'
+      + obj.getAttribute("classid") + '"';
+    console.log(command);
+  }
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
   obj.removeAttribute("classid");
@@ -88,6 +94,7 @@ function enableobj(obj) {
   obj.outerHTML = '<object type="application/x-itst-activex" '
     + obj.outerHTML.substring(8);
   log("Enable object, id: " + obj.id + " clsid: " + getClsid(obj));
+  // executeScriptInClient(command);
 }
 
 function getClsid(obj) {

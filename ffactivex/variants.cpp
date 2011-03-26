@@ -43,6 +43,7 @@
 #include <npruntime.h>
 #include "scriptable.h"
 #include "GenericNPObject.h"
+#include <OleAuto.h>
 #include "variants.h"
 void
 BSTR2NPVar(BSTR bstr, NPVariant *npvar, NPP instance)
@@ -313,7 +314,8 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 	case VT_DISPATCH:
 		Unknown2NPVar(GETVALUE(var, pdispVal), npvar, instance);
 		break;
-
+		
+	case VT_USERDEFINED:
 	case VT_UNKNOWN:
 		Unknown2NPVar(GETVALUE(var, punkVal), npvar, instance);
 		break;
@@ -371,10 +373,14 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 	case NPVariantType_Object:
 		NPObject *object = NPVARIANT_TO_OBJECT(*npvar);
 		var->vt = VT_UNKNOWN;
-		IUnknown *val = new FakeDispatcher(instance, pHtmlLib, object);
-		var->punkVal = val;
+		if (object->_class == &Scriptable::npClass) {
+			Scriptable* scriptObj = (Scriptable*)object;
+			var->punkVal = scriptObj->getControl();
+		} else {
+			IUnknown *val = new FakeDispatcher(instance, pHtmlLib, object);
+			var->punkVal = val;
+		}
 		break;
-			
 	}
 }
 
@@ -407,7 +413,6 @@ size_t VariantSize(VARTYPE vt) {
 	case VT_BSTR:
 	case VT_DISPATCH:
 	case VT_ERROR:
-	case VT_VARIANT:
 	case VT_UNKNOWN:
 	case VT_DECIMAL:
 	case VT_INT:
@@ -422,16 +427,18 @@ size_t VariantSize(VARTYPE vt) {
 	case VT_INT_PTR:
 	case VT_UINT_PTR:
 		return sizeof(LPVOID);
+	case VT_VARIANT:
+		return sizeof(VARIANT);
 	default:
 		return 0;
 	}
 }
 
 
-void ConvertVariantToGivenType(VARTYPE vt, const VARIANT &var, char* dest) {
+void ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const VARIANT &var, LPVOID dest) {
 	// var is converted from NPVariant, so only limited types are possible.
 	
-	switch (vt)
+	switch (vt.vt)
 	{
 	case VT_EMPTY:
 	case VT_VOID:
@@ -445,6 +452,8 @@ void ConvertVariantToGivenType(VARTYPE vt, const VARIANT &var, char* dest) {
 	case VT_R4:
 	case VT_UI4:
 	case VT_BOOL:
+	case VT_INT:
+	case VT_UINT:
 		int intvalue;
 		intvalue = NULL;
 		if (var.vt == VT_R8)
@@ -453,32 +462,92 @@ void ConvertVariantToGivenType(VARTYPE vt, const VARIANT &var, char* dest) {
 			intvalue = (int)var.boolVal;
 		else if (var.vt == VT_UI4)
 			intvalue = var.intVal;
-		*(int*)dest = intvalue;
+		**(int**)dest = intvalue;
+		break;
 	case VT_R8:
+		double dblvalue;
+		dblvalue = 0.0;
+		if (var.vt == VT_R8)
+			dblvalue = (double)var.dblVal;
+		else if (var.vt == VT_BOOL)
+			dblvalue = (double)var.boolVal;
+		else if (var.vt == VT_UI4)
+			dblvalue = var.intVal;
+		**(double**)dest = dblvalue;
+		break;
 	case VT_DATE:
 	case VT_I8:
 	case VT_UI8:
 	case VT_CY:
-		//return 8;
+		// I don't know how to deal with these types..
+		__asm{int 3};
 	case VT_BSTR:
 	case VT_DISPATCH:
 	case VT_ERROR:
-	case VT_VARIANT:
 	case VT_UNKNOWN:
 	case VT_DECIMAL:
-	case VT_INT:
-	case VT_UINT:
 	case VT_HRESULT:
-	case VT_PTR:
 	case VT_SAFEARRAY:
 	case VT_CARRAY:
-	case VT_USERDEFINED:
 	case VT_LPSTR:
 	case VT_LPWSTR:
 	case VT_INT_PTR:
 	case VT_UINT_PTR:
-		*(ULONG**)dest = var.pulVal;
+		**(ULONG***)dest = var.pulVal;
+		break;
+	case VT_USERDEFINED:
+		{
+			ITypeInfo *newType;
+			baseType->GetRefTypeInfo(vt.hreftype, &newType);
+			IUnknown *unk = var.punkVal;
+			TYPEATTR *attr;
+			newType->GetTypeAttr(&attr);
+			unk->QueryInterface(attr->guid, (LPVOID*)dest);
+			unk->Release();
+			newType->ReleaseTypeAttr(attr);
+			newType->Release();
+		}
+		break;
+	case VT_PTR:
+		ConvertVariantToGivenType(baseType, *vt.lptdesc, var, *(LPVOID*)dest);
+		break;
+	case VT_VARIANT:
+		memcpy(*(VARIANT**)dest, &var, sizeof(var));
 	default:
 		_asm{int 3}
+	}
+}
+
+void RawTypeToVariant(const TYPEDESC &desc, LPVOID source, VARIANT* var) {
+	BOOL pointer = FALSE;
+	switch (desc.vt) {
+	case VT_BSTR:
+	case VT_DISPATCH:
+	case VT_ERROR:
+	case VT_UNKNOWN:
+	case VT_SAFEARRAY:
+	case VT_CARRAY:
+	case VT_LPSTR:
+	case VT_LPWSTR:
+	case VT_INT_PTR:
+	case VT_UINT_PTR:
+	case VT_PTR:
+		// These are pointers
+		pointer = TRUE;
+		break;
+	default:
+		if (var->vt & VT_BYREF) 
+			pointer = TRUE;
+	}
+	if (pointer) {
+		var->vt = desc.vt;
+		var->pulVal = *(PULONG*)source;
+	} else if (desc.vt == VT_VARIANT) {
+		// It passed by object, but we use as a pointer
+		var->vt = desc.vt;
+		var->pulVal = (PULONG)source;
+	} else {
+		var->vt = desc.vt | VT_BYREF;
+		var->pulVal = (PULONG)source;
 	}
 }

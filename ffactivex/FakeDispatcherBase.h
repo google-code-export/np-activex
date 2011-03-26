@@ -3,1411 +3,1613 @@
 
 #pragma once
 #include <OleAuto.h>
-
+class FakeDispatcher;
+HRESULT DualProcessCommand(int commandId, FakeDispatcher *disp, ...);
+extern "C" void DualProcessCommandWrap();
 class FakeDispatcherBase : public IDispatch {
 private:
 
-	virtual HRESULT fv0(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(0, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv0() {
+		__asm {
+			leave
+			push 0
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv1() {
+		__asm {
+			leave
+			push 1
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv2() {
+		__asm {
+			leave
+			push 2
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv3() {
+		__asm {
+			leave
+			push 3
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv4() {
+		__asm {
+			leave
+			push 4
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv5() {
+		__asm {
+			leave
+			push 5
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv6() {
+		__asm {
+			leave
+			push 6
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv7() {
+		__asm {
+			leave
+			push 7
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv8() {
+		__asm {
+			leave
+			push 8
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv9() {
+		__asm {
+			leave
+			push 9
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv10() {
+		__asm {
+			leave
+			push 10
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv11() {
+		__asm {
+			leave
+			push 11
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv12() {
+		__asm {
+			leave
+			push 12
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv1(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(1, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv13() {
+		__asm {
+			leave
+			push 13
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv2(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(2, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv14() {
+		__asm {
+			leave
+			push 14
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv3(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(3, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv15() {
+		__asm {
+			leave
+			push 15
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv4(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(4, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv16() {
+		__asm {
+			leave
+			push 16
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv5(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(5, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv17() {
+		__asm {
+			leave
+			push 17
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv6(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(6, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv18() {
+		__asm {
+			leave
+			push 18
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv7(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(7, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv19() {
+		__asm {
+			leave
+			push 19
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv8(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(8, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv20() {
+		__asm {
+			leave
+			push 20
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv9(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(9, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv21() {
+		__asm {
+			leave
+			push 21
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv10(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(10, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv22() {
+		__asm {
+			leave
+			push 22
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv11(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(11, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv23() {
+		__asm {
+			leave
+			push 23
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv12(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(12, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv24() {
+		__asm {
+			leave
+			push 24
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv13(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(13, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv25() {
+		__asm {
+			leave
+			push 25
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv14(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(14, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv26() {
+		__asm {
+			leave
+			push 26
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv15(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(15, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv27() {
+		__asm {
+			leave
+			push 27
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv16(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(16, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv28() {
+		__asm {
+			leave
+			push 28
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv17(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(17, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv29() {
+		__asm {
+			leave
+			push 29
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv18(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(18, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv30() {
+		__asm {
+			leave
+			push 30
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv19(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(19, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv31() {
+		__asm {
+			leave
+			push 31
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv20(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(20, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv32() {
+		__asm {
+			leave
+			push 32
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv21(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(21, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv33() {
+		__asm {
+			leave
+			push 33
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv22(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(22, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv34() {
+		__asm {
+			leave
+			push 34
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv23(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(23, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv35() {
+		__asm {
+			leave
+			push 35
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv24(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(24, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv36() {
+		__asm {
+			leave
+			push 36
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv25(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(25, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv37() {
+		__asm {
+			leave
+			push 37
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv26(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(26, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv38() {
+		__asm {
+			leave
+			push 38
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv27(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(27, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv39() {
+		__asm {
+			leave
+			push 39
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv28(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(28, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv40() {
+		__asm {
+			leave
+			push 40
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv29(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(29, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv41() {
+		__asm {
+			leave
+			push 41
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv30(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(30, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv42() {
+		__asm {
+			leave
+			push 42
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv31(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(31, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv43() {
+		__asm {
+			leave
+			push 43
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv32(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(32, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv44() {
+		__asm {
+			leave
+			push 44
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv33(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(33, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv45() {
+		__asm {
+			leave
+			push 45
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv34(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(34, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv46() {
+		__asm {
+			leave
+			push 46
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv35(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(35, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv47() {
+		__asm {
+			leave
+			push 47
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv36(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(36, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv48() {
+		__asm {
+			leave
+			push 48
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv37(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(37, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv49() {
+		__asm {
+			leave
+			push 49
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv38(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(38, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv50() {
+		__asm {
+			leave
+			push 50
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv39(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(39, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv51() {
+		__asm {
+			leave
+			push 51
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv40(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(40, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv52() {
+		__asm {
+			leave
+			push 52
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv41(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(41, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv53() {
+		__asm {
+			leave
+			push 53
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv42(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(42, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv54() {
+		__asm {
+			leave
+			push 54
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv43(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(43, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv55() {
+		__asm {
+			leave
+			push 55
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv44(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(44, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv56() {
+		__asm {
+			leave
+			push 56
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv45(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(45, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv57() {
+		__asm {
+			leave
+			push 57
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv46(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(46, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv58() {
+		__asm {
+			leave
+			push 58
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv47(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(47, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv59() {
+		__asm {
+			leave
+			push 59
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv48(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(48, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv60() {
+		__asm {
+			leave
+			push 60
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv49(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(49, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv61() {
+		__asm {
+			leave
+			push 61
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv50(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(50, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv62() {
+		__asm {
+			leave
+			push 62
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv51(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(51, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv63() {
+		__asm {
+			leave
+			push 63
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv52(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(52, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv64() {
+		__asm {
+			leave
+			push 64
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv53(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(53, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv65() {
+		__asm {
+			leave
+			push 65
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv54(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(54, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv66() {
+		__asm {
+			leave
+			push 66
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv55(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(55, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv67() {
+		__asm {
+			leave
+			push 67
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv56(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(56, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv68() {
+		__asm {
+			leave
+			push 68
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv57(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(57, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv69() {
+		__asm {
+			leave
+			push 69
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv58(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(58, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv70() {
+		__asm {
+			leave
+			push 70
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv59(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(59, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv71() {
+		__asm {
+			leave
+			push 71
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv60(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(60, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv72() {
+		__asm {
+			leave
+			push 72
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv61(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(61, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv73() {
+		__asm {
+			leave
+			push 73
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv62(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(62, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv74() {
+		__asm {
+			leave
+			push 74
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv63(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(63, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv75() {
+		__asm {
+			leave
+			push 75
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv64(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(64, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv76() {
+		__asm {
+			leave
+			push 76
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv65(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(65, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv77() {
+		__asm {
+			leave
+			push 77
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv66(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(66, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv78() {
+		__asm {
+			leave
+			push 78
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv67(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(67, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv79() {
+		__asm {
+			leave
+			push 79
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv68(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(68, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv80() {
+		__asm {
+			leave
+			push 80
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv69(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(69, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv81() {
+		__asm {
+			leave
+			push 81
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv70(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(70, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv82() {
+		__asm {
+			leave
+			push 82
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv71(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(71, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv83() {
+		__asm {
+			leave
+			push 83
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv72(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(72, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv84() {
+		__asm {
+			leave
+			push 84
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv73(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(73, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv85() {
+		__asm {
+			leave
+			push 85
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv74(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(74, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv86() {
+		__asm {
+			leave
+			push 86
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv75(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(75, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv87() {
+		__asm {
+			leave
+			push 87
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv76(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(76, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv88() {
+		__asm {
+			leave
+			push 88
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv77(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(77, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv89() {
+		__asm {
+			leave
+			push 89
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv78(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(78, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv90() {
+		__asm {
+			leave
+			push 90
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv79(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(79, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv91() {
+		__asm {
+			leave
+			push 91
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv80(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(80, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv92() {
+		__asm {
+			leave
+			push 92
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv81(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(81, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv93() {
+		__asm {
+			leave
+			push 93
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv82(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(82, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv94() {
+		__asm {
+			leave
+			push 94
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv83(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(83, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv95() {
+		__asm {
+			leave
+			push 95
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv84(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(84, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv96() {
+		__asm {
+			leave
+			push 96
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv85(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(85, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv97() {
+		__asm {
+			leave
+			push 97
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv86(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(86, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv98() {
+		__asm {
+			leave
+			push 98
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv87(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(87, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv99() {
+		__asm {
+			leave
+			push 99
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv88(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(88, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv100() {
+		__asm {
+			leave
+			push 100
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv89(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(89, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv101() {
+		__asm {
+			leave
+			push 101
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv90(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(90, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv102() {
+		__asm {
+			leave
+			push 102
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv91(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(91, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv103() {
+		__asm {
+			leave
+			push 103
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv92(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(92, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv104() {
+		__asm {
+			leave
+			push 104
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv93(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(93, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv105() {
+		__asm {
+			leave
+			push 105
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv94(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(94, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv106() {
+		__asm {
+			leave
+			push 106
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv95(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(95, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv107() {
+		__asm {
+			leave
+			push 107
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv96(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(96, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv108() {
+		__asm {
+			leave
+			push 108
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv97(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(97, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv109() {
+		__asm {
+			leave
+			push 109
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv98(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(98, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv110() {
+		__asm {
+			leave
+			push 110
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv99(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(99, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv111() {
+		__asm {
+			leave
+			push 111
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv100(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(100, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv112() {
+		__asm {
+			leave
+			push 112
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv101(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(101, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv113() {
+		__asm {
+			leave
+			push 113
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv102(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(102, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv114() {
+		__asm {
+			leave
+			push 114
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv103(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(103, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv115() {
+		__asm {
+			leave
+			push 115
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv104(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(104, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv116() {
+		__asm {
+			leave
+			push 116
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv105(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(105, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv117() {
+		__asm {
+			leave
+			push 117
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv106(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(106, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv118() {
+		__asm {
+			leave
+			push 118
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv107(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(107, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv119() {
+		__asm {
+			leave
+			push 119
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv108(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(108, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv120() {
+		__asm {
+			leave
+			push 120
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv109(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(109, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv121() {
+		__asm {
+			leave
+			push 121
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv110(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(110, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv122() {
+		__asm {
+			leave
+			push 122
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv111(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(111, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv123() {
+		__asm {
+			leave
+			push 123
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv112(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(112, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv124() {
+		__asm {
+			leave
+			push 124
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv113(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(113, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv125() {
+		__asm {
+			leave
+			push 125
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv114(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(114, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv126() {
+		__asm {
+			leave
+			push 126
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv115(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(115, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv127() {
+		__asm {
+			leave
+			push 127
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv116(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(116, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv128() {
+		__asm {
+			leave
+			push 128
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv117(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(117, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv129() {
+		__asm {
+			leave
+			push 129
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv118(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(118, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv130() {
+		__asm {
+			leave
+			push 130
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv119(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(119, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv131() {
+		__asm {
+			leave
+			push 131
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv120(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(120, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv132() {
+		__asm {
+			leave
+			push 132
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv121(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(121, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv133() {
+		__asm {
+			leave
+			push 133
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv122(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(122, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv134() {
+		__asm {
+			leave
+			push 134
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv123(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(123, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv135() {
+		__asm {
+			leave
+			push 135
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv124(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(124, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv136() {
+		__asm {
+			leave
+			push 136
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv125(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(125, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv137() {
+		__asm {
+			leave
+			push 137
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv126(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(126, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv138() {
+		__asm {
+			leave
+			push 138
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv127(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(127, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv139() {
+		__asm {
+			leave
+			push 139
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv128(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(128, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv140() {
+		__asm {
+			leave
+			push 140
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv129(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(129, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv141() {
+		__asm {
+			leave
+			push 141
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv130(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(130, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv142() {
+		__asm {
+			leave
+			push 142
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv131(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(131, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv143() {
+		__asm {
+			leave
+			push 143
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv132(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(132, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv144() {
+		__asm {
+			leave
+			push 144
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv133(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(133, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv145() {
+		__asm {
+			leave
+			push 145
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv134(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(134, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv146() {
+		__asm {
+			leave
+			push 146
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv135(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(135, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv147() {
+		__asm {
+			leave
+			push 147
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv136(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(136, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv148() {
+		__asm {
+			leave
+			push 148
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv137(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(137, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv149() {
+		__asm {
+			leave
+			push 149
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv138(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(138, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv150() {
+		__asm {
+			leave
+			push 150
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv139(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(139, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv151() {
+		__asm {
+			leave
+			push 151
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv140(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(140, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv152() {
+		__asm {
+			leave
+			push 152
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv141(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(141, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv153() {
+		__asm {
+			leave
+			push 153
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv142(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(142, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv154() {
+		__asm {
+			leave
+			push 154
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv143(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(143, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv155() {
+		__asm {
+			leave
+			push 155
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv144(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(144, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv156() {
+		__asm {
+			leave
+			push 156
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv145(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(145, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv157() {
+		__asm {
+			leave
+			push 157
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv146(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(146, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv158() {
+		__asm {
+			leave
+			push 158
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv147(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(147, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv159() {
+		__asm {
+			leave
+			push 159
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv148(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(148, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv160() {
+		__asm {
+			leave
+			push 160
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv149(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(149, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv161() {
+		__asm {
+			leave
+			push 161
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv150(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(150, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv162() {
+		__asm {
+			leave
+			push 162
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv151(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(151, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv163() {
+		__asm {
+			leave
+			push 163
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv152(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(152, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv164() {
+		__asm {
+			leave
+			push 164
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv153(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(153, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv165() {
+		__asm {
+			leave
+			push 165
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv154(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(154, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv166() {
+		__asm {
+			leave
+			push 166
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv155(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(155, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv167() {
+		__asm {
+			leave
+			push 167
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv156(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(156, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv168() {
+		__asm {
+			leave
+			push 168
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv157(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(157, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv169() {
+		__asm {
+			leave
+			push 169
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv158(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(158, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv170() {
+		__asm {
+			leave
+			push 170
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv159(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(159, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv171() {
+		__asm {
+			leave
+			push 171
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv160(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(160, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv172() {
+		__asm {
+			leave
+			push 172
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv161(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(161, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv173() {
+		__asm {
+			leave
+			push 173
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv162(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(162, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv174() {
+		__asm {
+			leave
+			push 174
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv163(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(163, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv175() {
+		__asm {
+			leave
+			push 175
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv164(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(164, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv176() {
+		__asm {
+			leave
+			push 176
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv165(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(165, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv177() {
+		__asm {
+			leave
+			push 177
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv166(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(166, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv178() {
+		__asm {
+			leave
+			push 178
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv167(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(167, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv179() {
+		__asm {
+			leave
+			push 179
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv168(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(168, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv180() {
+		__asm {
+			leave
+			push 180
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv169(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(169, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv181() {
+		__asm {
+			leave
+			push 181
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv170(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(170, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv182() {
+		__asm {
+			leave
+			push 182
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv171(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(171, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv183() {
+		__asm {
+			leave
+			push 183
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv172(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(172, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv184() {
+		__asm {
+			leave
+			push 184
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv173(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(173, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv185() {
+		__asm {
+			leave
+			push 185
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv174(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(174, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv186() {
+		__asm {
+			leave
+			push 186
+			jmp DualProcessCommandWrap
+		}
 	}
 
-	virtual HRESULT fv175(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(175, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv176(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(176, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv177(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(177, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv178(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(178, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv179(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(179, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv180(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(180, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv181(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(181, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv182(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(182, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv183(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(183, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv184(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(184, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv185(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(185, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv186(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(186, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv187(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(187, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv188(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(188, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv189(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(189, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv190(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(190, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv191(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(191, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv192(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(192, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv193(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(193, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv194(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(194, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv195(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(195, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv196(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(196, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv197(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(197, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv198(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(198, va);
-		va_end(va);
-		return ret;
-	}
-
-	virtual HRESULT fv199(char x) {
-		va_list va = &x;
-		HRESULT ret = ProcessCommand(199, va);
-		va_end(va);
-		return ret;
+	virtual HRESULT __stdcall fv187() {
+		__asm {
+			leave
+			push 187
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv188() {
+		__asm {
+			leave
+			push 188
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv189() {
+		__asm {
+			leave
+			push 189
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv190() {
+		__asm {
+			leave
+			push 190
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv191() {
+		__asm {
+			leave
+			push 191
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv192() {
+		__asm {
+			leave
+			push 192
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv193() {
+		__asm {
+			leave
+			push 193
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv194() {
+		__asm {
+			leave
+			push 194
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv195() {
+		__asm {
+			leave
+			push 195
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv196() {
+		__asm {
+			leave
+			push 196
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv197() {
+		__asm {
+			leave
+			push 197
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv198() {
+		__asm {
+			leave
+			push 198
+			jmp DualProcessCommandWrap
+		}
+	}
+
+	virtual HRESULT __stdcall fv199() {
+		__asm {
+			leave
+			push 199
+			jmp DualProcessCommandWrap
+		}
 	}
 
 protected:
 	const static int kMaxVf = 200;
-	virtual HRESULT ProcessCommand(int commandId, va_list &va) = 0;
+
 };

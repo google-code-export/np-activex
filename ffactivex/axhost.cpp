@@ -178,7 +178,7 @@ CAxHost::~CAxHost()
 	if (Sink) {
 
 		Sink->UnsubscribeFromEvents();
-        Sink->Release();
+       // Sink->Release();
     }
 
     if (Site) {

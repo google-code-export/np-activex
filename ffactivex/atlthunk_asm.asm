@@ -46,10 +46,8 @@ public __KiUserExceptionDispatcher_ATL_p
 __KiUserExceptionDispatcher_ATL_p dd 0
 .code
 __KiUserExceptionDispatcher_hook proc
-  push [esp + 4]
-  push [esp + 4]
+  ; The arguments are already on the stack
   call __KiUserExceptionDispatcher_ATL_p
-  add esp, 8
   push __KiUserExceptionDispatcher_origin
   ret
 __KiUserExceptionDispatcher_hook   endp 

@@ -37,6 +37,7 @@
 #include <npapi.h>
 #include <npruntime.h>
 #include "FakeDispatcherBase.h"
+#include "objectProxy.h"
 extern ITypeLib *pHtmlLib;
 class CAxHost;
 class FakeDispatcher :
@@ -100,9 +101,8 @@ public:
 	FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *object);
 	~FakeDispatcher(void);
 	
-protected:
-	HRESULT virtual ProcessCommand(int ID, va_list &list);
-
+	HRESULT ProcessCommand(int ID, int *parlength,va_list &list);
+	//friend HRESULT __cdecl DualProcessCommand(int parlength, int commandId, FakeDispatcher *disp, ...);
 private:
 	
     const static DWORD MAGIC_NUMBER = 0xFF101243;
@@ -112,7 +112,7 @@ private:
 	ITypeLib *typeLib;
 	ITypeInfo *typeInfo;
 	CAxHost *internalObj;
-
+	NPVariantProxy npName;
 	int ref;
 	DWORD magic;
 
