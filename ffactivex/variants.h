@@ -36,5 +36,5 @@ struct ITypeInfo;
 void Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance);
 void NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance);
 size_t VariantSize(VARTYPE vt);
-void ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const VARIANT &var, LPVOID dest);
+HRESULT ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const VARIANT &var, LPVOID dest);
 void RawTypeToVariant(const TYPEDESC &desc, LPVOID source, VARIANT* var);

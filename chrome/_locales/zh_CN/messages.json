@@ -22,5 +22,8 @@
   },
   "given_setting": {
     "message": "你可以在http://code.google.com/p/np-activex/wiki/ChinaSettings查看提供的预定义选项。"
+  },
+  "copyright": {
+    "message": "本插件由eagleonhill制作"
   }
 }

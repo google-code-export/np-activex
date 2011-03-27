@@ -174,7 +174,10 @@ HRESULT CControlEventSink::SubscribeToEvents(IUnknown *pControl)
     }
     // Custom IID
     m_EventIID = iidEventSink;
-    DWORD dwCookie = 0;
+    DWORD dwCookie = 0;/*
+	CComPtr<IEnumConnectionPoints> e;
+	ccp->EnumConnectionPoints(&e);
+	e->Next(1, &cp, &dwCookie);*/
     if (FAILED(ccp->FindConnectionPoint(m_EventIID, &cp)))
 	{
 		np_log(instance, 0, "failed to find connection point");
@@ -196,7 +199,7 @@ HRESULT CControlEventSink::SubscribeToEvents(IUnknown *pControl)
 HRESULT
 CControlEventSink::InternalInvoke(DISPID dispIdMember, REFIID riid, LCID lcid, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult, EXCEPINFO *pExcepInfo, UINT *puArgErr)
 {
-	USES_CONVERSION;
+	USES_CONVERSION; 
 
 	if (DISPATCH_METHOD != wFlags) {
 		// any other reason to call us?!

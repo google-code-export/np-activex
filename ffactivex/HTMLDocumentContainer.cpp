@@ -32,8 +32,8 @@
 #include "npactivex.h"
 
 HTMLDocumentContainer::HTMLDocumentContainer(NPP instance, ITypeLib *htmlLib, NPObject *document)
-	:FakeDispatcher(instance, htmlLib, document)
 {
+	dispacher = new FakeDispatcher(instance, htmlLib, document);
 	NPNFuncs.retainobject(document);
 }
 

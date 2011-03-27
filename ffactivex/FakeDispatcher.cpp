@@ -64,7 +64,8 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 	USES_CONVERSION;
 	HRESULT hr = E_FAIL;
 	BSTR pBstrName;
-	typeInfo->GetDocumentation(dispIdMember, &pBstrName, NULL, NULL, NULL);
+	if (FAILED(typeInfo->GetDocumentation(dispIdMember, &pBstrName, NULL, NULL, NULL)))
+		return E_FAIL;
 	LPSTR str = OLE2A(pBstrName);
 	SysFreeString(pBstrName);
 
@@ -119,7 +120,7 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 	} else if (!typeInfo) {
 		hr = typeLib->GetTypeInfoOfGuid(riid, &typeInfo);
 		if (SUCCEEDED(hr)) {
-			*ppvObject = this;
+			*ppvObject = static_cast<FakeDispatcher*>(this);
 			AddRef();
 		}
 	} else {
@@ -149,9 +150,6 @@ FakeDispatcher::~FakeDispatcher(void)
 	if (typeInfo) {
 		typeInfo->Release();
 	}
-	if (npName.value.stringValue.UTF8Characters) {
-		ATLTRACE2("Destroy %s\n", npName.value.stringValue.UTF8Characters);
-	}
 	NPNFuncs.releaseobject(npObject);
 	typeLib->Release();
 }
@@ -169,15 +167,18 @@ extern "C" HRESULT __cdecl DualProcessCommand(int parlength, int commandId, int 
 
 HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 {
+	ATLASSERT(this->IsValid());
+	// The exception is critical if we can't find the size of parameters.
 	if (!typeInfo)
-		return E_FAIL;
+		__asm int 3;
 	UINT index = FindFuncByVirtualId(vfid + DISPATCH_VTABLE);
 	if (index == (UINT)-1)
-		return E_NOTIMPL;
+		__asm int 3;
 	FUNCDESC *func;
-	// We should count this first.
+	// We should count pointer of "this" first.
 	*parlength = sizeof(LPVOID);
-	typeInfo->GetFuncDesc(index, &func);
+	if (FAILED(typeInfo->GetFuncDesc(index, &func)))
+		__asm int 3;
 	DISPPARAMS varlist;
 	VARIANT *list = new VARIANT[func->cParams];
 	varlist.cArgs = func->cParams;
@@ -198,9 +199,11 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 	VARIANT result;
 	HRESULT ret = Invoke(func->memid, IID_NULL, NULL, func->invkind, &varlist, &result, NULL, NULL);
 	
-	ConvertVariantToGivenType(typeInfo, func->elemdescFunc.tdesc, result, args);
+	if (SUCCEEDED(ret))
+		ret = ConvertVariantToGivenType(typeInfo, func->elemdescFunc.tdesc, result, args);
+
 	size_t varsize = VariantSize(func->elemdescFunc.tdesc.vt);
-	// It should always be a pointer.
+	// It should always be a pointer. It always should be counted.
 	size_t intvarsz = varsize ? sizeof(LPVOID) : 0;
 	*parlength += intvarsz;
 	delete list;

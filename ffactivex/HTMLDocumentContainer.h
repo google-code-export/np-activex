@@ -36,7 +36,6 @@
 #include "objectProxy.h"
 #include "FakeDispatcher.h"
 class HTMLDocumentContainer :
-	public FakeDispatcher,
 	public IOleContainer
 {
 public:
@@ -68,18 +67,23 @@ public:
 			AddRef();
 			return S_OK;
 		}
-		return FakeDispatcher::QueryInterface(riid, ppvObject);
+		return dispacher->QueryInterface(riid, ppvObject);
 	}
 
     virtual ULONG STDMETHODCALLTYPE AddRef( void) {
-		return FakeDispatcher::AddRef();
+		return dispacher->AddRef();
 	}
 
     virtual ULONG STDMETHODCALLTYPE Release( void) {
-		return FakeDispatcher::Release();
+		ULONG ret = dispacher->Release();
+		if (!ret)
+			delete this;
+		return ret;
 	}
 
 private:
+	
+	FakeDispatcher *dispacher;
 	NPObjectProxy document_;
 };
 

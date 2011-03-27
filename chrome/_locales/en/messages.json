@@ -36,5 +36,8 @@
   },
   "log_enable": {
     "message": "Enable Log"
+  },
+  "copyright": {
+    "message": "This extension is made by eagleonhill."
   }
 }

@@ -435,15 +435,15 @@ size_t VariantSize(VARTYPE vt) {
 }
 
 
-void ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const VARIANT &var, LPVOID dest) {
+HRESULT ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const VARIANT &var, LPVOID dest) {
 	// var is converted from NPVariant, so only limited types are possible.
-	
+	HRESULT hr = S_OK;
 	switch (vt.vt)
 	{
 	case VT_EMPTY:
 	case VT_VOID:
 	case VT_NULL:
-		return;
+		return S_OK;
 	case VT_I1:
 	case VT_UI1:
 	case VT_I2:
@@ -497,15 +497,19 @@ void ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const VA
 		break;
 	case VT_USERDEFINED:
 		{
-			ITypeInfo *newType;
-			baseType->GetRefTypeInfo(vt.hreftype, &newType);
-			IUnknown *unk = var.punkVal;
-			TYPEATTR *attr;
-			newType->GetTypeAttr(&attr);
-			unk->QueryInterface(attr->guid, (LPVOID*)dest);
-			unk->Release();
-			newType->ReleaseTypeAttr(attr);
-			newType->Release();
+			if (var.vt != VT_UNKNOWN) {
+				return E_FAIL;
+			} else {
+				ITypeInfo *newType;
+				baseType->GetRefTypeInfo(vt.hreftype, &newType);
+				IUnknown *unk = var.punkVal;
+				TYPEATTR *attr;
+				newType->GetTypeAttr(&attr);
+				hr = unk->QueryInterface(attr->guid, (LPVOID*)dest);
+				unk->Release();
+				newType->ReleaseTypeAttr(attr);
+				newType->Release();
+			}
 		}
 		break;
 	case VT_PTR:
@@ -516,6 +520,7 @@ void ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const VA
 	default:
 		_asm{int 3}
 	}
+	return hr;
 }
 
 void RawTypeToVariant(const TYPEDESC &desc, LPVOID source, VARIANT* var) {
