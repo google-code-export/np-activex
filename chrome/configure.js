@@ -37,7 +37,7 @@ with (ActiveXConfig) {
   {
     try {
       // Remove comment and trim.
-      wild = wild.replace(/\s*###.*$/, "").
+      wild = wild.toLowerCase().replace(/\s*###.*$/, "").
         replace(/\s*$/, "").replace(/^\s*/, "");
       if (wild.substr(0, 2) == "r/")
         return new RegExp(wild.substr(2));
@@ -122,6 +122,7 @@ with (ActiveXConfig) {
 
   prototype.isUrlMatched = function(url) {
     var list = this.getUrlMatches();
+    url = url.toLowerCase();
     for (var i = 0; i < list.length; ++i) {
       if (list[i].test(url)) return true;
     }
@@ -129,7 +130,9 @@ with (ActiveXConfig) {
   }
 
   prototype.isClsidTrusted = function(clsid) {
-    return this.getTrustedClsids().replace(/###.*/g, "").indexOf(clsid) != -1;
+    var clsidpattern = this.getTrustedClsids().replace(
+        /###.*/g, "").toUpperCase();
+    return clsidpattern.indexOf(clsid.toUpperCase()) != -1;
   }
 }
 

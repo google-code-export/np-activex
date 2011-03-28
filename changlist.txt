@@ -1,4 +1,6 @@
 Version 1.2.2 -----
+Fix: Case insentive for CLSID and url
+Version 1.2.2 -----
 Fix: Error is thrown instead of returned if no interface fit the returned value in dual interface
 Add: author advertisement..
 
