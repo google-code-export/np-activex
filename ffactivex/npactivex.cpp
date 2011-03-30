@@ -485,15 +485,17 @@ NPP_New(NPMIMEType pluginType,
 			}
 		}
 		if (host) {
-			NPObjectProxy npWindow;
-			NPNFuncs.getvalue(instance, NPNVWindowNPObject, &npWindow);
-			NPVariantProxy documentVariant;
-			if (NPNFuncs.getproperty(instance, npWindow, NPNFuncs.getstringidentifier("document"), &documentVariant)
-				&& NPVARIANT_IS_OBJECT(documentVariant)) {
-				NPObject *npDocument = NPVARIANT_TO_OBJECT(documentVariant);
-				IOleContainer *document = new HTMLDocumentContainer(instance, pHtmlLib, npDocument);
-				host->Site->SetContainer(document);
-			}
+			CComAggObject<HTMLDocumentContainer> *document;
+			CComAggObject<HTMLDocumentContainer>::CreateInstance(host->Site->GetUnknown(), &document);
+
+			document->m_contained.Init(instance, pHtmlLib);
+
+			CComQIPtr<IOleContainer> container = document;
+			host->Site->SetContainer(container);
+			CComQIPtr<IServiceProvider> provider = document;
+			host->Site->SetServiceProvider(provider);
+
+			host->Site->SetInnerWindow(document);
 			host->RegisterObject();
 			instance->pdata = host;
 		}

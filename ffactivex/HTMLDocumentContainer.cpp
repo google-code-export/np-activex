@@ -31,13 +31,38 @@
 #include "HTMLDocumentContainer.h"
 #include "npactivex.h"
 
-HTMLDocumentContainer::HTMLDocumentContainer(NPP instance, ITypeLib *htmlLib, NPObject *document)
+HTMLDocumentContainer::HTMLDocumentContainer() : dispatcher(NULL)
 {
-	dispacher = new FakeDispatcher(instance, htmlLib, document);
-	NPNFuncs.retainobject(document);
+
 }
 
-
+void HTMLDocumentContainer::Init(NPP instance, ITypeLib *htmlLib) {
+	NPObjectProxy npWindow;
+	NPNFuncs.getvalue(instance, NPNVWindowNPObject, &npWindow);
+	NPVariantProxy documentVariant;
+	if (NPNFuncs.getproperty(instance, npWindow, NPNFuncs.getstringidentifier("document"), &documentVariant)
+		&& NPVARIANT_IS_OBJECT(documentVariant)) {
+		NPObject *npDocument = NPVARIANT_TO_OBJECT(documentVariant);
+		dispatcher = new FakeDispatcher(instance, htmlLib, npDocument);
+	}
+	npp = instance;
+}
+HRESULT HTMLDocumentContainer::get_LocationURL(BSTR *str) {
+	NPObjectProxy npWindow;
+	NPNFuncs.getvalue(npp, NPNVWindowNPObject, &npWindow);
+	NPVariantProxy LocationVariant;
+	if (!NPNFuncs.getproperty(npp, npWindow, NPNFuncs.getstringidentifier("location"), &LocationVariant)
+		|| !NPVARIANT_IS_OBJECT(LocationVariant)) {
+			return E_FAIL;
+	}
+	NPObject *npLocation = NPVARIANT_TO_OBJECT(LocationVariant);
+	NPVariantProxy npStr;
+	if (!NPNFuncs.getproperty(npp, npLocation, NPNFuncs.getstringidentifier("href"), &npStr))
+		return E_FAIL;
+	CComBSTR bstr = npStr.value.stringValue.UTF8Characters;
+	*str = bstr.Detach();
+	return S_OK;
+}
 HTMLDocumentContainer::~HTMLDocumentContainer(void)
 {
 }

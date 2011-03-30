@@ -147,6 +147,7 @@ private:
 
 protected:
 // Pointers to object interfaces
+	CComPtr<IUnknown> m_spInner;
     // Raw pointer to the object
     CComPtr<IUnknown> m_spObject;
     // Pointer to objects IViewObject interface
@@ -213,6 +214,7 @@ public:
 
 BEGIN_COM_MAP(CControlSite)
     CCONTROLSITE_INTERFACES()
+	COM_INTERFACE_ENTRY_AGGREGATE_BLIND(m_spInner)
 END_COM_MAP()
 
 BEGIN_OLECOMMAND_TABLE()
@@ -253,6 +255,9 @@ END_OLECOMMAND_TABLE()
     {
         m_spContainer = pContainer;
     }
+	void SetInnerWindow(IUnknown *unk) {
+		m_spInner = unk;
+	}
     // Set the security policy object. Ownership of this object remains with the caller and the security
     // policy object is meant to exist for as long as it is set here.
     virtual void SetSecurityPolicy(CControlSiteSecurityPolicy *pSecurityPolicy)
