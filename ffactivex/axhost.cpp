@@ -47,6 +47,8 @@
 
 #include "axhost.h"
 
+#include "HTMLDocumentContainer.h"
+
 #ifdef NO_REGISTRY_AUTHORIZE
 
 static const char *WellKnownProgIds[] = {
@@ -178,13 +180,15 @@ CAxHost::~CAxHost()
 	if (Sink) {
 
 		Sink->UnsubscribeFromEvents();
-       // Sink->Release();
+        Sink->Release();
+		Sink = NULL;
     }
 
     if (Site) {
 
 		Site->Detach();
         Site->Release();
+		Site = NULL;
     }
 
 	if (Props_) {
@@ -377,6 +381,10 @@ CAxHost::hasValidClsID()
 	return isValidClsID;
 }
 
+static void HTMLContainerDeleter(IUnknown *unk) {
+	CComAggObject<HTMLDocumentContainer>* val = (CComAggObject<HTMLDocumentContainer>*)(unk);
+	val->InternalRelease();
+}
 bool
 CAxHost::CreateControl(bool subscribeToEvents)
 {
@@ -393,7 +401,7 @@ CAxHost::CreateControl(bool subscribeToEvents)
 		np_log(instance, 0, "AxHost.CreateControl: CreateInstance failed");
 		return false;
 	}
-
+	Site->AddRef();
 	Site->m_bSupportWindowlessActivation = false;
 
 	if (TrustWellKnown && isKnown) {
@@ -406,7 +414,10 @@ CAxHost::CreateControl(bool subscribeToEvents)
 		Site->m_bSafeForScriptingObjectsOnly = true;
 	}
 
-	Site->AddRef();
+	CComAggObject<HTMLDocumentContainer> *document;
+	CComAggObject<HTMLDocumentContainer>::CreateInstance(Site->GetUnknown(), &document);
+	document->m_contained.Init(instance, pHtmlLib);
+	Site->SetInnerWindow(document, HTMLContainerDeleter);
 
 	// Create the object
 	HRESULT hr;
@@ -427,6 +438,7 @@ CAxHost::CreateControl(bool subscribeToEvents)
 
 	// Create the event sink
 	CComObject<CControlEventSink>::CreateInstance(&Sink);
+	Sink->AddRef();
 	Sink->instance = instance;
 	hr = Sink->SubscribeToEvents(control);
 	control->Release();
@@ -492,16 +504,14 @@ CAxHost::CreateScriptableObject()
 			markedSafe = 1;
 		else 
 			markedSafe = 2;
-	}
-	if (Site->m_bSafeForScriptingObjectsOnly || markedSafe == 1)
+}
+	Scriptable *obj = Scriptable::FromAxHost(instance, this);
+	if (!Site->m_bSafeForScriptingObjectsOnly && markedSafe != 1)
 	{
-		ScriptBase *obj = Scriptable::FromAxHost(instance, this);
-		return obj;
+		// Disable scripting.
+		obj->Invalidate();
 	}
-	else
-	{
-		return NULL;
-	}
+	return obj;
 }
 
 HRESULT CAxHost::GetControlUnknown(IUnknown **pObj) {

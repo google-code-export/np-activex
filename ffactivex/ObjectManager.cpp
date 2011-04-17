@@ -40,7 +40,7 @@
 NPClass ObjectManager::npClass = {
 	/* version */		NP_CLASS_STRUCT_VERSION,
 	/* allocate */		ObjectManager::_Allocate,
-	/* deallocate */	ObjectManager::_Deallocate,
+	/* deallocate */	ObjectManager::Deallocate,
 	/* invalidate */	NULL,
 	/* hasMethod */		ObjectManager::HasMethod,
 	/* invoke */		ObjectManager::Invoke,
@@ -165,4 +165,8 @@ void ObjectManager::RetainOwnership(CAxHost* host) {
 ScriptBase* ObjectManager::CreateScriptableObject() {
 	ScriptBase* obj = static_cast<ScriptBase*>(NPNFuncs.createobject(instance, &npClass));
 	return obj;
+}
+
+void ObjectManager::Deallocate(NPObject *obj) {
+	delete static_cast<ScriptManager*>(obj);
 }

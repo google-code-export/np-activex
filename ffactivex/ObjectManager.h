@@ -75,10 +75,7 @@ private:
 	
 	static bool SetProperty(NPObject *obj, NPIdentifier name, const NPVariant *value);
 
-	static void	_Deallocate(NPObject *obj)
-	{
-		delete obj;
-	}
+	static void	Deallocate(NPObject *obj);
 	
 };
 

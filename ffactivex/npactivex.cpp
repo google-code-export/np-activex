@@ -46,7 +46,6 @@
 #include "authorize.h"
 #include "common\PropertyList.h"
 #include "common\ControlSite.h"
-#include "HTMLDocumentContainer.h"
 
 #include "ObjectManager.h"
 
@@ -480,22 +479,12 @@ NPP_New(NPMIMEType pluginType,
 
 			if (NPERR_NO_ERROR != rc) {
 				delete host;
+				instance->pdata = NULL;
 				host = NULL;
 				return rc;
 			}
 		}
 		if (host) {
-			CComAggObject<HTMLDocumentContainer> *document;
-			CComAggObject<HTMLDocumentContainer>::CreateInstance(host->Site->GetUnknown(), &document);
-
-			document->m_contained.Init(instance, pHtmlLib);
-
-			CComQIPtr<IOleContainer> container = document;
-			host->Site->SetContainer(container);
-			CComQIPtr<IServiceProvider> provider = document;
-			host->Site->SetServiceProvider(provider);
-
-			host->Site->SetInnerWindow(document);
 			host->RegisterObject();
 			instance->pdata = host;
 		}

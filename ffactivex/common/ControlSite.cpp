@@ -206,6 +206,8 @@ CControlSite::CControlSite()
     m_hRgnBuffer = NULL;
     m_hBMBufferOld = NULL;
     m_hBMBuffer = NULL;
+
+	m_spInner = NULL;
 }
 
 
@@ -214,6 +216,9 @@ CControlSite::~CControlSite()
 {
     TRACE_METHOD(CControlSite::~CControlSite);
     Detach();
+	if (m_spInner && m_spInnerDeallocater) {
+		m_spInnerDeallocater(m_spInner);
+	}
 }
 
 // Create the specified control, optionally providing properties to initialise
@@ -462,6 +467,11 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
     if (spObject)
     {        
         m_spObject = spObject;
+
+		CComQIPtr<IObjectWithSite> site = m_spObject;
+		if (site) {
+			site->SetSite(GetUnknown());
+		}
     }    
     return hr;
 }
@@ -738,17 +748,6 @@ CControlSiteSecurityPolicy *CControlSite::GetDefaultControlSecurityPolicy()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// IServiceProvider implementation
-
-HRESULT STDMETHODCALLTYPE CControlSite::QueryService(REFGUID guidService, REFIID riid, void** ppv)
-{
-    if (m_spServiceProvider)
-        return m_spServiceProvider->QueryService(guidService, riid, ppv);
-    return E_NOINTERFACE;
-}
-
-
-///////////////////////////////////////////////////////////////////////////////
 // IDispatch implementation
 
 
@@ -902,7 +901,8 @@ HRESULT STDMETHODCALLTYPE CControlSite::GetMoniker(/* [in] */ DWORD dwAssign, /*
 HRESULT STDMETHODCALLTYPE CControlSite::GetContainer(/* [out] */ IOleContainer __RPC_FAR *__RPC_FAR *ppContainer)
 {
     if (!ppContainer) return E_INVALIDARG;
-    *ppContainer = m_spContainer;
+	CComQIPtr<IOleContainer> container(this->GetUnknown());
+    *ppContainer = container;
     if (*ppContainer)
     {
         (*ppContainer)->AddRef();

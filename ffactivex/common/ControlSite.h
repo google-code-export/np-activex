@@ -57,7 +57,6 @@
     COM_INTERFACE_ENTRY_IID(IID_IAdviseSink2, IAdviseSinkEx) \
     COM_INTERFACE_ENTRY_IID(IID_IAdviseSinkEx, IAdviseSinkEx) \
     COM_INTERFACE_ENTRY(IOleCommandTarget) \
-    COM_INTERFACE_ENTRY(IServiceProvider) \
     COM_INTERFACE_ENTRY(IBindStatusCallback) \
     COM_INTERFACE_ENTRY(IWindowForBindingUI)
 
@@ -109,7 +108,6 @@ class CControlSite :    public CComObjectRootEx<CComSingleThreadModel>,
                         public IOleControlSite,
                         public IAdviseSinkEx,
                         public IDispatch,
-                        public IServiceProvider,
                         public IOleCommandTargetImpl<CControlSite>,
                         public IBindStatusCallback,
                         public IWindowForBindingUI
@@ -136,10 +134,6 @@ private:
     unsigned m_bWindowless:1;
     // Flag indicating if only safely scriptable controls are allowed
     unsigned m_bSafeForScriptingObjectsOnly:1;
-    // Pointer to an externally registered service provider
-    CComPtr<IServiceProvider> m_spServiceProvider;
-    // Pointer to the OLE container
-    CComPtr<IOleContainer> m_spContainer;
     // Return the default security policy object
     static CControlSiteSecurityPolicy *GetDefaultControlSecurityPolicy();
 
@@ -147,7 +141,6 @@ private:
 
 protected:
 // Pointers to object interfaces
-	CComPtr<IUnknown> m_spInner;
     // Raw pointer to the object
     CComPtr<IUnknown> m_spObject;
     // Pointer to objects IViewObject interface
@@ -165,6 +158,9 @@ protected:
     // Pointer to the security policy
     CControlSiteSecurityPolicy *m_pSecurityPolicy;
 
+	// Document and Service provider
+	IUnknown *m_spInner;
+	void (*m_spInnerDeallocater)(IUnknown *m_spInner);
 // Binding variables
     // Flag indicating whether binding is in progress
     unsigned m_bBindingInProgress;
@@ -246,17 +242,10 @@ END_OLECOMMAND_TABLE()
     virtual HRESULT Advise(IUnknown *pIUnkSink, const IID &iid, DWORD *pdwCookie);
     // Removes an advise sink
     virtual HRESULT Unadvise(const IID &iid, DWORD dwCookie);
-    // Register an external service provider object
-    virtual void SetServiceProvider(IServiceProvider *pSP)
-    {
-        m_spServiceProvider = pSP;
-    }
-    virtual void SetContainer(IOleContainer *pContainer)
-    {
-        m_spContainer = pContainer;
-    }
-	void SetInnerWindow(IUnknown *unk) {
+
+	void SetInnerWindow(IUnknown *unk, void (*Deleter)(IUnknown *unk)) {
 		m_spInner = unk;
+		m_spInnerDeallocater = Deleter;
 	}
     // Set the security policy object. Ownership of this object remains with the caller and the security
     // policy object is meant to exist for as long as it is set here.
@@ -293,9 +282,6 @@ END_OLECOMMAND_TABLE()
     {
         return m_bInPlaceActive;
     }
-
-// IServiceProvider
-    virtual HRESULT STDMETHODCALLTYPE QueryService(REFGUID guidService, REFIID riid, void** ppv);
 
 // IDispatch
     virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount(/* [out] */ UINT __RPC_FAR *pctinfo);

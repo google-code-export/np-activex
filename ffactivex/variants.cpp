@@ -45,49 +45,68 @@
 #include "GenericNPObject.h"
 #include <OleAuto.h>
 #include "variants.h"
+
+#include "NPSafeArray.h"
+
 void
 BSTR2NPVar(BSTR bstr, NPVariant *npvar, NPP instance)
 {
-	USES_CONVERSION;
 	char *npStr = NULL;
-  size_t sourceLen;
-  size_t bytesNeeded;
+	size_t sourceLen;
+	size_t bytesNeeded;
 
-  sourceLen = lstrlenW(bstr);
+	sourceLen = lstrlenW(bstr);
 
-  bytesNeeded = WideCharToMultiByte(CP_UTF8,
-                                    0,
-                                    bstr,
-                                    sourceLen,
-                                    NULL,
-                                    0,
-                                    NULL,
-                                    NULL);
+	bytesNeeded = WideCharToMultiByte(CP_UTF8,
+									0,
+									bstr,
+									sourceLen,
+									NULL,
+									0,
+									NULL,
+									NULL);
 
-  bytesNeeded += 1;
+	bytesNeeded += 1;
 
 	// complete lack of documentation on Mozilla's part here, I have no
 	// idea how this string is supposed to be freed
 	npStr = (char *)NPNFuncs.memalloc(bytesNeeded);
 	if (npStr) {
+		int len = WideCharToMultiByte(CP_UTF8,
+							0,
+							bstr,
+							sourceLen,
+							npStr,
+							bytesNeeded - 1,
+							NULL,
+							NULL);
+		npStr[len] = 0;
 
-		memset(npStr, 0, bytesNeeded);
-
-    WideCharToMultiByte(CP_UTF8,
-                        0,
-                        bstr,
-                        sourceLen,
-                        npStr,
-                        bytesNeeded - 1,
-                        NULL,
-                        NULL);
-		
-		STRINGZ_TO_NPVARIANT(npStr, (*npvar));
+		STRINGN_TO_NPVARIANT(npStr, len, (*npvar));
 	}
 	else {
 
-		STRINGZ_TO_NPVARIANT(NULL, (*npvar));
+		VOID_TO_NPVARIANT(*npvar);
 	}
+}
+
+BSTR NPStringToBstr(const NPString npstr) {
+	size_t bytesNeeded;
+
+	bytesNeeded = MultiByteToWideChar(
+		CP_UTF8, 0, npstr.UTF8Characters, npstr.UTF8Length, NULL, 0);
+
+	bytesNeeded += 1;
+
+	BSTR bstr = (BSTR)CoTaskMemAlloc(sizeof(OLECHAR) * bytesNeeded);
+	if (bstr) {
+
+		int len = MultiByteToWideChar(
+			CP_UTF8, 0, npstr.UTF8Characters, npstr.UTF8Length, bstr, bytesNeeded);
+		bstr[len] = 0;
+		return bstr;
+	}
+	return NULL;
 }
 
 void
@@ -102,139 +121,6 @@ Unknown2NPVar(IUnknown *unk, NPVariant *npvar, NPP instance)
 	NPObject *obj = Scriptable::FromIUnknown(instance, unk);
 	OBJECT_TO_NPVARIANT(obj, (*npvar));
 }
-/*
-NPObject *
-SafeArray2NPObject(SAFEARRAY *parray, unsigned short dim, unsigned long *pindices, NPP instance)
-{
-	unsigned long *indices = pindices;
-	NPObject *obj = NULL;
-	bool rc = true;
-
-	if (!parray || !instance) {
-
-		return NULL;
-	}
-
-	obj = NPNFuncs.createobject(instance, &GenericNPObjectClass);
-	if (NULL == obj) {
-
-		return NULL;
-	}
-
-	do {
-		if (NULL == indices) {
-			// just getting started
-			SafeArrayLock(parray);
-
-			indices = (unsigned long *)calloc(1, parray->cDims * sizeof(unsigned long));
-			if (NULL == indices) {
-
-				rc = false;
-				break;
-			}
-		}
-
-		NPIdentifier id = NULL;
-		NPVariant val;
-		VOID_TO_NPVARIANT(val);
-
-		for(indices[dim] = 0; indices[dim] < parray->rgsabound[dim].cElements; indices[dim]++) {
-
-			if (dim == (parray->cDims - 1)) {
-				// single dimension (or the bottom of the recursion)
-				if (parray->fFeatures & FADF_VARIANT) {
-
-					VARIANT variant;
-					VariantInit(&variant);
-
-					if(FAILED(SafeArrayGetElement(parray, (long *)indices, &variant))) {
-
-						rc = false;
-						break;
-					}
-
-					Variant2NPVar(&variant, &val, instance);
-					VariantClear(&variant);
-				}
-				else if (parray->fFeatures & FADF_BSTR) {
-
-					BSTR bstr;
-
-					if(FAILED(SafeArrayGetElement(parray, (long *)indices, &bstr))) {
-
-						rc = false;
-						break;
-					}
-
-					BSTR2NPVar(bstr, &val, instance);
-				}
-				else if (parray->fFeatures & FADF_DISPATCH) {
-
-					IDispatch *disp;
-
-					if(FAILED(SafeArrayGetElement(parray, (long *)indices, &disp))) {
-
-						rc = false;
-						break;
-					}
-
-					Unknown2NPVar(disp, &val, instance);
-				}
-				else if (parray->fFeatures & FADF_UNKNOWN) {
-
-					IUnknown *unk;
-
-					if(FAILED(SafeArrayGetElement(parray, (long *)indices, &unk))) {
-
-						rc = false;
-						break;
-					}
-
-					Unknown2NPVar(unk, &val, instance);
-				}
-			}
-			else {
-				// recurse
-				NPObject *o = SafeArray2NPObject(parray, dim + 1, indices, instance);
-				if (NULL == o) {
-
-					rc = false;
-					break;
-				}
-
-				OBJECT_TO_NPVARIANT(o, val);
-			}
-
-			id = NPNFuncs.getintidentifier(parray->rgsabound[dim].lLbound + indices[dim]);
-
-			// setproperty will call retainobject or copy the internal string, we should
-			// release variant
-			NPNFuncs.setproperty(instance, obj, id, &val);
-			NPNFuncs.releasevariantvalue(&val);
-			VOID_TO_NPVARIANT(val);
-		}
-	} while (0);
-
-	if (false == rc) {
-
-		if (!pindices && indices) {
-
-			free(indices);
-			indices = NULL;
-
-			SafeArrayUnlock(parray);
-		}
-
-		if (obj) {
-
-			NPNFuncs.releaseobject(obj);
-			obj = NULL;
-		}
-	}
-
-	return obj;
-}
-*/
 
 #define GETVALUE(var, val)	(((var->vt) & VT_BYREF) ? *(var->p##val) : (var->val))
 
@@ -247,14 +133,13 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 
 		return;
 	}
-
 	VOID_TO_NPVARIANT(*npvar);
 	USES_CONVERSION;
 	switch (var->vt & ~VT_BYREF) {
-	case VT_ARRAY:
-		_asm{int 3}
-		// not supported
-		// obj = SafeArray2NPObject(GETVALUE(var, parray), 0, NULL, instance);
+	case VT_ARRAY | VT_VARIANT:
+		NPSafeArray::RegisterVBArray(instance);
+		NPSafeArray *obj;
+		obj = NPSafeArray::CreateFromArray(instance, var->parray);
 		OBJECT_TO_NPVARIANT(obj, (*npvar));
 		break;
 
@@ -312,9 +197,6 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 		break;
 
 	case VT_DISPATCH:
-		Unknown2NPVar(GETVALUE(var, pdispVal), npvar, instance);
-		break;
-		
 	case VT_USERDEFINED:
 	case VT_UNKNOWN:
 		Unknown2NPVar(GETVALUE(var, punkVal), npvar, instance);
@@ -325,6 +207,7 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 		break;
 	default:
 		// Some unsupported type
+		__asm int 3;
 		break;
 	}
 }
@@ -342,7 +225,7 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 	var->vt = VT_EMPTY;
 	switch (npvar->type) {
 	case NPVariantType_Void:
-		var->vt = VT_NULL;
+		var->vt = VT_EMPTY;
 		var->ulVal = 0;
 		break;
 
@@ -357,7 +240,7 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 		break;
 
 	case NPVariantType_Int32:
-		var->vt = VT_UI4;
+		var->vt = VT_I4;
 		var->ulVal = npvar->value.intValue;
 		break;
 
@@ -367,7 +250,7 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 		break;
 
 	case NPVariantType_String:
-		(CComVariant&)*var = npvar->value.stringValue.UTF8Characters;
+		(CComVariant&)*var = NPStringToBstr(npvar->value.stringValue);
 		break;
 
 	case NPVariantType_Object:
@@ -375,7 +258,7 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 		var->vt = VT_UNKNOWN;
 		if (object->_class == &Scriptable::npClass) {
 			Scriptable* scriptObj = (Scriptable*)object;
-			var->punkVal = scriptObj->getControl();
+			scriptObj->getControl(&var->punkVal);
 		} else {
 			IUnknown *val = new FakeDispatcher(instance, pHtmlLib, object);
 			var->punkVal = val;

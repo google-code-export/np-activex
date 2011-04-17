@@ -30,7 +30,8 @@
 
 #include "HTMLDocumentContainer.h"
 #include "npactivex.h"
-
+#include <MsHTML.h>
+const GUID HTMLDocumentContainer::IID_TopLevelBrowser = {0x4C96BE40, 0x915C, 0x11CF, {0x99, 0xD3, 0x00, 0xAA, 0x00, 0x4A, 0xE8, 0x37}};
 HTMLDocumentContainer::HTMLDocumentContainer() : dispatcher(NULL)
 {
 
@@ -63,6 +64,15 @@ HRESULT HTMLDocumentContainer::get_LocationURL(BSTR *str) {
 	*str = bstr.Detach();
 	return S_OK;
 }
+
+
+HRESULT STDMETHODCALLTYPE HTMLDocumentContainer::get_Document( 
+	__RPC__deref_out_opt IDispatch **ppDisp) {
+	if (dispatcher)
+		return dispatcher->QueryInterface(DIID_DispHTMLDocument, (LPVOID*)ppDisp);
+	return E_FAIL;
+}
+
 HTMLDocumentContainer::~HTMLDocumentContainer(void)
 {
 }

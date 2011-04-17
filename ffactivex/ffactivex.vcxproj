@@ -148,6 +148,7 @@
     <ClCompile Include="GenericNPObject.cpp" />
     <ClCompile Include="common\ItemContainer.cpp" />
     <ClCompile Include="common\PropertyBag.cpp" />
+    <ClCompile Include="NPSafeArray.cpp" />
     <ClCompile Include="scriptable.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -176,6 +177,7 @@
     <ClInclude Include="common\ItemContainer.h" />
     <ClInclude Include="common\PropertyBag.h" />
     <ClInclude Include="common\PropertyList.h" />
+    <ClInclude Include="NPSafeArray.h" />
     <ClInclude Include="objectProxy.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="scriptable.h" />

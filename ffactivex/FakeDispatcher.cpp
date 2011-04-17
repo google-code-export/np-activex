@@ -180,7 +180,7 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 	if (FAILED(typeInfo->GetFuncDesc(index, &func)))
 		__asm int 3;
 	DISPPARAMS varlist;
-	VARIANT *list = new VARIANT[func->cParams];
+	CComVariant *list = new CComVariant[func->cParams];
 	varlist.cArgs = func->cParams;
 	varlist.cNamedArgs = 0;
 	varlist.rgdispidNamedArgs = NULL;
@@ -196,6 +196,7 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 		args += intvarsz;
 		*parlength += intvarsz;
 	}
+	// We needn't clear it.
 	VARIANT result;
 	HRESULT ret = Invoke(func->memid, IID_NULL, NULL, func->invkind, &varlist, &result, NULL, NULL);
 	
@@ -206,7 +207,7 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 	// It should always be a pointer. It always should be counted.
 	size_t intvarsz = varsize ? sizeof(LPVOID) : 0;
 	*parlength += intvarsz;
-	delete list;
+	delete[] list;
 	return ret;
 }
 

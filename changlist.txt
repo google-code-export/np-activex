@@ -1,3 +1,9 @@
+Version 1.2.6 -----
+Support VBArray
+Return new XMLHttpRequest when creating ActiveXObject of XHR
+Fix: Use UTF-8 instead of default encoding
+Fix: Memory leak
+
 Version 1.2.4 -----
 Fix: Support IServiceProvider and IWebBrowser2 interface.
 

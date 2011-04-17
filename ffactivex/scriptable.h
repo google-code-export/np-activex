@@ -58,18 +58,19 @@ private:
 
 	bool InvokeControl(DISPID id, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult);
 
-	IUnknownPtr control;
+	CComQIPtr<IDispatch> disp;
 	bool invalid;
 	void setControl(IUnknown *unk) {
-		control = unk;
-		control->AddRef();
+		disp = unk;
 	}
 
 public:
 	Scriptable(NPP npp):
 	    ScriptBase(npp),
-		invalid(false),
-		control(NULL) {
+		invalid(false) {
+	}
+		
+	~Scriptable() {
 	}
 
 	static NPClass npClass;
@@ -81,10 +82,14 @@ public:
 	}
 
 	static Scriptable* FromAxHost(NPP npp, CAxHost* host);
-	~Scriptable() {control->Release();}
 
-	IUnknownPtr getControl() { 
-		return control;
+	HRESULT getControl(IUnknown **obj) { 
+		if (disp) { 
+			*obj = disp.p;
+			(*obj)->AddRef();
+			return S_OK;
+		}
+		return E_NOT_SET;
 	}
 
 	void Invalidate() {invalid = true;}
@@ -99,6 +104,7 @@ public:
 	
 	bool SetProperty(NPIdentifier name, const NPVariant *value);
 
+	bool Enumerate(NPIdentifier **value, uint32_t *count);
 private:
 	
 	// Some wrappers to adapt NPAPI's interface.
@@ -134,6 +140,9 @@ private:
 	static bool _SetProperty(NPObject *npobj, NPIdentifier name, const NPVariant *value) {
 		return ((Scriptable *)npobj)->SetProperty(name, value);
 	}
-
+	
+	static bool _Enumerate(NPObject *npobj, NPIdentifier **value, uint32_t *count) {
+		return ((Scriptable *)npobj)->Enumerate(value, count);
+	}
 };
 

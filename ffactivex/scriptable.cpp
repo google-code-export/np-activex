@@ -49,7 +49,7 @@ NPClass Scriptable::npClass = {
 	/* getProperty */	Scriptable::_GetProperty,
 	/* setProperty */	Scriptable::_SetProperty,
 	/* removeProperty */ NULL,
-	/* enumerate */		NULL,
+	/* enumerate */		Scriptable::_Enumerate,
 	/* construct */		NULL
 };
 
@@ -71,7 +71,7 @@ bool Scriptable::find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id
 		}
 		info->ReleaseFuncDesc(fDesc);
 	}
-
+#if 0
 	if (!found && (invKind & ~INVOKE_FUNC)) {
 
 		VARDESC *vDesc;
@@ -121,7 +121,7 @@ bool Scriptable::find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id
 			baseInfo->ReleaseTypeAttr(baseAttr);
 		}
 	}
-
+#endif
 	return found;
 }
 
@@ -135,6 +135,11 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 		return -1;
 	}
 
+	if (!disp) {
+
+		return -1;
+	}
+
 	if (!NPNFuncs.identifierisstring(name)) {
 
 		return -1;
@@ -144,15 +149,19 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 
 	LPOLESTR oleName = A2W(npname);
 
-	IDispatchPtr disp = control.GetInterfacePtr();
-	if (!disp) {
+	disp->GetIDsOfNames(IID_NULL, &oleName, 1, 0, &dID);
 
-		return -1;
+	if ((dID != -1) && (invKind & INVOKE_PROPERTYGET)) {
+		// Try to get property to check.
+		// Put will failed, and we assume GET won't have any side effect.
+		DISPPARAMS par = {0, 0, NULL, NULL};
+		CComVariant result;
+		HRESULT hr = disp->Invoke(dID, IID_NULL, 1, invKind, &par, &result, NULL, NULL);
+		if (hr == DISP_E_MEMBERNOTFOUND || hr == DISP_E_TYPEMISMATCH)
+			return -1;
 	}
-
-	disp->AddRef();
-
-	disp->GetIDsOfNames(IID_NULL, &oleName, 1, LOCALE_SYSTEM_DEFAULT, &dID);
+	return dID;
+#if 0
 	if (dID != -1) {
 
 		ITypeInfoPtr info;
@@ -161,8 +170,6 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 
 			return -1;
 		}
-
-		info->AddRef();
 
 		TYPEATTR *attr;
 		if (FAILED(info->GetTypeAttr(&attr))) {
@@ -173,21 +180,16 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 		found = find_member(info, attr, dID, invKind);
 		info->ReleaseTypeAttr(attr);
 	}
-
 	return found ? dID : -1;
+#endif
 }
 
 bool Scriptable::InvokeControl(DISPID id, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult) {
-
-	IDispatchPtr disp = control.GetInterfacePtr();
 	if (!disp) {
 
 		return false;
 	}
-
-	disp->AddRef();
-
-	HRESULT hr = disp->Invoke(id, IID_NULL, LOCALE_SYSTEM_DEFAULT, wFlags, pDispParams, pVarResult, NULL, NULL);
+	HRESULT hr = disp->Invoke(id, IID_NULL, 0, wFlags, pDispParams, pVarResult, NULL, NULL);
 
 	return (SUCCEEDED(hr)) ? true : false;
 }
@@ -201,10 +203,10 @@ bool Scriptable::Invoke(NPIdentifier name, const NPVariant *args, uint32_t argCo
 		return false;
 	}
 
-	VARIANT *vArgs = NULL;
+	CComVariant *vArgs = NULL;
 	if (argCount) {
 
-		vArgs = new VARIANT[argCount];
+		vArgs = new CComVariant[argCount];
 		if (!vArgs) {
 
 			return false;
@@ -224,18 +226,11 @@ bool Scriptable::Invoke(NPIdentifier name, const NPVariant *args, uint32_t argCo
 	params.rgdispidNamedArgs = NULL;
 	params.rgvarg = vArgs;
 
-	VARIANT vResult;
+	CComVariant vResult;
 
 	bool rc = InvokeControl(id, DISPATCH_METHOD, &params, &vResult);
 	if (vArgs) {
-		for (unsigned int i = 0; i < argCount; ++i) {
-			if (vArgs[i].scode == VT_UNKNOWN) {
-				FakeDispatcher *disp = dynamic_cast<FakeDispatcher*>(vArgs[i].punkVal);
-				if (disp)
-					disp->Release();
-			}
-		}
-		delete vArgs;
+		delete []vArgs;
 	}
 
 	if (!rc) {
@@ -254,7 +249,6 @@ bool Scriptable::HasMethod(NPIdentifier name)  {
 }
 
 bool Scriptable::HasProperty(NPIdentifier name) {
-
 	if (invalid) return false;
 
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET | INVOKE_PROPERTYPUT);
@@ -278,7 +272,7 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 	params.rgdispidNamedArgs = NULL;
 	params.rgvarg = NULL;
 
-	VARIANT vResult;
+	CComVariant vResult;
 
 	if (!InvokeControl(id, DISPATCH_PROPERTYGET, &params, &vResult)) {
 
@@ -298,7 +292,7 @@ bool Scriptable::SetProperty(NPIdentifier name, const NPVariant *value) {
 		return false;
 	}
 
-	VARIANT val;
+	CComVariant val;
 	NPVar2Variant(value, &val, instance);
 
 	DISPPARAMS params;
@@ -309,7 +303,7 @@ bool Scriptable::SetProperty(NPIdentifier name, const NPVariant *value) {
 	params.cArgs = 1;
 	params.rgvarg = &val;
 
-	VARIANT vResult;
+	CComVariant vResult;
 	if (!InvokeControl(id, DISPATCH_PROPERTYPUT, &params, &vResult)) {
 
 		return false;
@@ -324,6 +318,7 @@ Scriptable* Scriptable::FromAxHost(NPP npp, CAxHost* host)
 	host->GetControlUnknown(&unk);
 	new_obj->setControl(unk);
 	new_obj->host = host;
+	unk->Release();
 	return new_obj;
 }
 
@@ -336,8 +331,47 @@ NPObject* Scriptable::_Allocate(NPP npp, NPClass *aClass)
 
 void Scriptable::_Deallocate(NPObject *obj) {
 	if (obj) {
-		ScriptBase *a = static_cast<ScriptBase*>(obj);
-		np_log(a->instance, 3, "Dealocate obj");
-		delete obj;
+		Scriptable *a = static_cast<Scriptable*>(obj);
+		//np_log(a->instance, 3, "Dealocate obj");
+		delete a;
 	}
+}
+
+bool Scriptable::Enumerate(NPIdentifier **value, uint32_t *count) {
+	UINT cnt;
+	if (!disp || FAILED(disp->GetTypeInfoCount(&cnt)))
+		return false;
+	*count = 0;
+	for (UINT i = 0; i < cnt; ++i) {
+		CComPtr<ITypeInfo> info;
+		disp->GetTypeInfo(i, LOCALE_SYSTEM_DEFAULT, &info);
+		TYPEATTR *attr;
+		info->GetTypeAttr(&attr);
+		*count += attr->cFuncs;
+		info->ReleaseTypeAttr(attr);
+	}
+	uint32_t pos = 0;
+	NPIdentifier *v = (NPIdentifier*) NPNFuncs.memalloc(sizeof(NPIdentifier) * *count);
+	USES_CONVERSION;
+	for (UINT i = 0; i < cnt; ++i) {
+		CComPtr<ITypeInfo> info;
+		disp->GetTypeInfo(i, LOCALE_SYSTEM_DEFAULT, &info);
+		TYPEATTR *attr;
+		info->GetTypeAttr(&attr);
+		BSTR name;
+		for (uint j = 0; j < attr->cFuncs; ++j) {
+			FUNCDESC *desc;
+			info->GetFuncDesc(j, &desc);
+			if (SUCCEEDED(info->GetDocumentation(desc->memid, &name, NULL, NULL, NULL))) {
+				LPCSTR str = OLE2A(name);
+				v[pos++] = NPNFuncs.getstringidentifier(str);
+				SysFreeString(name);
+			}
+			info->ReleaseFuncDesc(desc);
+		}
+		info->ReleaseTypeAttr(attr);
+	}
+	*count = pos;
+	*value = v;
+	return true;
 }

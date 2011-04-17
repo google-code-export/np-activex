@@ -227,7 +227,7 @@ public:
         /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp) {return notimpl();}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Document( 
-        /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp) {return notimpl();}
+        /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp);
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_TopLevelContainer( 
         /* [retval][out] */ __RPC__out VARIANT_BOOL *pBool) {return notimpl();}
@@ -301,13 +301,15 @@ BEGIN_COM_MAP(HTMLDocumentContainer)
 	COM_INTERFACE_ENTRY_AGGREGATE_BLIND(dispatcher)
 END_COM_MAP()
 
+static const GUID IID_TopLevelBrowser;
 BEGIN_SERVICE_MAP(HTMLDocumentContainer)
 	SERVICE_ENTRY(IID_IWebBrowserApp)
 	SERVICE_ENTRY(IID_IWebBrowser2)
 	SERVICE_ENTRY(IID_IWebBrowser)
+	SERVICE_ENTRY(SID_SContainerDispatch);
+	SERVICE_ENTRY(IID_TopLevelBrowser)
 END_SERVICE_MAP()
 private:
-	
 	FakeDispatcher *dispatcher;
 	NPObjectProxy document_;
 	NPP npp;

@@ -138,8 +138,10 @@ void CControlEventSink::UnsubscribeFromEvents()
         // Unsubscribe and reset - This seems to complete release and destroy us...
         m_spEventCP->Unadvise(tmpCookie);
 		// Unadvise handles the Release
-		//m_spEventCP.Release();
-    }
+		m_spEventCP.Release();
+    } else {
+		m_spEventCP.Release();
+	}
 }
 
 HRESULT CControlEventSink::SubscribeToEvents(IUnknown *pControl)

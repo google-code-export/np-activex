@@ -5,6 +5,9 @@
 function declareActiveXObject() {
   var hiddenDivId = "__hiddendiv_activex";
   window.__proto__.ActiveXObject = function(progid) {
+    progid = progid.trim();
+    if (progid == 'Msxml2.XMLHTTP' || progid == 'Microsoft.XMLHTTP')
+      return new XMLHttpRequest();
     var hiddenDiv = document.getElementById(hiddenDivId);
     if (!hiddenDiv) {
       if (!document.body) document.body=document.createElement("body");
@@ -18,7 +21,7 @@ function declareActiveXObject() {
     obj.setAttribute("progid", progid);
     obj.setAttribute("style", "display:hidden; width:0px; height:0px");
     hiddenDiv.appendChild(obj);
-    return obj
+    return obj.object
   }
   //console.log("ActiveXObject declared");
 }
