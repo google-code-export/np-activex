@@ -1,3 +1,7 @@
+Version 1.2.8 -----
+Fix: Support using createElement in IE's way(full HTML)
+Add: Support createPopup.
+
 Version 1.2.7 -----
 Fix: Avoid using non IDispatcher as IDispatcher in FakeDispatcher
 Fix: If a valid embed element is found as child, fall back automatically.
