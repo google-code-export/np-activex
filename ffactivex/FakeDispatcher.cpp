@@ -120,12 +120,21 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 	} else if (!typeInfo) {
 		hr = typeLib->GetTypeInfoOfGuid(riid, &typeInfo);
 		if (SUCCEEDED(hr)) {
-			*ppvObject = static_cast<FakeDispatcher*>(this);
-			AddRef();
+			TYPEATTR *attr;
+			typeInfo->GetTypeAttr(&attr);
+			if (!(attr->wTypeFlags & TYPEFLAG_FDISPATCHABLE)) {
+				typeInfo->Release();
+				hr = E_NOINTERFACE;
+			} else {
+				*ppvObject = static_cast<FakeDispatcher*>(this);
+				AddRef();
+			}
+			typeInfo->ReleaseTypeAttr(attr);
 		}
 	} else {
 		FakeDispatcher *another_obj = new FakeDispatcher(npInstance, typeLib, npObject);
 		hr = another_obj->QueryInterface(riid, ppvObject);
+		another_obj->Release();
 	}
 	if (FAILED(hr) && internalObj) {
 		IUnknown *unk;

@@ -62,14 +62,20 @@ public:
 	}
 	virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount( 
 			/* [out] */ __RPC__out UINT *pctinfo) {
-		return E_NOTIMPL; // doesn't support now
+		*pctinfo = 1;
+		return S_OK;
 	}
         
 	virtual HRESULT STDMETHODCALLTYPE GetTypeInfo( 
 		/* [in] */ UINT iTInfo,
 		/* [in] */ LCID lcid,
 		/* [out] */ __RPC__deref_out_opt ITypeInfo **ppTInfo){
-		return E_NOTIMPL; // doesn't support now
+		if (iTInfo == 0 && typeInfo) {
+			*ppTInfo = typeInfo;
+			typeInfo->AddRef();
+			return S_OK;
+		}
+		return E_INVALIDARG;
 	}
         
 	virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames( 
@@ -78,7 +84,10 @@ public:
 		/* [range][in] */ __RPC__in_range(0,16384) UINT cNames,
 		/* [in] */ LCID lcid,
 		/* [size_is][out] */ __RPC__out_ecount_full(cNames) DISPID *rgDispId){
-		return E_NOTIMPL; // doesn't support now
+		if (typeInfo) {
+			return typeInfo->GetIDsOfNames(rgszNames, cNames, rgDispId);
+		}
+		return E_FAIL;
 	}
 
 	virtual /* [local] */ HRESULT STDMETHODCALLTYPE Invoke( 

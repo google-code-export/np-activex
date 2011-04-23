@@ -277,7 +277,7 @@ VerifySiteLock(NPP instance)
 	return rc;
 }
 
-static void FillProperties(CAxHost *host, NPP instance) {
+static bool FillProperties(CAxHost *host, NPP instance) {
 	NPObjectProxy embed;
 	NPNFuncs.getvalue(instance, NPNVPluginElementNPObject, &embed);
 	// Traverse through childs
@@ -285,15 +285,15 @@ static void FillProperties(CAxHost *host, NPP instance) {
 	NPVariantProxy var_length;
 	NPVariant str_name, str_value;
 	if (!NPNFuncs.getproperty(instance, embed, NPNFuncs.getstringidentifier("childNodes"), &var_childNodes))
-		return;
+		return true;
 	if (!NPVARIANT_IS_OBJECT(var_childNodes))
-		return;
+		return true;
 
 	NPObject *childNodes = NPVARIANT_TO_OBJECT(var_childNodes);
 
 	VOID_TO_NPVARIANT(var_length);
 	if (!NPNFuncs.getproperty(instance, childNodes, NPNFuncs.getstringidentifier("length"), &var_length))
-		return;
+		return true;
 	USES_CONVERSION;
 
 	int length = 0;
@@ -318,6 +318,26 @@ static void FillProperties(CAxHost *host, NPP instance) {
 
 		if (!NPNFuncs.getproperty(instance, param_obj, idname, &var_nodeName))
 			continue;
+		if (stricmp(NPVARIANT_TO_STRING(var_nodeName).UTF8Characters, "embed") == 0) {
+			NPVariantProxy type;
+			NPVariant typestr;
+			STRINGZ_TO_NPVARIANT("type", typestr);
+			if (!NPNFuncs.invoke(instance, param_obj, idAttr, &typestr, 1, &type))
+				continue;
+			if (!NPVARIANT_IS_STRING(type))
+				continue;
+			CStringA command;
+			command.Format("navigator.mimeTypes[\'%s\'] != null", NPVARIANT_TO_STRING(type).UTF8Characters);
+			NPString str = {command.GetString(), command.GetLength()};
+			NPVariantProxy value;
+			NPObjectProxy window;
+			NPNFuncs.getvalue(instance, NPNVWindowNPObject, &window);
+			NPNFuncs.evaluate(instance, window, &str, &value);
+			if (NPVARIANT_IS_BOOLEAN(value) && NPVARIANT_TO_BOOLEAN(value)) {
+				// The embed is supported by chrome. Fallback automatically.
+				return false;
+			}
+		}
 		if (stricmp(NPVARIANT_TO_STRING(var_nodeName).UTF8Characters, "param") != 0)
 			continue;
 
@@ -335,6 +355,7 @@ static void FillProperties(CAxHost *host, NPP instance) {
         CComVariant v(paramValue);
         host->Props()->AddOrReplaceNamedProperty(paramName, v);
 	}
+	return true;
 
 }
 
@@ -395,7 +416,9 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 		}
 	}
 
-	FillProperties(host, instance);
+	if (!FillProperties(host, instance)) {
+		return NPERR_GENERIC_ERROR;
+	}
 	// Make sure we have all the information we need to initialize a new instance
 	if (!host->hasValidClsID()) {
 		np_log(instance, 0, "AxHost.NPP_New: no valid CLSID or PROGID");
