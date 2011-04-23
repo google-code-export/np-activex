@@ -39,5 +39,8 @@
   },
   "copyright": {
     "message": "This extension is made by eagleonhill."
+  },
+  "submit_issue": {
+    "message": "To submit an issue, or for technical support, click here!!"
   }
 }

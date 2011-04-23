@@ -25,5 +25,8 @@
   },
   "copyright": {
     "message": "本插件由eagleonhill制作"
+  },
+  "submit_issue": {
+    "message": "若需要汇报不兼容网站，请点击此处！！"
   }
 }
