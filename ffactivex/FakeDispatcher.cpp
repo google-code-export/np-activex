@@ -58,6 +58,15 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 /* [out] */ VARIANT *pVarResult,
 /* [out] */ EXCEPINFO *pExcepInfo,
 /* [out] */ UINT *puArgErr) {
+	if (dispIdMember == 0 && (wFlags & DISPATCH_PROPERTYGET) && pDispParams->cArgs == 0) {
+		// Return toString()
+		static NPIdentifier strIdentify = NPNFuncs.getstringidentifier("toString");
+		NPVariantProxy result;
+		if (!NPNFuncs.invoke(npInstance, npObject, strIdentify, NULL, 0, &result))
+			return E_FAIL;
+		NPVar2Variant(&result, pVarResult, npInstance);
+		return S_OK;
+	}
 	if (!typeInfo) {
 		return E_FAIL;
 	}

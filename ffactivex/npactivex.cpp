@@ -195,7 +195,7 @@ MatchURL2TrustedLocations(NPP instance, LPCTSTR matchUrl)
 		np_log(instance, 0, "AxHost.MatchURL2TrustedLocations: failed to parse the current location URL");
 		return false;
 	}
-
+	
 	if (   (url.GetScheme() == ATL_URL_SCHEME_FILE) 
 		|| (!strncmp(LocalhostName, W2A(url.GetHostName()), strlen(LocalhostName)))){
 

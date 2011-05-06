@@ -255,7 +255,7 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 
 	case NPVariantType_Object:
 		NPObject *object = NPVARIANT_TO_OBJECT(*npvar);
-		var->vt = VT_UNKNOWN;
+		var->vt = VT_DISPATCH;
 		if (object->_class == &Scriptable::npClass) {
 			Scriptable* scriptObj = (Scriptable*)object;
 			scriptObj->getControl(&var->punkVal);
