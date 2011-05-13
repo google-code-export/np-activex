@@ -35,6 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 #include "scriptable.h"
 #include "axhost.h"
+#include "ScriptFunc.h"
 #include "npactivex.h"
 
 NPClass Scriptable::npClass = {
@@ -42,8 +43,8 @@ NPClass Scriptable::npClass = {
 	/* allocate */		Scriptable::_Allocate,
 	/* deallocate */	Scriptable::_Deallocate,
 	/* invalidate */	Scriptable::_Invalidate,
-	/* hasMethod */		Scriptable::_HasMethod,
-	/* invoke */		Scriptable::_Invoke,
+	/* hasMethod */		NULL, //Scriptable::_HasMethod,
+	/* invoke */		NULL, //Scriptable::_Invoke,
 	/* invokeDefault */	NULL,
 	/* hasProperty */	Scriptable::_HasProperty,
 	/* getProperty */	Scriptable::_GetProperty,
@@ -52,7 +53,6 @@ NPClass Scriptable::npClass = {
 	/* enumerate */		Scriptable::_Enumerate,
 	/* construct */		NULL
 };
-
 bool Scriptable::find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id, unsigned int invKind) {
 	bool found = false;
 	unsigned int i = 0;
@@ -126,6 +126,10 @@ bool Scriptable::find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id
 }
 
 DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
+
+	if (dispid != -1)
+		return false;	// submethod
+
 	bool found = false;
 	DISPID dID = -1;
 	USES_CONVERSION;
@@ -150,17 +154,28 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 	LPOLESTR oleName = A2W(npname);
 
 	disp->GetIDsOfNames(IID_NULL, &oleName, 1, 0, &dID);
-
-	if ((dID != -1) && (invKind & INVOKE_PROPERTYGET)) {
-		// Try to get property to check.
-		// Put will failed, and we assume GET won't have any side effect.
-		DISPPARAMS par = {0, 0, NULL, NULL};
-		CComVariant result;
-		HRESULT hr = disp->Invoke(dID, IID_NULL, 1, invKind, &par, &result, NULL, NULL);
-		if (hr == DISP_E_MEMBERNOTFOUND || hr == DISP_E_TYPEMISMATCH)
+	return dID;
+#if 0
+	int funcInv;
+	if (FindElementInvKind(disp, dID, &funcInv)) {
+		if (funcInv & invKind)
+			return dID;
+		else
 			return -1;
+	} else {
+		if ((dID != -1) && (invKind & INVOKE_PROPERTYGET)) {
+			// Try to get property to check.
+			// Use two parameters. It will definitely fail in property get/set, but it will return other orrer if it's not property.
+			CComVariant var[2];
+			DISPPARAMS par = {var, NULL, 2, 0};
+			CComVariant result;
+			HRESULT hr = disp->Invoke(dID, IID_NULL, 1, invKind, &par, &result, NULL, NULL);
+			if (hr == DISP_E_MEMBERNOTFOUND || hr == DISP_E_TYPEMISMATCH)
+				return -1;
+		}
 	}
 	return dID;
+#endif
 #if 0
 	if (dID != -1) {
 
@@ -184,20 +199,14 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 #endif
 }
 
-bool Scriptable::InvokeControl(DISPID id, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult) {
-	if (!disp) {
-
-		return false;
-	}
-	HRESULT hr = disp->Invoke(id, IID_NULL, 0, wFlags, pDispParams, pVarResult, NULL, NULL);
-
-	return (SUCCEEDED(hr)) ? true : false;
-}
-
 bool Scriptable::Invoke(NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result) {
 	if (invalid) return false;
 
 	DISPID id = ResolveName(name, INVOKE_FUNC);
+	return InvokeID(id, args, argCount, result);
+}
+
+bool Scriptable::InvokeID(DISPID id,  const NPVariant *args, uint32_t argCount, NPVariant *result) {
 	if (-1 == id) {
 
 		return false;
@@ -228,12 +237,12 @@ bool Scriptable::Invoke(NPIdentifier name, const NPVariant *args, uint32_t argCo
 
 	CComVariant vResult;
 
-	bool rc = InvokeControl(id, DISPATCH_METHOD, &params, &vResult);
+	HRESULT rc = disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_METHOD, &params, &vResult, NULL, NULL);
 	if (vArgs) {
 		delete []vArgs;
 	}
 
-	if (!rc) {
+	if (FAILED(rc)) {
 
 		return false;
 	}
@@ -257,7 +266,8 @@ bool Scriptable::HasProperty(NPIdentifier name) {
 
 bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 
-	if (invalid) return false;
+	if (invalid)
+		return false;
 
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET);
 	if (-1 == id) {
@@ -274,10 +284,13 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 
 	CComVariant vResult;
 
-	if (!InvokeControl(id, DISPATCH_PROPERTYGET, &params, &vResult)) {
-
-		return false;
+	HRESULT hr = disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYGET, &params, &vResult, NULL, NULL);
+	if (hr == DISP_E_MEMBERNOTFOUND || hr == DISP_E_TYPEMISMATCH) {
+		OBJECT_TO_NPVARIANT(ScriptFunc::GetObjectW(instance, this, id), *result);
+		return true;
 	}
+	else if (FAILED(hr))
+		return false;
 
 	Variant2NPVar(&vResult, result, instance);
 	return true;
@@ -304,7 +317,7 @@ bool Scriptable::SetProperty(NPIdentifier name, const NPVariant *value) {
 	params.rgvarg = &val;
 
 	CComVariant vResult;
-	if (!InvokeControl(id, DISPATCH_PROPERTYPUT, &params, &vResult)) {
+	if (FAILED(disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYPUT, &params, &vResult, NULL, NULL))) {
 
 		return false;
 	}

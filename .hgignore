@@ -16,3 +16,5 @@ glob:*.aps
 glob:*.opensdf
 glob:*.ipch
 glob:*.swp
+glob:*.orig
+glob:chrome/chrome.zip

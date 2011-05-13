@@ -56,10 +56,11 @@ private:
 
 	DISPID ResolveName(NPIdentifier name, unsigned int invKind);
 
-	bool InvokeControl(DISPID id, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult);
+	//bool InvokeControl(DISPID id, WORD wFlags, DISPPARAMS *pDispParams, VARIANT *pVarResult);
 
 	CComQIPtr<IDispatch> disp;
 	bool invalid;
+	DISPID dispid;
 	void setControl(IUnknown *unk) {
 		disp = unk;
 	}
@@ -68,8 +69,9 @@ public:
 	Scriptable(NPP npp):
 	    ScriptBase(npp),
 		invalid(false) {
+		dispid = -1;
 	}
-		
+
 	~Scriptable() {
 	}
 
@@ -97,6 +99,8 @@ public:
 	bool HasMethod(NPIdentifier name);
 
 	bool Invoke(NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result);
+	
+	bool InvokeID(DISPID id, const NPVariant *args, uint32_t argCount, NPVariant *result);
 
 	bool HasProperty(NPIdentifier name);
 
@@ -105,6 +109,7 @@ public:
 	bool SetProperty(NPIdentifier name, const NPVariant *value);
 
 	bool Enumerate(NPIdentifier **value, uint32_t *count);
+
 private:
 	
 	// Some wrappers to adapt NPAPI's interface.

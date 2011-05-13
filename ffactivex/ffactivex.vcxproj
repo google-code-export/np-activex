@@ -151,6 +151,7 @@
     <ClCompile Include="NPSafeArray.cpp" />
     <ClCompile Include="scriptable.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
+    <ClCompile Include="ScriptFunc.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -182,6 +183,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="scriptable.h" />
     <ClInclude Include="ObjectManager.h" />
+    <ClInclude Include="ScriptFunc.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="common\StdAfx.h" />
     <ClInclude Include="targetver.h" />
