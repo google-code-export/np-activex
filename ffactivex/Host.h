@@ -49,6 +49,7 @@ public:
 	NPObject *RegisterObject();
 	void UnRegisterObject();
 	virtual NPP ResetNPP(NPP newNpp);
+	void setLastObj(ScriptBase *obj);
 protected:
 	NPP instance;
 	ScriptBase *lastObj;

@@ -82,7 +82,7 @@
       <Command>copy "$(TargetPath)" "$(SolutionDir)Chrome\npactivex.dll"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>$(SolutionDir)Chrome\npactivex.dll</Outputs>
+      <Outputs>a</Outputs>
     </CustomBuildStep>
     <CustomBuildStep>
       <Inputs>$(TargetPath)</Inputs>

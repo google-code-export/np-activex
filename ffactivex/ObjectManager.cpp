@@ -92,7 +92,10 @@ CHost* ObjectManager::GetPreviousObject(NPP npp) {
 }
 
 bool ObjectManager::HasMethod(NPObject *npobj, NPIdentifier name) {
-	return name == NPNFuncs.getstringidentifier("CreateControlByProgId");
+	return name == NPNFuncs.getstringidentifier("CreateControlByProgId") ||
+		name == NPNFuncs.getstringidentifier("GetUnderlyingObject") ||
+		name == NPNFuncs.getstringidentifier("map") ||
+		name == NPNFuncs.getstringidentifier("executeScript");
 }
 
 bool ObjectManager::Invoke(NPObject *npobj, NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result) {
@@ -104,7 +107,7 @@ bool ObjectManager::Invoke(NPObject *npobj, NPIdentifier name, const NPVariant *
 		}
 		CAxHost* host = new CAxHost(obj->instance);
 		host->setClsIDFromProgID(NPVARIANT_TO_STRING(args[0]).UTF8Characters);
-		if (!host->CreateControl(false)) {
+		if (!host->CreateControl(false, NULL)) {
 			NPNFuncs.setexception(npobj, "Error creating object");
 			return false;
 		}
@@ -112,6 +115,45 @@ bool ObjectManager::Invoke(NPObject *npobj, NPIdentifier name, const NPVariant *
 		manager->dynamic_hosts.push_back(host);
 		OBJECT_TO_NPVARIANT(host->CreateScriptableObject(), *result);
 		return true;
+	} else if (name == NPNFuncs.getstringidentifier("GetUnderlyingObject")) {
+		if (argCount != 1 || !NPVARIANT_IS_OBJECT(args[0])) {
+			NPNFuncs.setexception(npobj, "Invalid arguments");
+			return false;
+		}
+		NPObject *embedobj = NPVARIANT_TO_OBJECT(args[0]);
+		NPNFuncs.getproperty(obj->instance, embedobj, NPNFuncs.getstringidentifier("object"), result);
+		return true;
+	} else if (name == NPNFuncs.getstringidentifier("map")) {
+		if (argCount != 1 || !NPVARIANT_IS_OBJECT(args[0])) {
+			NPNFuncs.setexception(npobj, "Invalid arguments");
+			return false;
+		}
+		NPObject *embedobj = NPVARIANT_TO_OBJECT(args[0]);
+		NPVariantProxy scriptobj;
+		NPNFuncs.getproperty(obj->instance, embedobj, NPNFuncs.getstringidentifier("object"), &scriptobj);
+		NPIdentifier *ids;
+		UINT count;
+		NPNFuncs.enumerate(obj->instance, NPVARIANT_TO_OBJECT(scriptobj), &ids, &count);
+		for (UINT i = 0; i < count; ++i) {
+			char *str = NPNFuncs.utf8fromidentifier(ids[i]);
+			char command[300];
+			sprintf(command, "this.__defineGetter__('%s', function(){return this.object.%s});"
+				"this.__defineSetter__('%s', function(val){this.object.%s = val});", str, str, str, str);
+			NPString npstr = {command, strlen(command)};
+			NPVariantProxy res;
+			NPNFuncs.evaluate(obj->instance, embedobj, &npstr, &res);
+		}
+		BOOLEAN_TO_NPVARIANT(TRUE, *result);
+		return true;
+	} else if (name == NPNFuncs.getstringidentifier("executeScript")) {
+		if (argCount < 1 || !NPVARIANT_IS_STRING(args[0])) {
+			NPNFuncs.setexception(npobj, "Invalid arguments");
+			return false;
+		}
+		NPObjectProxy window;
+		NPVariantProxy var;
+		NPNFuncs.getvalue(obj->instance, NPNVWindowNPObject, &window);
+		return NPNFuncs.evaluate(obj->instance, window, (NPString *)&args[0].value.stringValue, &var);
 	}
 	return false;
 }

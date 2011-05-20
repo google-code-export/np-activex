@@ -242,6 +242,8 @@ END_OLECOMMAND_TABLE()
     virtual HRESULT Advise(IUnknown *pIUnkSink, const IID &iid, DWORD *pdwCookie);
     // Removes an advise sink
     virtual HRESULT Unadvise(const IID &iid, DWORD dwCookie);
+	// Attach to created site
+	void AttachToObject(IUnknown *spObject);
 
 	void SetInnerWindow(IUnknown *unk, void (*Deleter)(IUnknown *unk)) {
 		m_spInner = unk;

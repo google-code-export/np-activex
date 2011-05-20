@@ -94,8 +94,13 @@ NPObject *CHost::GetScriptableObject() {
 	return lastObj;
 }
 
+void CHost::setLastObj(ScriptBase* obj) {
+	lastObj = obj;
+}
+
 NPObject *CHost::RegisterObject() {
-	lastObj = CreateScriptableObject();
+	if (lastObj == NULL)
+		lastObj = CreateScriptableObject();
 	if (!lastObj)
 		return NULL;
 	lastObj->host = this;

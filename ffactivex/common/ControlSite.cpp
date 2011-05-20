@@ -464,18 +464,18 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
         //EOF test code
     }
 
-    if (spObject)
-    {        
-        m_spObject = spObject;
-
-		CComQIPtr<IObjectWithSite> site = m_spObject;
-		if (site) {
-			site->SetSite(GetUnknown());
-		}
-    }    
+	AttachToObject(spObject);
     return hr;
 }
 
+void CControlSite::AttachToObject(IUnknown *spObject) {
+    m_spObject = spObject;
+
+	CComQIPtr<IObjectWithSite> site = m_spObject;
+	if (site) {
+		site->SetSite(GetUnknown());
+	}
+} 
 // Attach the created control to a window and activate it
 HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInitStream)
 {

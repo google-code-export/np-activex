@@ -1,25 +1,39 @@
 // Copyright (c) 2010 eagleonhill(qiuc12@gmail.com). All rights reserved.
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
-
+var mime_type = "application/x-itst-activex";
+var ACTIVEX_ID_SUFFIX = "__activex__real__";
+// Because of Chrome's bug, both setter and getter can't set for HTMLObject.
+// But it works for div. Wrap the object as div.
+var wrapdiv = false;
 function executeScriptInClient(command) {
-  var codediv = document.createElement("button");
-  codediv.setAttribute("style", "display:hidden");
-  codediv.setAttribute("onclick", command);
-  document.body.appendChild(codediv);
-  codediv.click();
-  log("executed command in client: " + command);
-  document.body.removeChild(codediv);
+  var manager = getManager();
+  if (manager.object) {
+    manager.executeScript(command);
+  }
+  else {
+    var codediv = document.createElement("button");
+    codediv.setAttribute("style", "display:hidden");
+    codediv.setAttribute("onclick", command);
+    document.body.appendChild(codediv);
+    codediv.click();
+    log("executed command in client: " + command);
+    document.body.removeChild(codediv);
+  }
 }
 
-function checkForm(new_obj) {
-  var parent = new_obj.parentNode;
-  while (parent && parent.nodeType == 1) {
+function checkForm(p, id) {
+  if (!id)
+    return;
+  var parent = p;
+  while (parent != null) {
     if (parent.nodeName.toLowerCase() == "form") {
-      command = "document.all." + parent.name + "." + new_obj.id + " = document.all." + new_obj.id;
+      command = parent.name
+        + "." + id + " = " + id;
+      console.log(command);
       executeScriptInClient(command);
     }
-    parent = parent.parentNode;
+    parent = parent.parentElement;
   }
 }
 
@@ -28,18 +42,16 @@ getManager = function() {
   manager.type = "application/activex-manager";
   manager.style.width = "0px";
   manager.style.height = "0px";
-  manager.id = "__activex_manager_IIID_"
-
-    return function() {
-
-      if (document.body == null)
-        document.body = document.createElement("body");
-      if (document.body.contains(manager))
-        return manager;
-      log("Manager object inserted");
-      document.body.insertBefore(manager, document.body.firstChild);
+  manager.id = "__activex_manager_IIID_";
+  return function() {
+    if (document.body == null)
+      document.body = document.createElement("body");
+    if (document.body.contains(manager))
       return manager;
-    }
+    document.body.insertBefore(manager, document.body.firstChild);
+    log("Manager object inserted");
+    return manager;
+  }
 }();
 
 function createReplaceObj(obj) {
@@ -79,6 +91,88 @@ function createReplaceObj(obj) {
 
 var pageEnabled = undefined;
 var hostElement = null;
+
+function wrapobj(obj) {
+  var div = document.createElement('div');
+  div.id = obj.id;
+  obj.id = obj.id + '__activex__wrapdiv';
+  attrtoremove = [];
+  for (var attri = 0; attri < obj.attributes.length; ++attri) {
+    var attr = obj.attributes[attri].name;
+    if (attr == "clsid" || attr == "codebase" || attr == "id" ||
+        attr == 'name' || attr == 'type') {
+      // Do nothing.
+    }
+    else {
+      attrtoremove.push(attr);
+    }
+  }
+  for (var i = 0; i < attrtoremove.length; ++i) {
+    attr = attrtoremove[i];
+    div.setAttribute(attr, obj.getAttribute(attr));
+    obj.removeAttribute(attr);
+  }
+  //obj.setAttribute('style', 'width:100%; height:100%');
+  obj.parentElement.insertBefore(div, obj);
+  obj.parentElement.removeChild(obj);
+  div.appendChild(obj);
+  return div;
+}
+
+function isObjectActived(obj) {
+  if (typeof obj.object == 'object')
+    return true;
+  var p = obj;
+  while (p != null) {
+    if (getComputedStyle(p)['display'].toLowerCase() == 'none')
+      return false;
+    p = p.parentElement;
+  }
+  return true;
+}
+
+var replaceobj_enable = true;
+function replaceobj(obj) {
+  if (obj.id == "") {
+    // The script object won't be used.
+    return obj;
+  }
+
+  if (isObjectActived(obj)) {
+    // This approach is applied to hidden objects only in case of
+    // unexpted problems.
+    return obj;
+  }
+
+  console.log('Replace object ' + obj.id);
+  // Make obj parmanent valid, and obj2 is the window reference.
+  var obj2 = obj.cloneNode();
+
+  var newid = obj.id + ACTIVEX_ID_SUFFIX;
+  obj2.id = newid;
+
+  obj.setAttribute('style', "width:0px; height:0px; display:block");
+  obj.removeAttribute('height');
+  obj.removeAttribute('width');
+  obj.setAttribute('noWindow', 'true');
+
+  obj2.setAttribute('origid', obj.id);
+
+  var placeholder = document.createElement('div');
+  placeholder.style.display="none";
+
+  obj.parentNode.insertBefore(placeholder, obj);
+  obj.parentNode.removeChild(obj);
+  document.body.insertBefore(obj, document.body.firstChild);
+
+  obj.object;
+
+  placeholder.parentNode.insertBefore(obj2, placeholder);
+  placeholder.parentNode.removeChild(placeholder);
+
+  return obj2;
+}
+
 function enableobj(obj) {
   var command = "";
   if (obj.id) {
@@ -89,12 +183,21 @@ function enableobj(obj) {
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
   obj.removeAttribute("classid");
-  // Append a "type" attribute seems not work.
-  // Use <object> so obj doesn't need reconstruction.
-  obj.outerHTML = '<object type="application/x-itst-activex" '
-    + obj.outerHTML.substring(8);
-  log("Enable object, id: " + obj.id + " clsid: " + getClsid(obj));
-  // executeScriptInClient(command);
+  obj.type = mime_type;
+  if (wrapdiv) {
+    wrapobj(obj);
+  }
+  if (replaceobj_enable) {
+    var id = obj.id;
+    var obj2 = replaceobj(obj);
+    checkForm(obj2, id);
+  }
+  else {
+    checkForm(obj, obj.id);
+  }
+  // Create a manager object, so the object count is always positive.
+  // It can avoid the deletion of the scriptable object.
+  getManager();
 }
 
 function getClsid(obj) {
@@ -108,25 +211,54 @@ function getClsid(obj) {
   return "{" + clsid + "}";
 }
 
+function reenable(obj) {
+  if (obj.type != "application/x-itst-activex")
+    return;
+  if (obj.object)
+    return;
+  var p = obj;
+  while (p != null) {
+    p.disp_orig = p.style.display;
+    p.style.display = "block";
+    p = p.parentElement;
+  }
+  // Make sure obj is loaded.
+  obj.xxxxxtestxxxx__;
+  p = obj;
+  while (p != null) {
+    p.style.display = p.disp_orig;
+    delete p.disp_orig;
+    p = p.parentElement;
+  }
+}
+
 function process(obj) {
   if (obj.type != "" || !obj.hasAttribute("classid"))
     return;
-  if (config == null) {
-    // Delay the process of this object.
-    // Hope config will be load soon.
-    pendingObjects.push(obj);
+  if (obj.activex_processed == 2)
     return;
+  if (config == null) {
+    if (obj.activex_processed != 1 ) {
+      obj.activex_processed = 1;
+      console.log('Pending object' + obj.id);
+      // Delay the process of this object.
+      // Hope config will be load soon.
+      pendingObjects.push(obj);
+      return;
+    } else {
+      return;
+    }
   }
+  obj.activex_processed = 2;
   if (pageEnabled === undefined)
     pageEnabled = config.isUrlMatched(location.href);
   var clsid = getClsid(obj);
 
   if (pageEnabled || config.isClsidTrusted(clsid)) {
     var new_obj = obj; 
+    var p = obj.parentElement;
+    var origid = obj.id;
     enableobj(obj);
-    if (obj.id != "") {
-      checkForm(new_obj);
-    }
   }
 }
 
@@ -141,9 +273,7 @@ function replaceDocument() {
 function onBeforeLoading(event) {
   var obj = event.target;
   if (obj.nodeName == "OBJECT") {
-    if (obj.activex_process === undefined) {
-      obj.activex_process = true;
-      process(obj);
-    }
+    process(obj);
   }
 }
+document.addEventListener('DOMContentLoaded', replaceDocument, false);

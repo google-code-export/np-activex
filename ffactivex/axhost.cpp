@@ -162,7 +162,9 @@ CAxHost::CAxHost(NPP inst):
 	OldProc(NULL),
 	Props_(new PropertyList),
 	isKnown(false),
-	CodeBaseUrl(NULL)
+	CodeBaseUrl(NULL),
+	hasWindow(TRUE),
+	hasScript(TRUE)
 {
 }
 CAxHost::~CAxHost()
@@ -196,13 +198,17 @@ CAxHost::~CAxHost()
 	}
 
 	CoFreeUnusedLibraries();
+
+	if (lastObj) {
+		lastObj->host = NULL;
+	}
 }
 
 
 void 
 CAxHost::setWindow(HWND win)
 {
-	if (win != Window) {
+	if (hasWindow && win != Window) {
 
 		if (win) {
 			// subclass window so we can intercept window messages and
@@ -229,13 +235,45 @@ CAxHost::getWinfow()
 {
 	return Window;
 }
-
+void CAxHost::CheckRealObject(){
+	if (!Site && objectID.GetLength() > 0) {
+		// Find the original ID.
+		NPObjectProxy window;
+		NPNFuncs.getvalue(instance, NPNVWindowNPObject, &window);
+		NPVariant objid;
+		STRINGZ_TO_NPVARIANT(objectID.GetString(), objid);
+		NPVariantProxy document;
+		if (!NPNFuncs.getproperty(instance, window, NPNFuncs.getstringidentifier("document"), &document))
+			return;
+		if (!NPVARIANT_IS_OBJECT(document))
+			return;
+		NPVariantProxy object;
+		if (!NPNFuncs.invoke(instance, NPVARIANT_TO_OBJECT(document),
+			NPNFuncs.getstringidentifier("getElementById"), &objid, 1, &object))
+			return;
+		if (!NPVARIANT_IS_OBJECT(object))
+			return;
+		NPVariantProxy scriptobject;
+		if (!NPNFuncs.getproperty(instance, NPVARIANT_TO_OBJECT(object), NPNFuncs.getstringidentifier("object"), &scriptobject))
+			return;
+		if (!NPVARIANT_IS_OBJECT(scriptobject))
+			return;
+		if (NPVARIANT_TO_OBJECT(scriptobject)->_class != &Scriptable::npClass)
+			return;
+		Scriptable *script = (Scriptable*)NPVARIANT_TO_OBJECT(scriptobject);
+		CAxHost* h = (CAxHost*)script->host;
+		if (h && h->Site) {
+			Site = h->Site;
+			Site->AddRef();
+		}
+	}
+}
 void 
 CAxHost::UpdateRect(RECT rcPos)
 {
 	HRESULT hr = -1;
-
-	if (Site && Window) {
+	CheckRealObject();
+	if (Site && Window && hasWindow) {
 
 		if (Site->GetParentWindow() == NULL) {
 
@@ -386,9 +424,9 @@ static void HTMLContainerDeleter(IUnknown *unk) {
 	val->InternalRelease();
 }
 bool
-CAxHost::CreateControl(bool subscribeToEvents)
+CAxHost::CreateControl(bool subscribeToEvents, IUnknown *orig)
 {
-	if (!isValidClsID) {
+	if (!isValidClsID && !orig) {
 
 		np_log(instance, 0, "AxHost.CreateControl: current location is not trusted");
 		return false;
@@ -420,8 +458,11 @@ CAxHost::CreateControl(bool subscribeToEvents)
 	Site->SetInnerWindow(document, HTMLContainerDeleter);
 
 	// Create the object
-	HRESULT hr;
-	hr = Site->Create(ClsID, *Props(), CodeBaseUrl);
+	HRESULT hr = S_OK;
+	if (!orig)
+		hr = Site->Create(ClsID, *Props(), CodeBaseUrl);
+	else
+		Site->AttachToObject(orig);
 
 	if (FAILED(hr)) {
 		np_log(instance, 0, "AxHost.CreateControl: failed to create site for 0x%08x", hr);
@@ -497,6 +538,8 @@ CAxHost::HandleEvent(void *event)
 ScriptBase *
 CAxHost::CreateScriptableObject()
 {
+	if (!hasScript || !Site)
+		return NULL;
 	static int markedSafe = 0;
 	if (!Site->m_bSafeForScriptingObjectsOnly && markedSafe == 0)
 	{

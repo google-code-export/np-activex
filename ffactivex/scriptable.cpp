@@ -38,13 +38,17 @@
 #include "ScriptFunc.h"
 #include "npactivex.h"
 
+Scriptable::Scriptable(NPP npp) :
+	    ScriptBase(npp),
+		invalid(false){
+	}
 NPClass Scriptable::npClass = {
 	/* version */		NP_CLASS_STRUCT_VERSION,
 	/* allocate */		Scriptable::_Allocate,
 	/* deallocate */	Scriptable::_Deallocate,
 	/* invalidate */	Scriptable::_Invalidate,
-	/* hasMethod */		NULL, //Scriptable::_HasMethod,
-	/* invoke */		NULL, //Scriptable::_Invoke,
+	/* hasMethod */		Scriptable::_HasMethod,
+	/* invoke */		Scriptable::_Invoke,
 	/* invokeDefault */	NULL,
 	/* hasProperty */	Scriptable::_HasProperty,
 	/* getProperty */	Scriptable::_GetProperty,
@@ -53,45 +57,119 @@ NPClass Scriptable::npClass = {
 	/* enumerate */		Scriptable::_Enumerate,
 	/* construct */		NULL
 };
-bool Scriptable::find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id, unsigned int invKind) {
-	bool found = false;
-	unsigned int i = 0;
+bool Scriptable::IsFunction(DISPID member_id) {
+	if (member_id == -1)
+		return FALSE;
+	CComPtr<ITypeInfo> info;
+	if (FAILED(disp->GetTypeInfo(0, LOCALE_SYSTEM_DEFAULT, &info)))
+		return FALSE;
+	if (!info) {
 
-	FUNCDESC *fDesc;
+		return FALSE;
+	}
+	CComPtr<ITypeInfo2> info2;
+	if (SUCCEEDED(info->QueryInterface(&info2)) && info2) {
+		UINT index;
+		if (SUCCEEDED(info2->GetFuncIndexOfMemId(member_id, INVOKE_FUNC, &index)))
+			return TRUE;
+	} else {
+		TYPEATTR *attr;
+		if (FAILED(info->GetTypeAttr(&attr))) {
 
-	for (i = 0; (i < attr->cFuncs) && !found; ++i) {
-
-		HRESULT hr = info->GetFuncDesc(i, &fDesc);
-		if (SUCCEEDED(hr) 
-			&& fDesc 
-			&& (fDesc->memid == member_id)) {
-
-			if (invKind & fDesc->invkind)
-				found = true;
+			return 0;
 		}
-		info->ReleaseFuncDesc(fDesc);
+
+		int found = 0;
+		unsigned int i = 0;
+
+		FUNCDESC *fDesc;
+
+		for (i = 0; (i < attr->cFuncs) && found != 2; ++i) {
+
+			HRESULT hr = info->GetFuncDesc(i, &fDesc);
+			if (SUCCEEDED(hr) 
+				&& fDesc 
+				&& (fDesc->memid == member_id)) {
+				if (INVOKE_FUNC & fDesc->invkind)
+					return true;
+			}
+			info->ReleaseFuncDesc(fDesc);
+		}
+		info->ReleaseTypeAttr(attr);
+	}
+	return false;
+}
+
+#if 0
+	CComPtr<ITypeInfo2> info2;
+	if (SUCCEEDED(info->QueryInterface(&info2)) && info2) {
+		int found = 0;
+		int realKind = 0;
+		INVOKEKIND kinds[] = {INVOKE_FUNC, INVOKE_PROPERTYGET, INVOKE_PROPERTYPUT};
+		for (int kind_index = 0; kind_index < sizeof(kinds) / sizeof(INVOKEKIND); ++kind_index) {
+			UINT funcid;
+			if (FAILED(info2->GetFuncIndexOfMemId(member_id, kinds[kind_index], &funcid)))
+				continue;
+			realKind |= kinds[kind_index];
+		}
+		UINT varIndex;
+		if (SUCCEEDED(info2->GetVarIndexOfMemId(member_id, &varIndex)) && varIndex >= 0)
+			realKind |= INVOKE_PROPERTYGET | INVOKE_PROPERTYPUT;
+		if (realKind & invKind)
+			return 2;
+		if (realKind & ~invKind)
+			return 1;
+		return 0;
+	}
+	else {
+
+		TYPEATTR *attr;
+		if (FAILED(info->GetTypeAttr(&attr))) {
+
+			return 0;
+		}
+
+		int found = 0;
+		unsigned int i = 0;
+
+		FUNCDESC *fDesc;
+
+		for (i = 0; (i < attr->cFuncs) && found != 2; ++i) {
+
+			HRESULT hr = info->GetFuncDesc(i, &fDesc);
+			if (SUCCEEDED(hr) 
+				&& fDesc 
+				&& (fDesc->memid == member_id)) {
+				found = 1;
+				if (invKind & fDesc->invkind)
+					found = 2;
+			}
+			info->ReleaseFuncDesc(fDesc);
+		}
+		if (!found && (invKind & ~INVOKE_FUNC)) {
+
+			VARDESC *vDesc;
+
+			for (i = 0; 
+					(i < attr->cVars) 
+					&& !found; 
+					++i) {
+
+				HRESULT hr = info->GetVarDesc(i, &vDesc);
+				if (   SUCCEEDED(hr) 
+					&& vDesc 
+					&& (vDesc->memid == member_id)) {
+
+					found = 2;
+				}
+				info->ReleaseVarDesc(vDesc);
+			}
+		}
+	
+		info->ReleaseTypeAttr(attr);
+		return found;
 	}
 #if 0
-	if (!found && (invKind & ~INVOKE_FUNC)) {
-
-		VARDESC *vDesc;
-
-		for (i = 0; 
-				(i < attr->cVars) 
-				&& !found; 
-				++i) {
-
-			HRESULT hr = info->GetVarDesc(i, &vDesc);
-			if (   SUCCEEDED(hr) 
-				&& vDesc 
-				&& (vDesc->memid == member_id)) {
-
-				found = true;
-			}
-			info->ReleaseVarDesc(vDesc);
-		}
-	}
-
 	if (!found) {
 		// iterate inherited interfaces
 		HREFTYPE refType = NULL;
@@ -122,13 +200,9 @@ bool Scriptable::find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id
 		}
 	}
 #endif
-	return found;
 }
-
+#endif
 DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
-
-	if (dispid != -1)
-		return false;	// submethod
 
 	bool found = false;
 	DISPID dID = -1;
@@ -175,27 +249,6 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 		}
 	}
 	return dID;
-#endif
-#if 0
-	if (dID != -1) {
-
-		ITypeInfoPtr info;
-		disp->GetTypeInfo(0, LOCALE_SYSTEM_DEFAULT, &info);
-		if (!info) {
-
-			return -1;
-		}
-
-		TYPEATTR *attr;
-		if (FAILED(info->GetTypeAttr(&attr))) {
-
-			return -1;
-		}
-
-		found = find_member(info, attr, dID, invKind);
-		info->ReleaseTypeAttr(attr);
-	}
-	return found ? dID : -1;
 #endif
 }
 
@@ -254,13 +307,21 @@ bool Scriptable::InvokeID(DISPID id,  const NPVariant *args, uint32_t argCount, 
 bool Scriptable::HasMethod(NPIdentifier name)  {
 	if (invalid) return false;
 	DISPID id = ResolveName(name, INVOKE_FUNC);
-	return (id != -1) ? true : false;
+	
+	return id != -1;
 }
 
 bool Scriptable::HasProperty(NPIdentifier name) {
 	if (invalid) return false;
+	if (name == NPNFuncs.getstringidentifier("object")) {
+		return true;
+	}
 
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET | INVOKE_PROPERTYPUT);
+	// If it can be sure to be a function, return as a method.
+	// Otherwise return a function object on get.
+	if (IsFunction(id))
+		return false;
 	return (id != -1) ? true : false;
 }
 
@@ -268,6 +329,11 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 
 	if (invalid)
 		return false;
+	
+	if (name == NPNFuncs.getstringidentifier("object")) {
+		OBJECT_TO_NPVARIANT(this, *result);
+		return true;
+	}
 
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET);
 	if (-1 == id) {
