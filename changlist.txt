@@ -1,3 +1,6 @@
+Version 1.3.2 -----
+Fix: Some controls are not loaded.
+
 Version 1.3.1 -----
 Fix: Improve the strategy of supporting none-displayed controls by creating a new site window.
 

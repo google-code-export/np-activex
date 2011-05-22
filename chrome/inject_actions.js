@@ -167,8 +167,9 @@ function enableobj(obj) {
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
   obj.removeAttribute("classid");
-  checkForm(obj, id);
-  obj.type = mime_type;
+  checkForm(obj, obj.id);
+  // We have to insert it in the front.
+  obj.outerHTML = '<object type="' + mime_type + '"' + obj.outerHTML.substr(7);
   if (replaceobj_enable) {
     var id = obj.id;
     var p = obj.parentElement;
