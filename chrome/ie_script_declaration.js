@@ -10,11 +10,10 @@ function __declareActiveXObject() {
       return new XMLHttpRequest();
     var hiddenDiv = document.getElementById(hiddenDivId);
     if (!hiddenDiv) {
-      if (!document.body) document.body=document.createElement("body");
       hiddenDiv = document.createElement("div");
       hiddenDiv.id = hiddenDivId;
       hiddenDiv.setAttribute("style", "display:hidden; width:0px; height:0px");
-      document.body.insertBefore(hiddenDiv, document.body.firstChild)
+      document.documentElement.appendChild(hiddenDiv);
     }
     var obj = document.createElement("object");
     obj.setAttribute("type", "application/x-itst-activex");

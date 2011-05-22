@@ -36,6 +36,7 @@ ScriptFunc* ScriptFunc::GetObject(NPP npp, Scriptable *script, MEMBERID dispid) 
 	if (M[index] == NULL) {
 		ScriptFunc *new_obj = (ScriptFunc*)NPNFuncs.createobject(npp, &npClass);
 		new_obj->setControl(script, dispid);
+		NPNFuncs.retainobject(script);
 		M[index] = new_obj;
 	}
 	return M[index];

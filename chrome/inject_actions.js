@@ -5,7 +5,6 @@ var mime_type = "application/x-itst-activex";
 var ACTIVEX_ID_SUFFIX = "__activex__real__";
 // Because of Chrome's bug, both setter and getter can't set for HTMLObject.
 // But it works for div. Wrap the object as div.
-var wrapdiv = false;
 function executeScriptInClient(command) {
   var manager = getManager();
   if (manager.object) {
@@ -25,6 +24,7 @@ function executeScriptInClient(command) {
 function checkForm(p, id) {
   if (!id)
     return;
+  eval(id).object;
   var parent = p;
   while (parent != null) {
     if (parent.nodeName.toLowerCase() == "form") {
@@ -92,33 +92,6 @@ function createReplaceObj(obj) {
 var pageEnabled = undefined;
 var hostElement = null;
 
-function wrapobj(obj) {
-  var div = document.createElement('div');
-  div.id = obj.id;
-  obj.id = obj.id + '__activex__wrapdiv';
-  attrtoremove = [];
-  for (var attri = 0; attri < obj.attributes.length; ++attri) {
-    var attr = obj.attributes[attri].name;
-    if (attr == "clsid" || attr == "codebase" || attr == "id" ||
-        attr == 'name' || attr == 'type') {
-      // Do nothing.
-    }
-    else {
-      attrtoremove.push(attr);
-    }
-  }
-  for (var i = 0; i < attrtoremove.length; ++i) {
-    attr = attrtoremove[i];
-    div.setAttribute(attr, obj.getAttribute(attr));
-    obj.removeAttribute(attr);
-  }
-  //obj.setAttribute('style', 'width:100%; height:100%');
-  obj.parentElement.insertBefore(div, obj);
-  obj.parentElement.removeChild(obj);
-  div.appendChild(obj);
-  return div;
-}
-
 function isObjectActived(obj) {
   if (typeof obj.object == 'object')
     return true;
@@ -132,7 +105,7 @@ function isObjectActived(obj) {
 }
 
 var replaceobj_enable = true;
-function replaceobj(obj) {
+function replaceobj(obj, p) {
   if (obj.id == "") {
     // The script object won't be used.
     return obj;
@@ -149,31 +122,42 @@ function replaceobj(obj) {
   var obj2 = obj.cloneNode();
 
   var newid = obj.id + ACTIVEX_ID_SUFFIX;
-  obj2.id = newid;
+  obj.id = newid;
 
-  obj.setAttribute('style', "width:0px; height:0px; display:block");
-  obj.removeAttribute('height');
-  obj.removeAttribute('width');
-  obj.setAttribute('noWindow', 'true');
+  obj2.setAttribute('style', "width:0px; height:0px; display:block");
+  obj2.removeAttribute('height');
+  obj2.removeAttribute('width');
+  obj2.removeAttribute('class');
+  obj2.setAttribute('noWindow', 'true');
 
-  obj2.setAttribute('origid', obj.id);
+  obj.setAttribute('origid', obj2.id);
 
   var placeholder = document.createElement('div');
   placeholder.style.display="none";
 
-  obj.parentNode.insertBefore(placeholder, obj);
-  obj.parentNode.removeChild(obj);
+  document.body.appendChild(obj2);
+  return obj2;
+  /*
+  p.insertBefore(placeholder, obj);
+  p.removeChild(obj);
+  obj.type = mime_type;
   document.body.insertBefore(obj, document.body.firstChild);
 
-  obj.object;
+  console.log(obj.object);
 
-  placeholder.parentNode.insertBefore(obj2, placeholder);
-  placeholder.parentNode.removeChild(placeholder);
+  p.insertBefore(obj2, placeholder);
+  p.removeChild(placeholder);
+  obj2.type = mime_type;
 
   return obj2;
+  */
 }
 
 function enableobj(obj) {
+  // Create a manager object, so the object count is always positive.
+  // It can avoid the deletion of the scriptable object.
+  getManager();
+
   var command = "";
   if (obj.id) {
     command = "document.all." + obj.id + '.classid = "'
@@ -183,21 +167,16 @@ function enableobj(obj) {
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
   obj.removeAttribute("classid");
+  checkForm(obj, id);
   obj.type = mime_type;
-  if (wrapdiv) {
-    wrapobj(obj);
-  }
   if (replaceobj_enable) {
     var id = obj.id;
-    var obj2 = replaceobj(obj);
-    checkForm(obj2, id);
+    var p = obj.parentElement;
+    var obj2 = replaceobj(obj, p);
   }
   else {
-    checkForm(obj, obj.id);
+    obj.type = mime_type;
   }
-  // Create a manager object, so the object count is always positive.
-  // It can avoid the deletion of the scriptable object.
-  getManager();
 }
 
 function getClsid(obj) {

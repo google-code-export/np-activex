@@ -388,6 +388,9 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 			*id = '{';
 			host->setClsID(id);
 		}
+		else if (stricmp(argn[i], "id") == 0) {
+			host->setMyID(argv[i]);
+		}
 		else if (0 == strnicmp(argn[i], PARAM_CLSID, sizeof(PARAM_CLSID))) {
 			// The class id of the control we are asked to load
 
@@ -478,6 +481,15 @@ void GetOriginalObject(NPP newInst, IUnknown **orig, Scriptable **script) {
 	(*script)->getControl(orig);
 }
 
+void ClearInnerHtml(NPP inst) {
+	NPObjectProxy obj;
+	NPNFuncs.getvalue(inst, NPNVPluginElementNPObject, &obj);
+	if (!obj)
+		return;
+	NPVariant var;
+	STRINGZ_TO_NPVARIANT("", var);
+	NPNFuncs.setproperty(inst, obj, NPNFuncs.getstringidentifier("innerHTML"), &var);
+}
 /* 
  * Create a new plugin instance, most probably through an embed/object HTML 
  * element.
@@ -533,9 +545,10 @@ NPP_New(NPMIMEType pluginType,
 			host = NULL;
 			return rc;
 		}
-		if (host) {
+		else if (host) {
 			host->RegisterObject();
 			instance->pdata = host;
+			//ClearInnerHtml(instance);
 		}
 	} else if (stricmp(pluginType, "application/activex-manager") == 0) {
 		ObjectManager *manager = new ObjectManager(instance);
@@ -561,14 +574,9 @@ NPP_Destroy(NPP instance, NPSavedData **save)
 	}
 
 	CHost *host = (CHost *)instance->pdata;
-	if (host) {
-		CAxHost *axhost = dynamic_cast<CAxHost*>(host);
-		np_log(instance, 0, "NPP_Destroy: destroying the control...");
-		//host->UnRegisterObject();
-		host->Release();
-		instance->pdata = NULL;
-	}
 
+	host->Release();
+	instance->pdata = NULL;
 	return NPERR_NO_ERROR;
 }
 

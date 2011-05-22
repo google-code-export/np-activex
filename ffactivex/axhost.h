@@ -52,6 +52,7 @@ private:
 	bool hasWindow;
 	bool hasScript;
 	CStringA objectID;
+	CStringA myID;
 protected:
 	// The window handle to our plugin area in the browser
 	HWND Window;
@@ -74,6 +75,9 @@ public:
 	}
 	void setObjectID(char* id) {
 		objectID = id;
+	}
+	void setMyID(char* id) {
+		myID = id;
 	}
 	CAxHost(NPP inst);
 	~CAxHost();

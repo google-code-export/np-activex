@@ -187,8 +187,9 @@ CAxHost::~CAxHost()
     }
 
     if (Site) {
-
 		Site->Detach();
+		if (objectID == "") // Not pure view control.
+			Site->DetachFromObject();
         Site->Release();
 		Site = NULL;
     }
@@ -261,10 +262,14 @@ void CAxHost::CheckRealObject(){
 		if (NPVARIANT_TO_OBJECT(scriptobject)->_class != &Scriptable::npClass)
 			return;
 		Scriptable *script = (Scriptable*)NPVARIANT_TO_OBJECT(scriptobject);
+		CComPtr<IUnknown> p;
 		CAxHost* h = (CAxHost*)script->host;
 		if (h && h->Site) {
-			Site = h->Site;
-			Site->AddRef();
+			h->Site->GetControlUnknown(&p);
+			if (p) {
+				Site = h->Site;
+				Site->AddRef();
+			}
 		}
 	}
 }

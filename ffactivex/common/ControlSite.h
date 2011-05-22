@@ -114,8 +114,6 @@ class CControlSite :    public CComObjectRootEx<CComSingleThreadModel>,
 {
 private:
 // Site management values
-    // Handle to parent window
-    HWND m_hWndParent;
     // Position of the site and the contained object
     RECT m_rcObjectPos;
     // Flag indicating if client site should be set early or late
@@ -158,6 +156,7 @@ protected:
     // Pointer to the security policy
     CControlSiteSecurityPolicy *m_pSecurityPolicy;
 
+	CAxWindow m_myWindow;
 	// Document and Service provider
 	IUnknown *m_spInner;
 	void (*m_spInnerDeallocater)(IUnknown *m_spInner);
@@ -196,6 +195,8 @@ protected:
     bool m_bAmbientUserMode:1;
     // Flag indicating if control has a 3d border or not
     bool m_bAmbientAppearance:1;
+
+	static LRESULT CALLBACK WndCallback(HWND, UINT, WPARAM, LPARAM);
 
 protected:
     // Notifies the attached control of a change to an ambient property
@@ -242,8 +243,12 @@ END_OLECOMMAND_TABLE()
     virtual HRESULT Advise(IUnknown *pIUnkSink, const IID &iid, DWORD *pdwCookie);
     // Removes an advise sink
     virtual HRESULT Unadvise(const IID &iid, DWORD dwCookie);
-	// Attach to created site
-	void AttachToObject(IUnknown *spObject);
+	// Attach to created object.
+	HRESULT AttachToObject(IUnknown *spObject);
+	// Detach object.
+	HRESULT DetachFromObject();
+	// Init the control
+	HRESULT InitControl(IUnknown *pInitStream);
 
 	void SetInnerWindow(IUnknown *unk, void (*Deleter)(IUnknown *unk)) {
 		m_spInner = unk;
@@ -275,10 +280,8 @@ END_OLECOMMAND_TABLE()
         return (m_spObject) ? TRUE : FALSE;
     }
     // Returns the parent window to this one
-    virtual HWND GetParentWindow() const
-    {
-        return m_hWndParent;
-    }
+    virtual HWND GetParentWindow() const;
+
     // Returns the inplace active state of the object
     virtual BOOL IsInPlaceActive() const
     {

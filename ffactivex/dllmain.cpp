@@ -264,6 +264,7 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 NPError OSCALL NP_Shutdown(void)
 {
 	AtlAxWinTerm();
+	CoUninitialize();
 
 	return NPERR_NO_ERROR;
 }
