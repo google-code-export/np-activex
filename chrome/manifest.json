@@ -3,7 +3,7 @@
   "version": "1.3.4",
   "description": "__MSG_plug_desp__",
   "permissions": [
-    "http://*/*", "https://*/*", "tabs"
+    "http://*/*", "https://*/*"
   ],
   "default_locale": "en",
   "background_page": "background.html",
