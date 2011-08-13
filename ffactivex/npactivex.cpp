@@ -42,7 +42,7 @@
 #include "axhost.h"
 #include "atlutil.h"
 #include "objectProxy.h"
-#include "scriptable.h"
+
 #include "authorize.h"
 #include "common\PropertyList.h"
 #include "common\ControlSite.h"
@@ -71,9 +71,6 @@ static const char PARAM_DEBUG[] = "debugLevel";
 static const char PARAM_LOGGER[] = "logger";
 static const char PARAM_CODEBASEURL [] = "codeBase";
 static const char PARAM_ONEVENT[] = "Event_";
-static const char PARAM_NOWINDOW[] = "nowindow";
-static const char PARAM_NOSCRIPT[] = "noscript";
-static const char PARAM_ORIGID[] = "origid";
 
 static unsigned int log_level = 5;
 
@@ -238,6 +235,9 @@ MatchURL2TrustedLocations(NPP instance, LPCTSTR matchUrl)
 static bool
 VerifySiteLock(NPP instance)
 {
+	// This approach is not used.
+	return true;
+#if 0
 	USES_CONVERSION;
 	NPObjectProxy globalObj;
 	NPIdentifier identifier;
@@ -278,6 +278,7 @@ VerifySiteLock(NPP instance)
 	}
 
 	return rc;
+#endif
 }
 
 static bool FillProperties(CAxHost *host, NPP instance) {
@@ -321,7 +322,7 @@ static bool FillProperties(CAxHost *host, NPP instance) {
 
 		if (!NPNFuncs.getproperty(instance, param_obj, idname, &var_nodeName))
 			continue;
-		if (stricmp(NPVARIANT_TO_STRING(var_nodeName).UTF8Characters, "embed") == 0) {
+		if (_strnicmp(NPVARIANT_TO_STRING(var_nodeName).UTF8Characters, "embed", NPVARIANT_TO_STRING(var_nodeName).UTF8Length) == 0) {
 			NPVariantProxy type;
 			NPVariant typestr;
 			STRINGZ_TO_NPVARIANT("type", typestr);
@@ -329,8 +330,8 @@ static bool FillProperties(CAxHost *host, NPP instance) {
 				continue;
 			if (!NPVARIANT_IS_STRING(type))
 				continue;
-			CStringA command;
-			command.Format("navigator.mimeTypes[\'%s\'] != null", NPVARIANT_TO_STRING(type).UTF8Characters);
+			CStringA command, mimetype(NPVARIANT_TO_STRING(type).UTF8Characters, NPVARIANT_TO_STRING(type).UTF8Length);
+			command.Format("navigator.mimeTypes[\'%s\'] != null", mimetype);
 			NPString str = {command.GetString(), command.GetLength()};
 			NPVariantProxy value;
 			NPObjectProxy window;
@@ -341,7 +342,7 @@ static bool FillProperties(CAxHost *host, NPP instance) {
 				return false;
 			}
 		}
-		if (stricmp(NPVARIANT_TO_STRING(var_nodeName).UTF8Characters, "param") != 0)
+		if (_strnicmp(NPVARIANT_TO_STRING(var_nodeName).UTF8Characters, "param", NPVARIANT_TO_STRING(var_nodeName).UTF8Length) != 0)
 			continue;
 
 		if (!NPNFuncs.invoke(instance, param_obj, idAttr, &str_name, 1, &var_parName))
@@ -351,8 +352,8 @@ static bool FillProperties(CAxHost *host, NPP instance) {
 		if (!NPVARIANT_IS_STRING(var_parName) || !NPVARIANT_IS_STRING(var_parValue))
 			continue;
 
-		CComBSTR paramName(NPVARIANT_TO_STRING(var_parName).UTF8Characters);
-        CComBSTR paramValue(NPVARIANT_TO_STRING(var_parValue).UTF8Characters);
+		CComBSTR paramName(NPVARIANT_TO_STRING(var_parName).UTF8Length, NPVARIANT_TO_STRING(var_parName).UTF8Characters);
+        CComBSTR paramValue(NPVARIANT_TO_STRING(var_parValue).UTF8Length, NPVARIANT_TO_STRING(var_parValue).UTF8Characters);
 
         // Add named parameter to list
         CComVariant v(paramValue);
@@ -388,9 +389,6 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 			*id = '{';
 			host->setClsID(id);
 		}
-		else if (stricmp(argn[i], "id") == 0) {
-			host->setMyID(argv[i]);
-		}
 		else if (0 == strnicmp(argn[i], PARAM_CLSID, sizeof(PARAM_CLSID))) {
 			// The class id of the control we are asked to load
 
@@ -420,17 +418,6 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 				np_log(instance, 0, "AxHost.NPP_New: codeBaseUrl contains an untrusted location");
 			}
 		}
-		else if (stricmp(argn[i], PARAM_NOSCRIPT) == 0) {
-			host->setHasScript(FALSE);
-		}
-		else if (stricmp(argn[i], PARAM_NOWINDOW) == 0) {
-			host->setHasWindow(FALSE);
-		}
-		else if (stricmp(argn[i], PARAM_ORIGID) == 0) {
-			host->setObjectID(argv[i]);
-			// We don't need to create the object.
-			return NPERR_NO_ERROR;
-		}
 	}
 
 	if (!FillProperties(host, instance)) {
@@ -445,11 +432,11 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 	instance->pdata = host;
 
 	// if no events were requested, don't fail if subscribing fails
-	if (!host->CreateControl(events.GetSize() ? true : false, NULL)) {
+	if (!host->CreateControl(events.GetSize() ? true : false)) {
 		np_log(instance, 0, "AxHost.NPP_New: failed to create the control");
 		return NPERR_GENERIC_ERROR;
 	}
-#if 0
+
 	for (unsigned int j = 0; j < events.GetSize(); j++) {
 
 		if (!host->AddEventHandler(events.GetNameOf(j), events.GetValueOf(j)->bstrVal)) {
@@ -458,37 +445,7 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 			//break;
 		}
 	}
-#endif
 	return NPERR_NO_ERROR;
-}
-
-void GetOriginalObject(NPP newInst, IUnknown **orig, Scriptable **script) {
-	*orig = NULL;
-	NPObjectProxy obj;
-	NPNFuncs.getvalue(newInst, NPNVPluginElementNPObject, &obj);
-	if (!obj)
-		return;
-	NPVariantProxy var, name;
-	
-	NPNFuncs.getproperty(newInst, obj, NPNFuncs.getstringidentifier("id"), &name);
-	if (!NPNFuncs.getproperty(newInst, obj, NPNFuncs.getstringidentifier("object"), &var))
-		return;
-	if (!NPVARIANT_IS_OBJECT(var))
-		return;
-	if (NPVARIANT_TO_OBJECT(var)->_class != &Scriptable::npClass)
-		return;
-	*script = (Scriptable*)NPVARIANT_TO_OBJECT(var);
-	(*script)->getControl(orig);
-}
-
-void ClearInnerHtml(NPP inst) {
-	NPObjectProxy obj;
-	NPNFuncs.getvalue(inst, NPNVPluginElementNPObject, &obj);
-	if (!obj)
-		return;
-	NPVariant var;
-	STRINGZ_TO_NPVARIANT("", var);
-	NPNFuncs.setproperty(inst, obj, NPNFuncs.getstringidentifier("innerHTML"), &var);
 }
 /* 
  * Create a new plugin instance, most probably through an embed/object HTML 
@@ -537,20 +494,30 @@ NPP_New(NPMIMEType pluginType,
 	InstallLogAction(instance);
 	if (stricmp(pluginType, "application/x-itst-activex") == 0) {
 		CAxHost *host = NULL;
-		rc = CreateControl(instance, argc, argn, argv, &host);
+		/*
+		ObjectManager* manager = ObjectManager::GetManager(instance);
+		if (manager && !(host = dynamic_cast<CAxHost*>(manager->GetPreviousObject(instance)))) {
+			// Object is created before
+			manager->RequestObjectOwnership(instance, host);
+		} else 
+		*/
+		{
+			rc = CreateControl(instance, argc, argn, argv, &host);
 
-		if (NPERR_NO_ERROR != rc) {
-			delete host;
-			instance->pdata = NULL;
-			host = NULL;
-			return rc;
+			if (NPERR_NO_ERROR != rc) {
+				delete host;
+				instance->pdata = NULL;
+				host = NULL;
+				return rc;
+			}
 		}
-		else if (host) {
+		if (host) {
 			host->RegisterObject();
 			instance->pdata = host;
-			//ClearInnerHtml(instance);
 		}
 	} else if (stricmp(pluginType, "application/activex-manager") == 0) {
+		// disabled now!!
+		return rc = NPERR_GENERIC_ERROR;
 		ObjectManager *manager = new ObjectManager(instance);
 		manager->RegisterObject();
 		instance->pdata = manager;
@@ -574,9 +541,24 @@ NPP_Destroy(NPP instance, NPSavedData **save)
 	}
 
 	CHost *host = (CHost *)instance->pdata;
+	if (host) {
+		
+		np_log(instance, 0, "NPP_Destroy: destroying the control...");
+		//host->UnRegisterObject();
+		host->Release();
+		instance->pdata = NULL;
+		/*
+		ObjectManager *manager = ObjectManager::GetManager(instance);
+		CAxHost *axHost = dynamic_cast<CAxHost*>(host);
+		if (manager && axHost) {
+			manager->RetainOwnership(axHost);
+		} else {
+			np_log(instance, 0, "NPP_Destroy: destroying the control...");
+			host->Release();
+			instance->pdata = NULL;
+		}*/
+	}
 
-	host->Release();
-	instance->pdata = NULL;
 	return NPERR_NO_ERROR;
 }
 

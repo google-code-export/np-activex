@@ -151,7 +151,8 @@ bool toString(void *object, const NPVariant *args, uint32_t argCount, NPVariant 
 		}
 		else if (NPVARIANT_IS_STRING(*it)) {
 
-			out += (*it).value.stringValue.UTF8Characters;
+			out += std::string((*it).value.stringValue.UTF8Characters,
+				(*it).value.stringValue.UTF8Characters + (*it).value.stringValue.UTF8Length);
 			out += ",";
 		}
 		else if (NPVARIANT_IS_OBJECT(*it)) {

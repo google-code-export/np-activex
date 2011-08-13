@@ -52,8 +52,7 @@ private:
 	// This method iterates all members of the current interface, looking for the member with the 
 	// id of member_id. If not found within this interface, it will iterate all base interfaces
 	// recursively, until a match is found, or all the hierarchy was searched.
-	// return 0: not found, 1: type mismatch, 2: success
-	bool IsFunction(DISPID member_id);
+	bool find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id, unsigned int invKind);
 
 	DISPID ResolveName(NPIdentifier name, unsigned int invKind);
 
@@ -61,17 +60,23 @@ private:
 
 	CComQIPtr<IDispatch> disp;
 	bool invalid;
+	DISPID dispid;
 	void setControl(IUnknown *unk) {
 		disp = unk;
 	}
 
 public:
-	Scriptable(NPP npp);
+	Scriptable(NPP npp):
+	    ScriptBase(npp),
+		invalid(false) {
+		dispid = -1;
+	}
 
 	~Scriptable() {
 	}
 
 	static NPClass npClass;
+	
 	static Scriptable* FromIUnknown(NPP npp, IUnknown *unk) {
 		Scriptable *new_obj = (Scriptable*)NPNFuncs.createobject(npp, &npClass);
 		new_obj->setControl(unk);

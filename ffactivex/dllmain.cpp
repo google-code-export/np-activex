@@ -221,7 +221,7 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 #ifdef DEBUG
 	_asm {int 3};
 #endif
-
+	
 	CoInitialize(NULL);
 	
 	InstallAtlThunkEnumeration();
@@ -264,7 +264,6 @@ NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 NPError OSCALL NP_Shutdown(void)
 {
 	AtlAxWinTerm();
-	CoUninitialize();
 
 	return NPERR_NO_ERROR;
 }

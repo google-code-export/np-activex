@@ -82,7 +82,7 @@
       <Command>copy "$(TargetPath)" "$(SolutionDir)Chrome\npactivex.dll"</Command>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>a</Outputs>
+      <Outputs>$(SolutionDir)Chrome\npactivex.dll</Outputs>
     </CustomBuildStep>
     <CustomBuildStep>
       <Inputs>$(TargetPath)</Inputs>
@@ -145,7 +145,6 @@
     <ClCompile Include="Host.cpp" />
     <ClCompile Include="HTMLDocumentContainer.cpp" />
     <ClCompile Include="npactivex.cpp" />
-    <ClCompile Include="GenericNPObject.cpp" />
     <ClCompile Include="common\ItemContainer.cpp" />
     <ClCompile Include="common\PropertyBag.cpp" />
     <ClCompile Include="NPSafeArray.cpp" />
@@ -173,7 +172,6 @@
     <ClInclude Include="Host.h" />
     <ClInclude Include="HTMLDocumentContainer.h" />
     <ClInclude Include="npactivex.h" />
-    <ClInclude Include="GenericNPObject.h" />
     <ClInclude Include="common\IOleCommandTargetImpl.h" />
     <ClInclude Include="common\ItemContainer.h" />
     <ClInclude Include="common\PropertyBag.h" />

@@ -31,13 +31,15 @@ ScriptFunc::~ScriptFunc(void)
 	}
 }
 
-ScriptFunc* ScriptFunc::GetObject(NPP npp, Scriptable *script, MEMBERID dispid) {
+ScriptFunc* ScriptFunc::GetFunctionObject(NPP npp, Scriptable *script, MEMBERID dispid) {
 	pair<Scriptable*, MEMBERID> index(script, dispid);
 	if (M[index] == NULL) {
 		ScriptFunc *new_obj = (ScriptFunc*)NPNFuncs.createobject(npp, &npClass);
-		new_obj->setControl(script, dispid);
 		NPNFuncs.retainobject(script);
+		new_obj->setControl(script, dispid);
 		M[index] = new_obj;
+	} else {
+		NPNFuncs.retainobject(M[index]);
 	}
 	return M[index];
 }

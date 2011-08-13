@@ -69,11 +69,11 @@ BEGIN
         BEGIN
             VALUE "FileDescription", "ActiveX hosting plugin for NPAPI r37"
             VALUE "FileExtents", "ocx"
-            VALUE "FileOpenName", "ActiveX (*.ocx)|ActiveXManager|ActiveX script holder"
+            VALUE "FileOpenName", "ActiveX (*.ocx)|ActiveXManager"
             VALUE "FileVersion", "r37"
             VALUE "InternalName", "npactivex.dll"
             VALUE "LegalCopyright", "(c) CloudShare Ltd.  All rights reserved."
-            VALUE "MIMEType", "application/x-itst-activex|application/activex-manager|application/activex-script"
+            VALUE "MIMEType", "application/x-itst-activex|application/activex-manager"
             VALUE "OriginalFilename", "npactivex.dll"
             VALUE "ProductName", "ActiveX hosting plugin for NPAPI"
             VALUE "ProductVersion", "r37"

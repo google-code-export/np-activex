@@ -33,7 +33,6 @@
 #pragma once
 
 #include "Host.h"
-#include "objectProxy.h"
 namespace ATL
 {
 	template <typename T>
@@ -49,10 +48,6 @@ private:
 
 	bool isValidClsID;
 	bool isKnown;
-	bool hasWindow;
-	bool hasScript;
-	CStringA objectID;
-	CStringA myID;
 protected:
 	// The window handle to our plugin area in the browser
 	HWND Window;
@@ -65,20 +60,7 @@ protected:
 	CComObject<CControlEventSink> *Sink;
 	
 	PropertyList *Props_;
-	void CheckRealObject();
 public:
-	void setHasWindow(bool b) {
-		hasWindow = b;
-	}
-	void setHasScript(bool b) {
-		hasScript = b;
-	}
-	void setObjectID(char* id) {
-		objectID = id;
-	}
-	void setMyID(char* id) {
-		myID = id;
-	}
 	CAxHost(NPP inst);
 	~CAxHost();
 	
@@ -97,7 +79,7 @@ public:
 	bool setClsIDFromProgID(const char *progid);
 	void setCodeBaseUrl(LPCWSTR clsid);
 	bool hasValidClsID();
-	bool CreateControl(bool subscribeToEvents, IUnknown *orig);
+	bool CreateControl(bool subscribeToEvents);
 
 	bool AddEventHandler(wchar_t *name, wchar_t *handler);
 	

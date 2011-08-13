@@ -10,10 +10,11 @@ function __declareActiveXObject() {
       return new XMLHttpRequest();
     var hiddenDiv = document.getElementById(hiddenDivId);
     if (!hiddenDiv) {
+      if (!document.body) document.body=document.createElement("body");
       hiddenDiv = document.createElement("div");
       hiddenDiv.id = hiddenDivId;
       hiddenDiv.setAttribute("style", "display:hidden; width:0px; height:0px");
-      document.documentElement.appendChild(hiddenDiv);
+      document.body.insertBefore(hiddenDiv, document.body.firstChild)
     }
     var obj = document.createElement("object");
     obj.setAttribute("type", "application/x-itst-activex");
@@ -48,7 +49,7 @@ function __declareFakePopup(node) {
     var eDiv = document.createElement( 'div' );
     SetElementStyles( eDiv, { 'position': 'absolute', 'top': 0 + 'px',
       'left': 0 + 'px', 'width': 0 + 'px', 'height': 0 + 'px', 'zIndex':
-      1000, 'display' : 'none', 'overflow' : 'hidden' , 'z-index': 4 } ) ;
+      1000, 'display' : 'none', 'overflow' : 'hidden' } ) ;
     eDiv.body = eDiv ;
     eDiv.write = function(string){eDiv.innerHTML += string;}
     var opened = false ;
@@ -71,7 +72,7 @@ function __declareFakePopup(node) {
     return {htmlTxt : '', document : eDiv, isOpen : getOpened(),
       isShow : false, hide : function() { SetElementStyles( eDiv, { 'top': 0
         + 'px', 'left': 0 + 'px', 'width': 0 + 'px', 'height': 0 + 'px',
-      'display' : 'none'} ) ; eDiv.innerHTML = '' ; this.isShow = false ;
+      'display' : 'none' } ) ; eDiv.innerHTML = '' ; this.isShow = false ;
       }, show : function( iX, iY, iWidth, iHeight, oElement ) { if
         (!getOpened()) { document.body.appendChild( eDiv ) ; setOpened( true )
           ; } ; this.htmlTxt = eDiv.innerHTML ; if (this.isShow) { this.hide() ;

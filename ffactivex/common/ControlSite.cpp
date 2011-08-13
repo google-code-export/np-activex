@@ -41,10 +41,11 @@
 
 #include <Objsafe.h>
 
+#include "../atlthunk.h"
 #include "ControlSite.h"
 #include "PropertyBag.h"
 #include "ControlSiteIPFrame.h"
-#define MYWINDOW
+
 class CDefaultControlSiteSecurityPolicy : public CControlSiteSecurityPolicy
 {
     // Test if the specified class id implements the specified category
@@ -176,11 +177,8 @@ BOOL CDefaultControlSiteSecurityPolicy::IsObjectSafeForScripting(IUnknown *pObje
 CControlSite::CControlSite()
 {
     TRACE_METHOD(CControlSite::CControlSite);
-#ifdef MYWINDOW
-	m_myWindow.Create(NULL);
-#else
-    m_myWindow = NULL;
-#endif
+
+    m_hWndParent = NULL;
     m_CLSID = CLSID_NULL;
     m_bSetClientSiteFirst = FALSE;
     m_bVisibleAtRuntime = TRUE;
@@ -466,22 +464,18 @@ HRESULT CControlSite::Create(REFCLSID clsid, PropertyList &pl,
         //EOF test code
     }
 
-	AttachToObject(spObject);
+    if (spObject)
+    {        
+        m_spObject = spObject;
+
+		CComQIPtr<IObjectWithSite> site = m_spObject;
+		if (site) {
+			site->SetSite(GetUnknown());
+		}
+    }    
     return hr;
 }
 
-HRESULT CControlSite::AttachToObject(IUnknown *spObject) {
-    m_spObject = spObject;
-
-	CComQIPtr<IObjectWithSite> site = m_spObject;
-	if (site) {
-		site->SetSite(GetUnknown());
-	}
-#ifdef MYWINDOW
-	InitControl(NULL);
-#endif
-	return S_OK;
-} 
 // Attach the created control to a window and activate it
 HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInitStream)
 {
@@ -493,39 +487,8 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
         return E_INVALIDARG;
     }
 
-	m_rcObjectPos = rcPos;
-#ifndef MYWINDOW
-	
-    m_myWindow = hwndParent;
-	InitControl(NULL);
-#else
-	m_myWindow.SetWindowLongW(GWL_STYLE, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-	m_myWindow.SetParent(hwndParent);
-	m_myWindow.ShowWindow(SW_SHOW);
-#endif
-	
-	if (m_spIOleInPlaceObject)
-	{
-		SetPosition(m_rcObjectPos);
-	}
-
-    // In-place activate the object
-    if (m_bVisibleAtRuntime)
-    {
-        DoVerb(OLEIVERB_INPLACEACTIVATE);
-    }
-
-    // For those objects which haven't had their client site set yet,
-    // it's done here.
-    if (!m_bSetClientSiteFirst)
-    {
-        m_spIOleObject->SetClientSite(this);
-    }
-
-	return S_OK;
-}
-
-HRESULT CControlSite::InitControl(IUnknown *pInitStream) {
+    m_hWndParent = hwndParent;
+    m_rcObjectPos = rcPos;
 
     // Object must have been created
     if (m_spObject == NULL)
@@ -605,22 +568,30 @@ HRESULT CControlSite::InitControl(IUnknown *pInitStream) {
     m_spIOleInPlaceObject = m_spObject;
     m_spIOleInPlaceObjectWindowless = m_spObject;
 
+	if (m_spIOleInPlaceObject)
+	{
+		SetPosition(m_rcObjectPos);
+	}
+
+    // In-place activate the object
+    if (m_bVisibleAtRuntime)
+    {
+        DoVerb(OLEIVERB_INPLACEACTIVATE);
+    }
+
+    // For those objects which haven't had their client site set yet,
+    // it's done here.
+    if (!m_bSetClientSiteFirst)
+    {
+        m_spIOleObject->SetClientSite(this);
+    }
+
     return S_OK;
 }
 
-HRESULT CControlSite::Detach() {
-#ifndef MYWINDOW
-	return DetachFromObject();
-#else
-	m_myWindow.ShowWindow(SW_HIDE);
-	m_myWindow.SetParent(NULL);
-	m_myWindow.SetWindowLong(GWL_STYLE, WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
-	return S_OK;
-#endif
-}
 
 // Unhook the control from the window and throw it all away
-HRESULT CControlSite::DetachFromObject()
+HRESULT CControlSite::Detach()
 {
     TRACE_METHOD(CControlSite::Detach);
 
@@ -726,7 +697,7 @@ HRESULT CControlSite::DoVerb(LONG nVerb, LPMSG lpMsg)
     }
 	
 //	InstallAtlThunk();
-    return m_spIOleObject->DoVerb(nVerb, lpMsg, this, 0, m_myWindow, &m_rcObjectPos);
+    return m_spIOleObject->DoVerb(nVerb, lpMsg, this, 0, m_hWndParent, &m_rcObjectPos);
 }
 
 
@@ -736,9 +707,6 @@ HRESULT CControlSite::SetPosition(const RECT &rcPos)
 	HWND hwnd;
     TRACE_METHOD(CControlSite::SetPosition);
     m_rcObjectPos = rcPos;
-#ifdef MYWINDOW
-	m_myWindow.SetWindowPos(HWND_TOP, &rcPos, NULL);
-#endif
     if (m_spIOleInPlaceObject && SUCCEEDED(m_spIOleInPlaceObject->GetWindow(&hwnd)))
     {
 		m_spIOleInPlaceObject->SetObjectRects(&m_rcObjectPos, &m_rcObjectPos);
@@ -903,7 +871,7 @@ void STDMETHODCALLTYPE CControlSite::OnViewStatusChange(/* [in] */ DWORD dwViewS
 
 HRESULT STDMETHODCALLTYPE CControlSite::GetWindow(/* [out] */ HWND __RPC_FAR *phwnd)
 {
-    *phwnd = m_myWindow;
+    *phwnd = m_hWndParent;
     return S_OK;
 }
 
@@ -1169,7 +1137,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::GetDC(/* [in] */ LPCRECT pRect, /* [in] 
         // TODO When OLEDC_PAINTBKGND we must draw every site behind this one
 
         // Get the window DC
-        m_hDCBuffer = GetWindowDC(m_myWindow);
+        m_hDCBuffer = GetWindowDC(m_hWndParent);
         if (m_hDCBuffer == NULL)
         {
             // Error
@@ -1207,14 +1175,14 @@ HRESULT STDMETHODCALLTYPE CControlSite::ReleaseDC(/* [in] */ HDC hDC)
     {
         // BitBlt the buffer into the control's object
         SetViewportOrgEx(m_hDCBuffer, 0, 0, NULL);
-        HDC hdc = GetWindowDC(m_myWindow);
+        HDC hdc = GetWindowDC(m_hWndParent);
 
         long cx = m_rcBuffer.right - m_rcBuffer.left;
         long cy = m_rcBuffer.bottom - m_rcBuffer.top;
 
         BitBlt(hdc, m_rcBuffer.left, m_rcBuffer.top, cx, cy, m_hDCBuffer, 0, 0, SRCCOPY);
         
-        ::ReleaseDC(m_myWindow, hdc);
+        ::ReleaseDC(m_hWndParent, hdc);
     }
     else
     {
@@ -1243,7 +1211,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::ReleaseDC(/* [in] */ HDC hDC)
     }
     else
     {
-        ::ReleaseDC(m_myWindow, m_hDCBuffer);
+        ::ReleaseDC(m_hWndParent, m_hDCBuffer);
     }
     m_hDCBuffer = NULL;
 
@@ -1263,7 +1231,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::InvalidateRect(/* [in] */ LPCRECT pRect,
     {
         IntersectRect(&rcI, &m_rcObjectPos, pRect);
     }
-    ::InvalidateRect(m_myWindow, &rcI, fErase);
+    ::InvalidateRect(m_hWndParent, &rcI, fErase);
 
     return S_OK;
 }
@@ -1272,7 +1240,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::InvalidateRgn(/* [in] */ HRGN hRGN, /* [
 {
     if (hRGN == NULL)
     {
-        ::InvalidateRect(m_myWindow, &m_rcObjectPos, fErase);
+        ::InvalidateRect(m_hWndParent, &m_rcObjectPos, fErase);
     }
     else
     {
@@ -1280,7 +1248,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::InvalidateRgn(/* [in] */ HRGN hRGN, /* [
         HRGN hrgnClip = CreateRectRgnIndirect(&m_rcObjectPos);
         if (CombineRgn(hrgnClip, hrgnClip, hRGN, RGN_AND) != ERROR)
         {
-            ::InvalidateRgn(m_myWindow, hrgnClip, fErase);
+            ::InvalidateRgn(m_hWndParent, hrgnClip, fErase);
         }
         DeleteObject(hrgnClip);
     }
@@ -1366,7 +1334,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::TransformCoords(/* [out][in] */ POINTL _
         return E_INVALIDARG;
     }
 
-    HDC hdc = ::GetDC(m_myWindow);
+    HDC hdc = ::GetDC(m_hWndParent);
     ::SetMapMode(hdc, MM_HIMETRIC);
     POINT rgptConvert[2];
     rgptConvert[0].x = 0;
@@ -1417,7 +1385,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::TransformCoords(/* [out][in] */ POINTL _
         hr = E_INVALIDARG;
     }
 
-    ::ReleaseDC(m_myWindow, hdc);
+    ::ReleaseDC(m_hWndParent, hdc);
 
     return hr;
 }
@@ -1512,10 +1480,3 @@ HRESULT STDMETHODCALLTYPE CControlSite::GetWindow(
 }
 
 
-HWND CControlSite::GetParentWindow() const {
-#ifdef MYWINDOW
-    return m_myWindow.GetParent();
-#else
-	return m_myWindow;
-#endif
-}

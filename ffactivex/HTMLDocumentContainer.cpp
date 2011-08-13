@@ -60,7 +60,7 @@ HRESULT HTMLDocumentContainer::get_LocationURL(BSTR *str) {
 	NPVariantProxy npStr;
 	if (!NPNFuncs.getproperty(npp, npLocation, NPNFuncs.getstringidentifier("href"), &npStr))
 		return E_FAIL;
-	CComBSTR bstr = npStr.value.stringValue.UTF8Characters;
+	CComBSTR bstr(npStr.value.stringValue.UTF8Length, npStr.value.stringValue.UTF8Characters);
 	*str = bstr.Detach();
 	return S_OK;
 }

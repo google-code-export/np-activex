@@ -35,7 +35,7 @@ public:
 		delete obj;
 	}
 	
-	static ScriptFunc* GetObject(NPP npp, Scriptable *script, MEMBERID dispid);
+	static ScriptFunc* GetFunctionObject(NPP npp, Scriptable *script, MEMBERID dispid);
 
 	static bool _InvokeDefault(NPObject *npobj, const NPVariant *args, uint32_t argCount,
 						NPVariant *result) {
