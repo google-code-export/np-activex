@@ -1,0 +1,46 @@
+﻿{
+  "plug_desp": {
+    "message": "Allow your chrome using ActiveX plugins."
+  },
+  "option_title": {
+    "message": "ActiveX for Chrome Settings"
+  },
+  "url_desp": {
+    "message": "The urls in the following list, one per line, will be qualified to load ActiveX plugins whenever possible"
+  },
+  "url_format": {
+    "message" : "The format should be like <scheme>://<host>/<path> . Use * to present any strings. Note the / after host cannot be omitted."
+  },
+  "url_regex": {
+    "message" : "To use Regular Expression, add \"/r\" before this line"
+  },
+  "clsid_desp": {
+    "message": "The trusted CLSIDs, one per line. All the plugins within the following CLSIDs will be actived on every page."
+  },
+  "clsid_format": {
+    "message": "Input with the barket and minus sign.\nFor example, {ACACC6EB-1FBA-4E13-A729-1234567854F8} ."
+  },
+  "log_title": {
+    "message": "ActiveX log"
+  },
+  "log_head": {
+    "message": "Log for tab $tabid$",
+    "placeholders": {
+      "tabid": {
+        "content": "$1"
+      }
+    }
+  },
+  "log_link": {
+    "message": "View ActiveX log"
+  },
+  "log_enable": {
+    "message": "Enable Log"
+  },
+  "copyright": {
+    "message": "This extension is made by eagleonhill."
+  },
+  "submit_issue": {
+    "message": "To submit an issue, or for technical support, click here!!"
+  }
+}
