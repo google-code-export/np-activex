@@ -9,7 +9,7 @@
     "message": "The urls in the following list, one per line, will be qualified to load ActiveX plugins whenever possible"
   },
   "url_format": {
-    "message" : "The format should be like <scheme>://<host>/<path> . Use * to present any strings. Note the / after host cannot be omitted."
+    "message" : "The format should be like <scheme>://<host>/<path> . Use * to present any strings. Note the / after host cannot be omitted. For example: http://*.google.com/*,  *://*.bar.com/foo/*"
   },
   "url_regex": {
     "message" : "To use Regular Expression, add \"/r\" before this line"

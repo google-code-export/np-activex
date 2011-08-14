@@ -1,9 +1,9 @@
 ﻿{
   "name": "ActiveX for Chrome",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "__MSG_plug_desp__",
   "permissions": [
-    "http://*/*", "https://*/*"
+    "<all_urls>"
   ],
   "default_locale": "en",
   "background_page": "background.html",

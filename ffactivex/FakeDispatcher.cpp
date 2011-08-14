@@ -28,13 +28,17 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-
 #include <atlstr.h>
 #include "npactivex.h"
 #include "scriptable.h"
 #include "axhost.h"
 #include "ObjectManager.h"
 #include "FakeDispatcher.h"
+
+// {1DDBD54F-2F8A-4186-972B-2A84FE1135FE}
+static const GUID IID_IFakeDispatcher = 
+{ 0x1ddbd54f, 0x2f8a, 0x4186, { 0x97, 0x2b, 0x2a, 0x84, 0xfe, 0x11, 0x35, 0xfe } };
+
 FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *object)
 	: npInstance(npInstance), typeLib(typeLib),  npObject(object), typeInfo(NULL), internalObj(NULL)
 {
@@ -123,6 +127,10 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 {
 	HRESULT hr = E_FAIL;
 	if (riid == IID_IDispatch || riid == IID_IUnknown) {
+		*ppvObject = this;
+		AddRef();
+		hr = S_OK;
+	} else if (riid == IID_IFakeDispatcher) {
 		*ppvObject = this;
 		AddRef();
 		hr = S_OK;
