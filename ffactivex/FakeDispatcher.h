@@ -40,6 +40,9 @@
 #include "objectProxy.h"
 extern ITypeLib *pHtmlLib;
 class CAxHost;
+
+EXTERN_C const IID IID_IFakeDispatcher;
+
 class FakeDispatcher :
 	public FakeDispatcherBase
 {

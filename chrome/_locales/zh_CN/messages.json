@@ -12,7 +12,7 @@
     "message" : "URL的输入格式为 <scheme>://<host>/<path> .可使用*代替任意数量字符。注意<host>后面的/及<path>不可省略，如https://*.foo.com/*"
   },
   "url_regex": {
-    "message" : "如要使用正则表达式，请在该行前加上 r/"
+    "message" : "如要使用正则表达式，请在该行前加上 r/。如:r/https:\\/\\/[a-z\\.]*\\.com\\/[0-9]*.html"
   },
   "clsid_desp": {
     "message": "可信的CLSID列表，按行分隔。这些CLSID的控件将在所有网页中启用。"

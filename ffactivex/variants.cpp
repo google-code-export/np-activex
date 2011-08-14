@@ -112,14 +112,14 @@ BSTR NPStringToBstr(const NPString npstr) {
 void
 Unknown2NPVar(IUnknown *unk, NPVariant *npvar, NPP instance)
 {
-	// Once we return a FakeDispatcher, the pointer won't change.
-	FakeDispatcher *disp = dynamic_cast<FakeDispatcher*>(unk);
-	if (disp && disp->IsValid()) {
+	FakeDispatcher *disp = NULL;
+	if (SUCCEEDED(unk->QueryInterface(IID_IFakeDispatcher, (void**)&disp))) {
 		OBJECT_TO_NPVARIANT(disp->getObject(), *npvar);
-		return;
+		disp->Release();
+	} else {
+		NPObject *obj = Scriptable::FromIUnknown(instance, unk);
+		OBJECT_TO_NPVARIANT(obj, (*npvar));
 	}
-	NPObject *obj = Scriptable::FromIUnknown(instance, unk);
-	OBJECT_TO_NPVARIANT(obj, (*npvar));
 }
 
 #define GETVALUE(var, val)	(((var->vt) & VT_BYREF) ? *(var->p##val) : (var->val))
