@@ -89,8 +89,13 @@ public:
 		/* [size_is][out] */ __RPC__out_ecount_full(cNames) DISPID *rgDispId){
 		if (typeInfo) {
 			return typeInfo->GetIDsOfNames(rgszNames, cNames, rgDispId);
+		} else {
+			USES_CONVERSION;
+			for (UINT i = 0; i < cNames; ++i) {
+				rgDispId[i] = (DISPID) NPNFuncs.getstringidentifier(OLE2A(rgszNames[i]));
+			}
+			return S_OK;
 		}
-		return E_FAIL;
 	}
 
 	virtual /* [local] */ HRESULT STDMETHODCALLTYPE Invoke( 
@@ -107,9 +112,6 @@ public:
 		return npObject;
 	}
 
-	BOOL IsValid() {
-		return magic == MAGIC_NUMBER;
-	}
 	FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *object);
 	~FakeDispatcher(void);
 	
@@ -117,7 +119,6 @@ public:
 	//friend HRESULT __cdecl DualProcessCommand(int parlength, int commandId, FakeDispatcher *disp, ...);
 private:
 	
-    const static DWORD MAGIC_NUMBER = 0xFF101243;
 	const static int DISPATCH_VTABLE = 7;
 	NPP npInstance;
 	NPObject *npObject;
@@ -126,7 +127,6 @@ private:
 	CAxHost *internalObj;
 	NPVariantProxy npName;
 	int ref;
-	DWORD magic;
 
 	UINT FindFuncByVirtualId(int vtbId);
 };
