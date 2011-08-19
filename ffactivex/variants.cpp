@@ -259,7 +259,11 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 		if (object->_class == &Scriptable::npClass) {
 			Scriptable* scriptObj = (Scriptable*)object;
 			scriptObj->getControl(&var->punkVal);
-		} else {
+		} if (object->_class == &NPSafeArray::npClass) {
+			NPSafeArray* arrayObj = (NPSafeArray*)object;
+			var->vt = VT_ARRAY | VT_VARIANT;
+			var->parray = arrayObj->GetArrayPtr();
+		}else {
 			IUnknown *val = new FakeDispatcher(instance, pHtmlLib, object);
 			var->punkVal = val;
 		}

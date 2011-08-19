@@ -42,7 +42,6 @@ static const GUID IID_IFakeDispatcher =
 FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *object)
 	: npInstance(npInstance), typeLib(typeLib),  npObject(object), typeInfo(NULL), internalObj(NULL)
 {
-	magic = MAGIC_NUMBER;
 	ref = 1;
 	typeLib->AddRef();
 	NPNFuncs.retainobject(object);
@@ -62,58 +61,76 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 /* [out] */ VARIANT *pVarResult,
 /* [out] */ EXCEPINFO *pExcepInfo,
 /* [out] */ UINT *puArgErr) {
-	if (dispIdMember == 0 && (wFlags & DISPATCH_PROPERTYGET) && pDispParams->cArgs == 0) {
-		// Return toString()
-		static NPIdentifier strIdentify = NPNFuncs.getstringidentifier("toString");
-		NPVariantProxy result;
-		if (!NPNFuncs.invoke(npInstance, npObject, strIdentify, NULL, 0, &result))
-			return E_FAIL;
-		NPVar2Variant(&result, pVarResult, npInstance);
-		return S_OK;
-	}
-	if (!typeInfo) {
-		return E_FAIL;
-	}
-	USES_CONVERSION;
-	HRESULT hr = E_FAIL;
-	BSTR pBstrName;
-	if (FAILED(typeInfo->GetDocumentation(dispIdMember, &pBstrName, NULL, NULL, NULL)))
-		return E_FAIL;
-	LPSTR str = OLE2A(pBstrName);
-	SysFreeString(pBstrName);
 
-	NPIdentifier identifier = NPNFuncs.getstringidentifier(str);
+	USES_CONVERSION;
+	
 	// Convert variants
 	int nArgs = pDispParams->cArgs;
 	NPVariantProxy *npvars = new NPVariantProxy[nArgs];
 	for (int i = 0; i < nArgs; ++i) {
 		Variant2NPVar(&pDispParams->rgvarg[nArgs - 1 - i], &npvars[i], npInstance);
 	}
+
+	// Determine method to call.
+	HRESULT hr = E_FAIL;
+	BSTR pBstrName;
+	
 	NPVariantProxy result;
-	if (dispIdMember == 0 && (wFlags & DISPATCH_METHOD) && strcmp(str, "item") == 0) {
-		// Item can be evaluated as the default property.
-		NPIdentifier id = NULL;
-		if (NPVARIANT_IS_INT32(npvars[0]))
-			id = NPNFuncs.getintidentifier(npvars[0].value.intValue);
-		else if (NPVARIANT_IS_STRING(npvars[0]))
-			id = NPNFuncs.getstringidentifier(npvars[0].value.stringValue.UTF8Characters);
-		// Because Chrome doesn't support the index in item(name, index), we'll ignore it here.
-		if (id && NPNFuncs.getproperty(npInstance, npObject, id, &result))
+	NPIdentifier identifier = NULL;
+	NPIdentifier itemIdentifier = NULL;
+	if (typeInfo && SUCCEEDED(typeInfo->GetDocumentation(dispIdMember, &pBstrName, NULL, NULL, NULL))) {
+		LPSTR str = OLE2A(pBstrName);
+		SysFreeString(pBstrName);
+
+		identifier = NPNFuncs.getstringidentifier(str);
+
+		if (dispIdMember == 0 && (wFlags & DISPATCH_METHOD) && strcmp(str, "item") == 0) {
+			// Item can be evaluated as the default property.
+			if (NPVARIANT_IS_INT32(npvars[0]))
+				itemIdentifier = NPNFuncs.getintidentifier(npvars[0].value.intValue);
+			else if (NPVARIANT_IS_STRING(npvars[0]))
+				itemIdentifier = NPNFuncs.getstringidentifier(npvars[0].value.stringValue.UTF8Characters);
+		}
+	}
+
+	if (identifier == NULL && !typeInfo && dispIdMember != NULL && dispIdMember != -1) {
+		identifier = (NPIdentifier) dispIdMember;
+	}
+
+	if (FAILED(hr) && itemIdentifier != NULL) {
+		if (NPNFuncs.getproperty(npInstance, npObject, itemIdentifier, &result))
 			hr = S_OK;
 	}
-	if (!SUCCEEDED(hr) && (wFlags & DISPATCH_METHOD)) {
+
+	if (FAILED(hr) && (wFlags & DISPATCH_METHOD)) {
 		if (NPNFuncs.invoke(npInstance, npObject, identifier, npvars, nArgs, &result)) {
 			hr = S_OK;
 		}
 	}
-	if (!SUCCEEDED(hr) && (wFlags & DISPATCH_PROPERTYGET)) {
+
+	if (FAILED(hr) && (wFlags & DISPATCH_PROPERTYGET)) {
 		if (NPNFuncs.getproperty(npInstance, npObject, identifier, &result))
 			hr = S_OK;
 	}
-	if (!SUCCEEDED(hr) && (wFlags & DISPATCH_PROPERTYPUT)) {
+	if (FAILED(hr) && (wFlags & DISPATCH_PROPERTYPUT)) {
 		if (nArgs == 1 && NPNFuncs.setproperty(npInstance, npObject, identifier, npvars))
 			hr = S_OK;
 	}
+
+	if (FAILED(hr) && dispIdMember == 0 && (wFlags & DISPATCH_METHOD)) {
+		// Call default method.
+		if (NPNFuncs.invokeDefault(npInstance, npObject, npvars, nArgs, &result)) {
+			hr = S_OK;
+		}
+	}
+	
+	if (FAILED(hr) && dispIdMember == 0 && (wFlags & DISPATCH_PROPERTYGET) && pDispParams->cArgs == 0) {
+		// Return toString()
+		static NPIdentifier strIdentify = NPNFuncs.getstringidentifier("toString");
+		if (NPNFuncs.invoke(npInstance, npObject, strIdentify, NULL, 0, &result))
+			hr = S_OK;
+	}
+
 	if (SUCCEEDED(hr))
 		NPVar2Variant(&result, pVarResult, npInstance);
 
@@ -193,7 +210,6 @@ extern "C" HRESULT __cdecl DualProcessCommand(int parlength, int commandId, int 
 
 HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 {
-	ATLASSERT(this->IsValid());
 	// The exception is critical if we can't find the size of parameters.
 	if (!typeInfo)
 		__asm int 3;

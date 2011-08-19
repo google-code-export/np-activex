@@ -283,14 +283,11 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 	CComVariant vResult;
 
 	HRESULT hr = disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYGET, &params, &vResult, NULL, NULL);
-	if (hr == DISP_E_MEMBERNOTFOUND || hr == DISP_E_TYPEMISMATCH) {
+	if (FAILED(hr)) {
 		OBJECT_TO_NPVARIANT(ScriptFunc::GetFunctionObject(instance, this, id), *result);
-		return true;
+	} else {
+		Variant2NPVar(&vResult, result, instance);
 	}
-	else if (FAILED(hr))
-		return false;
-
-	Variant2NPVar(&vResult, result, instance);
 	return true;
 }
 
@@ -315,13 +312,19 @@ bool Scriptable::SetProperty(NPIdentifier name, const NPVariant *value) {
 	params.rgvarg = &val;
 
 	CComVariant vResult;
-	if (FAILED(disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYPUT, &params, &vResult, NULL, NULL))) {
+
+	WORD wFlags = DISPATCH_PROPERTYPUT;
+	if (val.vt == VT_DISPATCH) {
+		wFlags |= DISPATCH_PROPERTYPUTREF;
+	}
+	if (FAILED(disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, wFlags, &params, &vResult, NULL, NULL))) {
 
 		return false;
 	}
 
 	return true;
 }
+
 Scriptable* Scriptable::FromAxHost(NPP npp, CAxHost* host)
 {
 	Scriptable *new_obj = (Scriptable*)NPNFuncs.createobject(npp, &npClass);

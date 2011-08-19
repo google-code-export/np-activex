@@ -41,9 +41,12 @@ public:
 
 	static NPSafeArray* CreateFromArray(NPP instance, SAFEARRAY* array);
 	static void RegisterVBArray(NPP npp);
+	
+	static NPClass npClass;
+
+	SAFEARRAY* NPSafeArray::GetArrayPtr();
 private:
 	static NPInvokeDefaultFunctionPtr GetFuncPtr(NPIdentifier name);
-	static NPClass npClass;
 	CComSafeArray<VARIANT> arr_;
 	NPObjectProxy window;
 	// Some wrappers to adapt NPAPI's interface.

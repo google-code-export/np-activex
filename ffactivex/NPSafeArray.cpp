@@ -69,6 +69,10 @@ void NPSafeArray::Deallocate(NPObject *obj){
 	delete static_cast<NPSafeArray*>(obj);
 }
 	
+LPSAFEARRAY NPSafeArray::GetArrayPtr() {
+	return arr_.m_psa;
+}
+
 NPInvokeDefaultFunctionPtr NPSafeArray::GetFuncPtr(NPIdentifier name) {
 	if (name == NPNFuncs.getstringidentifier("getItem")) {
 		return NPSafeArray::GetItem;
