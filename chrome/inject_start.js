@@ -38,7 +38,10 @@ function log(text) {
 
 function injectScript(filename) {
   var scriptobj = document.createElement("script");
-  scriptobj.src = filename;
+  var req = new XMLHttpRequest();
+  req.open("GET", filename, false);
+  req.send();
+  scriptobj.innerHTML = req.responseText;
   document.documentElement.insertBefore(
       scriptobj, document.documentElement.firstChild);
 }

@@ -97,10 +97,33 @@ function __overloadCreateElement(doc) {
         var obj = document.head.lastChild;
         document.head.removeChild(obj);
         return obj;
+      } else {
+        var val = orig.call(this, name);
+        if (name == "object") {
+          val.setAttribute("type", "application/x-itst-activex");
+        }
+        return val;
       }
-      return orig.call(this, name);
     }
   }(doc.createElement);
+}
+
+function __declareClsid(proto) {
+  proto.__defineGetter__("classid", function() {
+    var clsid = this.getAttribute("clsid");
+    if (clsid == null) {
+      return "";
+    }
+    return "CLSID:" + clsid.substring(1, clsid.length - 1);
+  })
+  proto.__defineSetter__("classid", function(value) {
+    this.setAttribute("type", "application/x-itst-activex");
+    var pos = value.indexOf(":");
+    this.setAttribute("clsid", "{" + value.substring(pos + 1) + "}");
+    var oldstyle = this.style.display;
+    this.style.display = "none";
+    this.style.display = oldstyle;
+  })
 }
 
 function __initIEScription() {
@@ -108,6 +131,7 @@ function __initIEScription() {
   __declareEventAsIE(window.Node.prototype);
   __declareEventAsIE(window.__proto__);
   __declareFakePopup(window.__proto__);
+  __declareClsid(HTMLObjectElement.prototype);
   __overloadCreateElement(HTMLDocument.prototype);
 }
 
