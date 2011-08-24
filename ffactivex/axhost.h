@@ -58,24 +58,35 @@ protected:
 	LPCWSTR CodeBaseUrl;
 
 	CComObject<CControlEventSink> *Sink;
+	RECT lastRect;
 	
 	PropertyList *Props_;
 public:
 	CAxHost(NPP inst);
 	~CAxHost();
+
+	static CLSID ParseCLSIDFromSetting(LPCSTR clsid, int length);
 	
 	virtual NPP ResetNPP(NPP npp);
 	CComObject<CControlSite> *Site;
+	void SetNPWindow(NPWindow *window);
+	void ResetWindow();
 
 	PropertyList *Props() {
 		return Props_;
 	}
+	void Clear();
 	void setWindow(HWND win);
 	HWND getWinfow();
 	void UpdateRect(RECT rcPos);
 
 	bool verifyClsID(LPOLESTR oleClsID);
 	bool setClsID(const char *clsid);
+	bool setClsID(const CLSID& clsid);
+	CLSID getClsID() {
+		return this->ClsID;
+	}
+
 	bool setClsIDFromProgID(const char *progid);
 	void setCodeBaseUrl(LPCWSTR clsid);
 	bool hasValidClsID();

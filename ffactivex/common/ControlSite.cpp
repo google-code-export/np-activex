@@ -627,8 +627,10 @@ HRESULT CControlSite::GetControlUnknown(IUnknown **ppObject)
     if (m_spObject)
     {
         m_spObject->QueryInterface(IID_IUnknown, (void **) ppObject);
-    }
-    return S_OK;
+		return S_OK;
+    } else {
+		return E_FAIL;
+	}
 }
 
 // Subscribe to an event sink on the control

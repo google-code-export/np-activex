@@ -426,7 +426,8 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 	// Make sure we have all the information we need to initialize a new instance
 	if (!host->hasValidClsID()) {
 		np_log(instance, 0, "AxHost.NPP_New: no valid CLSID or PROGID");
-		return NPERR_INVALID_PARAM;
+		// create later.
+		return NPERR_NO_ERROR;
 	}
 
 	instance->pdata = host;
@@ -570,7 +571,6 @@ NPError
 NPP_SetWindow(NPP instance, NPWindow *window)
 {
 	CAxHost *host = NULL;
-	RECT rcPos;
 
 	if (!instance || !instance->pdata) {
 
@@ -579,14 +579,7 @@ NPP_SetWindow(NPP instance, NPWindow *window)
 
 	host = dynamic_cast<CAxHost*>((CHost *)instance->pdata);
 	if (host) {
-		host->setWindow((HWND)window->window);
-	
-		rcPos.left = 0;
-		rcPos.top = 0;
-		rcPos.right = window->width;
-		rcPos.bottom = window->height;
-		host->UpdateRect(rcPos);
-	
+		host->SetNPWindow(window);
 	}
 
 	return NPERR_NO_ERROR;
