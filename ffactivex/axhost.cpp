@@ -168,15 +168,22 @@ CAxHost::CAxHost(NPP inst):
 CAxHost::~CAxHost()
 {
 	np_log(instance, 0, "AxHost.~AXHost: destroying the control...");
-
+	
 	if (Window){
 
-		if (OldProc)
+		if (OldProc) {
 			::SetWindowLong(Window, GWL_WNDPROC, (LONG)OldProc);
+			OldProc = NULL;
+		}
 
 		::SetWindowLong(Window, GWL_USERDATA, (LONG)NULL);
 	}
 
+	Clear();
+	delete Props_;
+}
+
+void CAxHost::Clear() {
 	if (Sink) {
 
 		Sink->UnsubscribeFromEvents();
@@ -192,12 +199,27 @@ CAxHost::~CAxHost()
     }
 
 	if (Props_) {
-		delete Props_;
+		Props_->Clear();
 	}
 
 	CoFreeUnusedLibraries();
 }
 
+CLSID CAxHost::ParseCLSIDFromSetting(LPCSTR str, int length) {
+	CLSID ret;
+	CStringW input(str, length);
+	if (SUCCEEDED(CLSIDFromString(input, &ret)))
+		return ret;
+	int pos = input.Find(':');
+	if (pos != -1) {
+		CStringW wolestr(_T("{"));
+		wolestr.Append(input.Mid(pos + 1));
+		wolestr.Append(_T("}"));
+		if (SUCCEEDED(CLSIDFromString(wolestr.GetString(), &ret)))
+			return ret;
+	}
+	return CLSID_NULL;
+}
 
 void 
 CAxHost::setWindow(HWND win)
@@ -224,6 +246,10 @@ CAxHost::setWindow(HWND win)
 	}
 }
 
+void CAxHost::ResetWindow() {
+	UpdateRect(lastRect);
+}
+
 HWND 
 CAxHost::getWinfow()
 {
@@ -234,6 +260,7 @@ void
 CAxHost::UpdateRect(RECT rcPos)
 {
 	HRESULT hr = -1;
+	lastRect = rcPos;
 
 	if (Site && Window) {
 
@@ -255,6 +282,17 @@ CAxHost::UpdateRect(RECT rcPos)
 	}
 }
 
+void CAxHost::SetNPWindow(NPWindow *window) {
+	
+	RECT rcPos;
+	setWindow((HWND)window->window);
+	
+	rcPos.left = 0;
+	rcPos.top = 0;
+	rcPos.right = window->width;
+	rcPos.bottom = window->height;
+	UpdateRect(rcPos);
+}
 bool
 CAxHost::verifyClsID(LPOLESTR oleClsID)
 {
@@ -307,17 +345,24 @@ CAxHost::setClsID(const char *clsid)
 
     // Check the Internet Explorer list of vulnerable controls
     if (oleClsID && verifyClsID(oleClsID)) {
-
-		hr = CLSIDFromString(oleClsID, &ClsID);
-		if (SUCCEEDED(hr) && !::IsEqualCLSID(ClsID, CLSID_NULL)) {
-
-			isValidClsID = true;
-			np_log(instance, 1, "AxHost.setClsID: CLSID %s set", clsid);
-			return true;
+		CLSID vclsid;
+		hr = CLSIDFromString(oleClsID, &vclsid);
+		if (SUCCEEDED(hr)) {
+			return setClsID(vclsid);
 		}
     }
 
 	np_log(instance, 0, "AxHost.setClsID: failed to set the requested clsid");
+	return false;
+}
+
+bool CAxHost::setClsID(const CLSID& clsid) {
+	if (clsid != CLSID_NULL) {
+		this->ClsID = clsid;
+		isValidClsID = true;
+		//np_log(instance, 1, "AxHost.setClsID: CLSID %s set", clsid);
+		return true;
+	}
 	return false;
 }
 
@@ -497,6 +542,10 @@ CAxHost::HandleEvent(void *event)
 ScriptBase *
 CAxHost::CreateScriptableObject()
 {
+	Scriptable *obj = Scriptable::FromAxHost(instance, this);
+	if (Site == NULL) {
+		return obj;
+	}
 	static int markedSafe = 0;
 	if (!Site->m_bSafeForScriptingObjectsOnly && markedSafe == 0)
 	{
@@ -504,8 +553,7 @@ CAxHost::CreateScriptableObject()
 			markedSafe = 1;
 		else 
 			markedSafe = 2;
-}
-	Scriptable *obj = Scriptable::FromAxHost(instance, this);
+	}
 	if (!Site->m_bSafeForScriptingObjectsOnly && markedSafe != 1)
 	{
 		// Disable scripting.
@@ -515,6 +563,9 @@ CAxHost::CreateScriptableObject()
 }
 
 HRESULT CAxHost::GetControlUnknown(IUnknown **pObj) {
+	if (Site == NULL) {
+		return E_FAIL;
+	}
 	return Site->GetControlUnknown(pObj);
 }
 

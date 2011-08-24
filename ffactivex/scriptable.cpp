@@ -256,6 +256,10 @@ bool Scriptable::HasMethod(NPIdentifier name)  {
 }
 
 bool Scriptable::HasProperty(NPIdentifier name) {
+	static NPIdentifier classid = NPNFuncs.getstringidentifier("classid");
+	if (name == classid) {
+		return true;
+	}
 	if (invalid) return false;
 
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET | INVOKE_PROPERTYPUT);
@@ -263,6 +267,30 @@ bool Scriptable::HasProperty(NPIdentifier name) {
 }
 
 bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
+	static NPIdentifier classid = NPNFuncs.getstringidentifier("classid");
+	if (name == classid) {
+		CAxHost *host = (CAxHost*)this->host;
+		if (this->disp == NULL) {
+			char* cstr = (char*)NPNFuncs.memalloc(1);
+			cstr[0] = 0;
+			STRINGZ_TO_NPVARIANT(cstr, *result);
+			return true;
+		} else {
+			USES_CONVERSION;
+			char* cstr = (char*)NPNFuncs.memalloc(50);
+			strcpy(cstr, "CLSID:");
+
+			LPOLESTR clsidstr;
+			StringFromCLSID(host->getClsID(), &clsidstr);
+			// Remove braces.
+			clsidstr[lstrlenW(clsidstr) - 1] = '\0';
+			strcat(cstr, OLE2A(clsidstr + 1));
+
+			CoTaskMemFree(clsidstr);
+			STRINGZ_TO_NPVARIANT(cstr, *result);
+			return true;
+		}
+	}
 
 	if (invalid)
 		return false;
@@ -292,6 +320,26 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 }
 
 bool Scriptable::SetProperty(NPIdentifier name, const NPVariant *value) {
+	static NPIdentifier classid = NPNFuncs.getstringidentifier("classid");
+	if (name == classid) {
+		CAxHost* axhost = (CAxHost*)host;
+		CLSID newCLSID = CAxHost::ParseCLSIDFromSetting(value->value.stringValue.UTF8Characters, value->value.stringValue.UTF8Length);
+		if (newCLSID != GUID_NULL && (!axhost->hasValidClsID() || newCLSID != axhost->getClsID())) {
+			axhost->Clear();
+			if (axhost->setClsID(newCLSID)) {
+				axhost->CreateControl(false);
+				
+				IUnknown *unk;
+				if (SUCCEEDED(axhost->GetControlUnknown(&unk))) {
+					this->setControl(unk);
+					unk->Release();
+				}
+
+				axhost->ResetWindow();
+			}
+		}
+		return true;
+	}
 	if (invalid) return false;
 
 	DISPID id = ResolveName(name, INVOKE_PROPERTYPUT);
@@ -329,10 +377,11 @@ Scriptable* Scriptable::FromAxHost(NPP npp, CAxHost* host)
 {
 	Scriptable *new_obj = (Scriptable*)NPNFuncs.createobject(npp, &npClass);
 	IUnknown *unk;
-	host->GetControlUnknown(&unk);
-	new_obj->setControl(unk);
-	new_obj->host = host;
-	unk->Release();
+	if (SUCCEEDED(host->GetControlUnknown(&unk))) {
+		new_obj->setControl(unk);
+		new_obj->host = host;
+		unk->Release();
+	}
 	return new_obj;
 }
 
