@@ -1,0 +1,32 @@
+﻿{
+  "plug_desp": {
+    "message": "使Chrome支持ActiveX控件。"
+  },
+  "option_title": {
+    "message": "ActiveX for Chrome设置"
+  },
+  "url_desp": {
+    "message": "当打开以下列表列出的URL时，页面中的ActiveX控件会自动激活。按行分隔。"
+  },
+  "url_format": {
+    "message" : "URL的输入格式为 <scheme>://<host>/<path> .可使用*代替任意数量字符。注意<host>后面的/及<path>不可省略，如https://*.foo.com/*"
+  },
+  "url_regex": {
+    "message" : "如要使用正则表达式，请在该行前加上 r/。如:r/https:\\/\\/[a-z\\.]*\\.com\\/[0-9]*.html"
+  },
+  "clsid_desp": {
+    "message": "可信的CLSID列表，按行分隔。这些CLSID的控件将在所有网页中启用。"
+  },
+  "clsid_format": {
+    "message": "输入时不能省略{}及连接符 - 。例如： {ACACC6EB-1FBA-4E13-A729-1234567854F8} 。"
+  },
+  "given_setting": {
+    "message": "你可以在http://code.google.com/p/np-activex/wiki/ChinaSettings查看提供的预定义选项。"
+  },
+  "copyright": {
+    "message": "本插件由eagleonhill制作"
+  },
+  "submit_issue": {
+    "message": "若需要汇报不兼容网站，请点击此处！！"
+  }
+}
