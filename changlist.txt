@@ -1,3 +1,6 @@
+Version 1.3.7 ----
+Fix: Detect property type(prop or method) properly.
+
 Version 1.3.6 ----
 Add: Support initialize object via setting property "classid".
 Fix: Load IE_Script_Declaration immediately when the URL is validated.

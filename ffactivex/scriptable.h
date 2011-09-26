@@ -65,6 +65,8 @@ private:
 		disp = unk;
 	}
 
+	bool IsProperty(DISPID member_id);
+
 public:
 	Scriptable(NPP npp):
 	    ScriptBase(npp),
