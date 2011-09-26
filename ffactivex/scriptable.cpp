@@ -125,6 +125,20 @@ bool Scriptable::find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id
 	return found;
 }
 
+bool Scriptable::IsProperty(DISPID member_id) {
+	ITypeInfo *typeinfo;
+	if (FAILED(disp->GetTypeInfo(0, LOCALE_SYSTEM_DEFAULT, &typeinfo))) {
+		return false;
+	}
+
+	TYPEATTR *typeAttr;
+	typeinfo->GetTypeAttr(&typeAttr);
+	bool ret = find_member(typeinfo, typeAttr, member_id, DISPATCH_METHOD);
+	typeinfo->ReleaseTypeAttr(typeAttr);
+	typeinfo->Release();
+	return !ret;
+}
+
 DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 
 	if (dispid != -1)
@@ -267,6 +281,9 @@ bool Scriptable::HasProperty(NPIdentifier name) {
 }
 
 bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
+	if (invalid)
+		return false;
+
 	static NPIdentifier classid = NPNFuncs.getstringidentifier("classid");
 	if (name == classid) {
 		CAxHost *host = (CAxHost*)this->host;
@@ -292,12 +309,8 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 		}
 	}
 
-	if (invalid)
-		return false;
-
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET);
 	if (-1 == id) {
-
 		return false;
 	}
 
@@ -309,12 +322,12 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 	params.rgvarg = NULL;
 
 	CComVariant vResult;
-
-	HRESULT hr = disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYGET, &params, &vResult, NULL, NULL);
-	if (FAILED(hr)) {
-		OBJECT_TO_NPVARIANT(ScriptFunc::GetFunctionObject(instance, this, id), *result);
-	} else {
+	if (IsProperty(id)) {
+		HRESULT hr = disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYGET, &params, &vResult, NULL, NULL);
+		
 		Variant2NPVar(&vResult, result, instance);
+	} else {
+		OBJECT_TO_NPVARIANT(ScriptFunc::GetFunctionObject(instance, this, id), *result);
 	}
 	return true;
 }
