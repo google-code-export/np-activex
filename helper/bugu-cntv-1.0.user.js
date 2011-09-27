@@ -2,7 +2,7 @@
 // @namespace http://code.google.com/p/np-activex
 // @name Bugu CNTV ActiveX patch
 // @description Patcher for Bugu CNTV ActiveX controls
-// @match *://*.cntv.cn/live/*
+// @match *://*.cntv.cn/*live*
 // @run-at document-start
 // ==/UserScript==
 
