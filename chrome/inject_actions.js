@@ -93,6 +93,12 @@ function enableobj(obj) {
   // Use <object> so obj doesn't need reconstruction.
   obj.outerHTML = '<object type="application/x-itst-activex" '
     + obj.outerHTML.substring(8);
+  if (obj.id) {
+    command = "delete document." + obj.id + "\n";
+    command += "document." + obj.id + '=' + obj.id;
+    executeScriptInClient(command);
+    console.log(command);
+  }
   log("Enable object, id: " + obj.id + " clsid: " + getClsid(obj));
   // executeScriptInClient(command);
 }
