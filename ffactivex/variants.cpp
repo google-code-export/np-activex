@@ -115,6 +115,7 @@ Unknown2NPVar(IUnknown *unk, NPVariant *npvar, NPP instance)
 	FakeDispatcher *disp = NULL;
 	if (SUCCEEDED(unk->QueryInterface(IID_IFakeDispatcher, (void**)&disp))) {
 		OBJECT_TO_NPVARIANT(disp->getObject(), *npvar);
+		NPNFuncs.retainobject(disp->getObject());
 		disp->Release();
 	} else {
 		NPObject *obj = Scriptable::FromIUnknown(instance, unk);
