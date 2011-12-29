@@ -46,11 +46,104 @@ EXTERN_C const IID IID_IFakeDispatcher;
 class FakeDispatcher :
 	public FakeDispatcherBase
 {
+private:
+	class FakeDispatcherEx: IDispatchEx {
+	private:
+		FakeDispatcher *target;
+	public:
+		FakeDispatcherEx(FakeDispatcher *target) : target(target) {
+		}
+
+		virtual HRESULT STDMETHODCALLTYPE QueryInterface( 
+		REFIID riid,
+    	__RPC__deref_out void __RPC_FAR *__RPC_FAR *ppvObject) {
+			return target->QueryInterface(riid, ppvObject);
+		}
+
+		virtual ULONG STDMETHODCALLTYPE AddRef( void) {
+			return target->AddRef();
+		}
+
+		virtual ULONG STDMETHODCALLTYPE Release( void) {
+			return target->Release();
+		}
+
+		virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount( 
+			__RPC__out UINT *pctinfo) {
+			return target->GetTypeInfoCount(pctinfo);
+		}
+
+		virtual HRESULT STDMETHODCALLTYPE GetTypeInfo( 
+			UINT iTInfo,
+			LCID lcid,
+			__RPC__deref_out_opt ITypeInfo **ppTInfo) {
+			return target->GetTypeInfo(iTInfo, lcid, ppTInfo);
+		}
+
+		virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames( 
+			__RPC__in REFIID riid,
+			__RPC__in_ecount_full(cNames) LPOLESTR *rgszNames,
+			__RPC__in_range(0,16384) UINT cNames,
+			LCID lcid,
+			__RPC__out_ecount_full(cNames) DISPID *rgDispId) {
+			return target->GetIDsOfNames(riid, rgszNames, cNames, lcid, rgDispId);
+		}
+
+		virtual HRESULT STDMETHODCALLTYPE Invoke( 
+			DISPID dispIdMember,
+			REFIID riid,
+			LCID lcid,
+			WORD wFlags,
+			DISPPARAMS *pDispParams,
+			VARIANT *pVarResult,
+			EXCEPINFO *pExcepInfo,
+			UINT *puArgErr) {
+			return target->Invoke(dispIdMember, riid, lcid, wFlags, pDispParams, pVarResult, pExcepInfo, puArgErr);
+		}
+
+		virtual HRESULT STDMETHODCALLTYPE GetDispID( 
+			__RPC__in BSTR bstrName,
+			DWORD grfdex,
+			__RPC__out DISPID *pid);
+        
+		virtual HRESULT STDMETHODCALLTYPE InvokeEx( 
+			__in  DISPID id,
+			__in  LCID lcid,
+			__in  WORD wFlags,
+			__in  DISPPARAMS *pdp,
+			__out_opt  VARIANT *pvarRes,
+			__out_opt  EXCEPINFO *pei,
+			__in_opt  IServiceProvider *pspCaller);
+        
+		virtual HRESULT STDMETHODCALLTYPE DeleteMemberByName( 
+			__RPC__in BSTR bstrName,
+			DWORD grfdex);
+        
+		virtual HRESULT STDMETHODCALLTYPE DeleteMemberByDispID(DISPID id);
+        
+		virtual HRESULT STDMETHODCALLTYPE GetMemberProperties( 
+			DISPID id,
+			DWORD grfdexFetch,
+			__RPC__out DWORD *pgrfdex);
+        
+		virtual HRESULT STDMETHODCALLTYPE GetMemberName( 
+			DISPID id,
+			__RPC__deref_out_opt BSTR *pbstrName);
+        
+		virtual HRESULT STDMETHODCALLTYPE GetNextDispID( 
+			DWORD grfdex,
+			DISPID id,
+			__RPC__out DISPID *pid);
+        
+		virtual HRESULT STDMETHODCALLTYPE GetNameSpaceParent( 
+			__RPC__deref_out_opt IUnknown **ppunk);
+        
+	};
+
 public:
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface( 
-    /* [in] */ REFIID riid,
-    /* [iid_is][out] */ __RPC__deref_out void __RPC_FAR *__RPC_FAR *ppvObject);
-
+		REFIID riid,
+    	__RPC__deref_out void __RPC_FAR *__RPC_FAR *ppvObject);
 
     virtual ULONG STDMETHODCALLTYPE AddRef( void) {
 		++ref;
@@ -63,50 +156,34 @@ public:
 			delete this;
 		return ref;
 	}
+
 	virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount( 
-			/* [out] */ __RPC__out UINT *pctinfo) {
+		__RPC__out UINT *pctinfo) {
 		*pctinfo = 1;
 		return S_OK;
 	}
-        
-	virtual HRESULT STDMETHODCALLTYPE GetTypeInfo( 
-		/* [in] */ UINT iTInfo,
-		/* [in] */ LCID lcid,
-		/* [out] */ __RPC__deref_out_opt ITypeInfo **ppTInfo){
-		if (iTInfo == 0 && typeInfo) {
-			*ppTInfo = typeInfo;
-			typeInfo->AddRef();
-			return S_OK;
-		}
-		return E_INVALIDARG;
-	}
-        
-	virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames( 
-		/* [in] */ __RPC__in REFIID riid,
-		/* [size_is][in] */ __RPC__in_ecount_full(cNames) LPOLESTR *rgszNames,
-		/* [range][in] */ __RPC__in_range(0,16384) UINT cNames,
-		/* [in] */ LCID lcid,
-		/* [size_is][out] */ __RPC__out_ecount_full(cNames) DISPID *rgDispId){
-		if (typeInfo) {
-			return typeInfo->GetIDsOfNames(rgszNames, cNames, rgDispId);
-		} else {
-			USES_CONVERSION;
-			for (UINT i = 0; i < cNames; ++i) {
-				rgDispId[i] = (DISPID) NPNFuncs.getstringidentifier(OLE2A(rgszNames[i]));
-			}
-			return S_OK;
-		}
-	}
 
-	virtual /* [local] */ HRESULT STDMETHODCALLTYPE Invoke( 
-		/* [in] */ DISPID dispIdMember,
-		/* [in] */ REFIID riid,
-		/* [in] */ LCID lcid,
-		/* [in] */ WORD wFlags,
-		/* [out][in] */ DISPPARAMS *pDispParams,
-		/* [out] */ VARIANT *pVarResult,
-		/* [out] */ EXCEPINFO *pExcepInfo,
-		/* [out] */ UINT *puArgErr);
+	virtual HRESULT STDMETHODCALLTYPE GetTypeInfo( 
+		UINT iTInfo,
+		LCID lcid,
+		__RPC__deref_out_opt ITypeInfo **ppTInfo);
+
+	virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames( 
+		__RPC__in REFIID riid,
+		__RPC__in_ecount_full(cNames) LPOLESTR *rgszNames,
+		__RPC__in_range(0,16384) UINT cNames,
+		LCID lcid,
+		__RPC__out_ecount_full(cNames) DISPID *rgDispId);
+
+	virtual HRESULT STDMETHODCALLTYPE Invoke( 
+		DISPID dispIdMember,
+		REFIID riid,
+		LCID lcid,
+		WORD wFlags,
+		DISPPARAMS *pDispParams,
+		VARIANT *pVarResult,
+		EXCEPINFO *pExcepInfo,
+		UINT *puArgErr);
 
 	NPObject *getObject() {
 		return npObject;
@@ -118,15 +195,24 @@ public:
 	HRESULT ProcessCommand(int ID, int *parlength,va_list &list);
 	//friend HRESULT __cdecl DualProcessCommand(int parlength, int commandId, FakeDispatcher *disp, ...);
 private:
-	
+	static ITypeInfo* npTypeInfo;
 	const static int DISPATCH_VTABLE = 7;
+	FakeDispatcherEx *extended;
 	NPP npInstance;
 	NPObject *npObject;
 	ITypeLib *typeLib;
 	ITypeInfo *typeInfo;
 	CAxHost *internalObj;
-	NPVariantProxy npName;
+
+	bool HasValidTypeInfo();
+
 	int ref;
+	DWORD dualType;
+#ifdef DEBUG
+	char name[50];
+	char tag[100];
+	GUID interfaceid;
+#endif
 
 	UINT FindFuncByVirtualId(int vtbId);
 };

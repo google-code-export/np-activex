@@ -39,16 +39,40 @@
 static const GUID IID_IFakeDispatcher = 
 { 0x1ddbd54f, 0x2f8a, 0x4186, { 0x97, 0x2b, 0x2a, 0x84, 0xfe, 0x11, 0x35, 0xfe } };
 
+ITypeInfo* FakeDispatcher::npTypeInfo = (ITypeInfo*)-1;
+
 FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *object)
-	: npInstance(npInstance), typeLib(typeLib),  npObject(object), typeInfo(NULL), internalObj(NULL)
+	: npInstance(npInstance), typeLib(typeLib),  npObject(object), typeInfo(NULL), internalObj(NULL), extended(NULL)
 {
 	ref = 1;
 	typeLib->AddRef();
 	NPNFuncs.retainobject(object);
-	NPNFuncs.getproperty(npInstance, object, NPNFuncs.getstringidentifier("name"), &npName);
+	
 	ScriptBase *base = ObjectManager::GetInternalObject(npInstance, object);
 	if (base)
 		internalObj = dynamic_cast<CAxHost*>(base->host);
+
+#ifdef DEBUG
+	NPVariantProxy npName, npTag;
+	name[0] = 0;
+	tag[0] = 0;
+	NPNFuncs.getproperty(npInstance, object, NPNFuncs.getstringidentifier("id"), &npName);
+	if (npName.type != NPVariantType_String || npName.value.stringValue.UTF8Length == 0)
+		NPNFuncs.getproperty(npInstance, object, NPNFuncs.getstringidentifier("name"), &npName);
+	if (npName.type == NPVariantType_String) {
+		strncpy(name, npName.value.stringValue.UTF8Characters, npName.value.stringValue.UTF8Length);
+		name[npName.value.stringValue.UTF8Length] = 0;
+	}
+	if (NPNFuncs.hasmethod(npInstance, object, NPNFuncs.getstringidentifier("toString"))) {
+		NPNFuncs.invoke(npInstance, object, NPNFuncs.getstringidentifier("toString"), &npTag, 0, &npTag);
+		if (npTag.type == NPVariantType_String) {
+			strncpy(tag, npTag.value.stringValue.UTF8Characters, npTag.value.stringValue.UTF8Length);
+			tag[npTag.value.stringValue.UTF8Length] = 0;
+		}
+	}
+
+	interfaceid = GUID_NULL;
+#endif
 }
 
 /* [local] */ HRESULT STDMETHODCALLTYPE 
@@ -78,7 +102,7 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 	NPVariantProxy result;
 	NPIdentifier identifier = NULL;
 	NPIdentifier itemIdentifier = NULL;
-	if (typeInfo && SUCCEEDED(typeInfo->GetDocumentation(dispIdMember, &pBstrName, NULL, NULL, NULL))) {
+	if (HasValidTypeInfo() && SUCCEEDED(typeInfo->GetDocumentation(dispIdMember, &pBstrName, NULL, NULL, NULL))) {
 		LPSTR str = OLE2A(pBstrName);
 		SysFreeString(pBstrName);
 
@@ -91,15 +115,20 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 			else if (NPVARIANT_IS_STRING(npvars[0]))
 				itemIdentifier = NPNFuncs.getstringidentifier(npvars[0].value.stringValue.UTF8Characters);
 		}
+		else if (dispIdMember == 0x3E9 && (wFlags & DISPATCH_PROPERTYGET) && strcmp(str, "Script") == 0) {
+			identifier = NPNFuncs.getstringidentifier("defaultView");
+		}
 	}
-
-	if (identifier == NULL && !typeInfo && dispIdMember != NULL && dispIdMember != -1) {
+	else if (typeInfo == npTypeInfo && dispIdMember != NULL && dispIdMember != -1) {
 		identifier = (NPIdentifier) dispIdMember;
 	}
 
 	if (FAILED(hr) && itemIdentifier != NULL) {
-		if (NPNFuncs.getproperty(npInstance, npObject, itemIdentifier, &result))
-			hr = S_OK;
+		if (NPNFuncs.hasproperty(npInstance, npObject, itemIdentifier)) {
+			if (NPNFuncs.getproperty(npInstance, npObject, itemIdentifier, &result)) {
+				hr = S_OK;
+			}
+		}
 	}
 
 	if (FAILED(hr) && (wFlags & DISPATCH_METHOD)) {
@@ -109,9 +138,13 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 	}
 
 	if (FAILED(hr) && (wFlags & DISPATCH_PROPERTYGET)) {
-		if (NPNFuncs.getproperty(npInstance, npObject, identifier, &result))
-			hr = S_OK;
+		if (NPNFuncs.hasproperty(npInstance, npObject, identifier)) {
+			if (NPNFuncs.getproperty(npInstance, npObject, identifier, &result)) {
+				hr = S_OK;
+			}
+		}
 	}
+
 	if (FAILED(hr) && (wFlags & DISPATCH_PROPERTYPUT)) {
 		if (nArgs == 1 && NPNFuncs.setproperty(npInstance, npObject, identifier, npvars))
 			hr = S_OK;
@@ -147,6 +180,12 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 		*ppvObject = this;
 		AddRef();
 		hr = S_OK;
+	} else if (riid == IID_IDispatchEx) {
+		if (extended == NULL)
+			extended = new FakeDispatcherEx(this);
+		*ppvObject = extended;
+		AddRef();
+		hr = S_OK;
 	} else if (riid == IID_IFakeDispatcher) {
 		*ppvObject = this;
 		AddRef();
@@ -156,13 +195,9 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 		if (SUCCEEDED(hr)) {
 			TYPEATTR *attr;
 			typeInfo->GetTypeAttr(&attr);
-			if (!(attr->wTypeFlags & TYPEFLAG_FDISPATCHABLE)) {
-				typeInfo->Release();
-				hr = E_NOINTERFACE;
-			} else {
-				*ppvObject = static_cast<FakeDispatcher*>(this);
-				AddRef();
-			}
+			dualType = attr->wTypeFlags;
+			*ppvObject = static_cast<FakeDispatcher*>(this);
+			AddRef();
 			typeInfo->ReleaseTypeAttr(attr);
 		}
 	} else {
@@ -175,7 +210,7 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 		internalObj->GetControlUnknown(&unk);
 		hr = unk->QueryInterface(riid, ppvObject);
 		unk->Release(); 
-		/*			
+		/*
 		// Try to find the internal object
 		NPIdentifier object_id = NPNFuncs.getstringidentifier(object_property);
 		NPVariant npVar;
@@ -185,13 +220,23 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 			hr = internalObject->QueryInterface(riid, ppvObject);
 		}*/
 	}
+#ifdef DEBUG
+	if (hr == S_OK) {
+		interfaceid = riid;
+	} else {
+		// Unsupported Interface!
+	}
+#endif
 	return hr;
 }
 
 FakeDispatcher::~FakeDispatcher(void)
 {
-	if (typeInfo) {
+	if (HasValidTypeInfo()) {
 		typeInfo->Release();
+	}
+	if (extended) {
+		delete extended;
 	}
 	NPNFuncs.releaseobject(npObject);
 	typeLib->Release();
@@ -208,12 +253,42 @@ extern "C" HRESULT __cdecl DualProcessCommand(int parlength, int commandId, int 
 	return ret;
 }
 
+HRESULT FakeDispatcher::GetTypeInfo( 
+	/* [in] */ UINT iTInfo,
+	/* [in] */ LCID lcid,
+	/* [out] */ __RPC__deref_out_opt ITypeInfo **ppTInfo) {
+	if (iTInfo == 0 && HasValidTypeInfo()) {
+		*ppTInfo = typeInfo;
+		typeInfo->AddRef();
+		return S_OK;
+	}
+	return E_INVALIDARG;
+}
+
+HRESULT FakeDispatcher::GetIDsOfNames( 
+	/* [in] */ __RPC__in REFIID riid,
+	/* [size_is][in] */ __RPC__in_ecount_full(cNames) LPOLESTR *rgszNames,
+	/* [range][in] */ __RPC__in_range(0,16384) UINT cNames,
+	/* [in] */ LCID lcid,
+	/* [size_is][out] */ __RPC__out_ecount_full(cNames) DISPID *rgDispId){
+	if (HasValidTypeInfo()) {
+		return typeInfo->GetIDsOfNames(rgszNames, cNames, rgDispId);
+	} else {
+		typeInfo = npTypeInfo;
+		USES_CONVERSION;
+		for (UINT i = 0; i < cNames; ++i) {
+			rgDispId[i] = (DISPID) NPNFuncs.getstringidentifier(OLE2A(rgszNames[i]));
+		}
+		return S_OK;
+	}
+}
+
 HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 {
-	// The exception is critical if we can't find the size of parameters.
-	if (!typeInfo)
+	// This exception is critical if we can't find the size of parameters.
+	if (!HasValidTypeInfo())
 		__asm int 3;
-	UINT index = FindFuncByVirtualId(vfid + DISPATCH_VTABLE);
+	UINT index = FindFuncByVirtualId(vfid);
 	if (index == (UINT)-1)
 		__asm int 3;
 	FUNCDESC *func;
@@ -238,7 +313,7 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 		args += intvarsz;
 		*parlength += intvarsz;
 	}
-	// We needn't clear it.
+	// We needn't clear it. Caller takes ownership.
 	VARIANT result;
 	HRESULT ret = Invoke(func->memid, IID_NULL, NULL, func->invkind, &varlist, &result, NULL, NULL);
 	
@@ -254,5 +329,70 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 }
 
 UINT FakeDispatcher::FindFuncByVirtualId(int vtbId) {
-	return vtbId;
+	if (dualType & TYPEFLAG_FDUAL)
+		return vtbId + DISPATCH_VTABLE;
+	else
+		return vtbId;
 }
+
+bool FakeDispatcher::HasValidTypeInfo() {
+	return typeInfo && typeInfo != npTypeInfo;
+}
+
+static HRESULT NoImpl() {
+	return E_NOTIMPL;
+}
+
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetDispID( 
+    __RPC__in BSTR bstrName,
+    DWORD grfdex,
+    __RPC__out DISPID *pid) {
+	return NoImpl();
+}
+
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::InvokeEx( 
+    __in  DISPID id,
+    __in  LCID lcid,
+    __in  WORD wFlags,
+    __in  DISPPARAMS *pdp,
+    __out_opt  VARIANT *pvarRes,
+    __out_opt  EXCEPINFO *pei,
+    __in_opt  IServiceProvider *pspCaller) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::DeleteMemberByName( 
+	__RPC__in BSTR bstrName,
+	DWORD grfdex) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::DeleteMemberByDispID(DISPID id) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetMemberProperties(
+	DISPID id,
+	DWORD grfdexFetch,
+	__RPC__out DWORD *pgrfdex) {
+	return NoImpl();
+}
+
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetMemberName( 
+	DISPID id,
+	__RPC__deref_out_opt BSTR *pbstrName) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetNextDispID( 
+	DWORD grfdex,
+	DISPID id,
+	__RPC__out DISPID *pid) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetNameSpaceParent( 
+	__RPC__deref_out_opt IUnknown **ppunk) {
+	return NoImpl();
+}
+        
