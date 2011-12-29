@@ -260,11 +260,11 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 		if (object->_class == &Scriptable::npClass) {
 			Scriptable* scriptObj = (Scriptable*)object;
 			scriptObj->getControl(&var->punkVal);
-		} if (object->_class == &NPSafeArray::npClass) {
+		} else if (object->_class == &NPSafeArray::npClass) {
 			NPSafeArray* arrayObj = (NPSafeArray*)object;
 			var->vt = VT_ARRAY | VT_VARIANT;
 			var->parray = arrayObj->GetArrayPtr();
-		}else {
+		} else {
 			IUnknown *val = new FakeDispatcher(instance, pHtmlLib, object);
 			var->punkVal = val;
 		}
@@ -350,7 +350,10 @@ HRESULT ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const
 			intvalue = (int)var.boolVal;
 		else if (var.vt == VT_UI4)
 			intvalue = var.intVal;
+		else
+			return E_FAIL;
 		**(int**)dest = intvalue;
+		hr = S_OK;
 		break;
 	case VT_R8:
 		double dblvalue;
@@ -361,7 +364,10 @@ HRESULT ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const
 			dblvalue = (double)var.boolVal;
 		else if (var.vt == VT_UI4)
 			dblvalue = var.intVal;
+		else
+			return E_FAIL;
 		**(double**)dest = dblvalue;
+		hr = S_OK;
 		break;
 	case VT_DATE:
 	case VT_I8:
@@ -385,7 +391,7 @@ HRESULT ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const
 		break;
 	case VT_USERDEFINED:
 		{
-			if (var.vt != VT_UNKNOWN) {
+			if (var.vt != VT_UNKNOWN && var.vt != VT_DISPATCH) {
 				return E_FAIL;
 			} else {
 				ITypeInfo *newType;
@@ -401,7 +407,7 @@ HRESULT ConvertVariantToGivenType(ITypeInfo *baseType, const TYPEDESC &vt, const
 		}
 		break;
 	case VT_PTR:
-		ConvertVariantToGivenType(baseType, *vt.lptdesc, var, *(LPVOID*)dest);
+		return ConvertVariantToGivenType(baseType, *vt.lptdesc, var, *(LPVOID*)dest);
 		break;
 	case VT_VARIANT:
 		memcpy(*(VARIANT**)dest, &var, sizeof(var));
