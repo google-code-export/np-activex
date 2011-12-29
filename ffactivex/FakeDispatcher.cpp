@@ -42,7 +42,7 @@ static const GUID IID_IFakeDispatcher =
 ITypeInfo* FakeDispatcher::npTypeInfo = (ITypeInfo*)-1;
 
 FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *object)
-	: npInstance(npInstance), typeLib(typeLib),  npObject(object), typeInfo(NULL), internalObj(NULL)
+	: npInstance(npInstance), typeLib(typeLib),  npObject(object), typeInfo(NULL), internalObj(NULL), extended(NULL)
 {
 	ref = 1;
 	typeLib->AddRef();
@@ -180,6 +180,12 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 		*ppvObject = this;
 		AddRef();
 		hr = S_OK;
+	} else if (riid == IID_IDispatchEx) {
+		if (extended == NULL)
+			extended = new FakeDispatcherEx(this);
+		*ppvObject = extended;
+		AddRef();
+		hr = S_OK;
 	} else if (riid == IID_IFakeDispatcher) {
 		*ppvObject = this;
 		AddRef();
@@ -226,8 +232,11 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 
 FakeDispatcher::~FakeDispatcher(void)
 {
-	if (typeInfo) {
+	if (HasValidTypeInfo()) {
 		typeInfo->Release();
+	}
+	if (extended) {
+		delete extended;
 	}
 	NPNFuncs.releaseobject(npObject);
 	typeLib->Release();
@@ -329,3 +338,61 @@ UINT FakeDispatcher::FindFuncByVirtualId(int vtbId) {
 bool FakeDispatcher::HasValidTypeInfo() {
 	return typeInfo && typeInfo != npTypeInfo;
 }
+
+static HRESULT NoImpl() {
+	return E_NOTIMPL;
+}
+
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetDispID( 
+    __RPC__in BSTR bstrName,
+    DWORD grfdex,
+    __RPC__out DISPID *pid) {
+	return NoImpl();
+}
+
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::InvokeEx( 
+    __in  DISPID id,
+    __in  LCID lcid,
+    __in  WORD wFlags,
+    __in  DISPPARAMS *pdp,
+    __out_opt  VARIANT *pvarRes,
+    __out_opt  EXCEPINFO *pei,
+    __in_opt  IServiceProvider *pspCaller) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::DeleteMemberByName( 
+	__RPC__in BSTR bstrName,
+	DWORD grfdex) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::DeleteMemberByDispID(DISPID id) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetMemberProperties(
+	DISPID id,
+	DWORD grfdexFetch,
+	__RPC__out DWORD *pgrfdex) {
+	return NoImpl();
+}
+
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetMemberName( 
+	DISPID id,
+	__RPC__deref_out_opt BSTR *pbstrName) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetNextDispID( 
+	DWORD grfdex,
+	DISPID id,
+	__RPC__out DISPID *pid) {
+	return NoImpl();
+}
+        
+HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetNameSpaceParent( 
+	__RPC__deref_out_opt IUnknown **ppunk) {
+	return NoImpl();
+}
+        
