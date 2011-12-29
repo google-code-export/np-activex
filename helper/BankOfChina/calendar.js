@@ -155,7 +155,7 @@ var meizzTheYear=new Date().getFullYear(); //\u5b9a\u4e49\u5e74\u7684\u53d8\u91c
 var meizzTheMonth=new Date().getMonth()+1; //\u5b9a\u4e49\u6708\u7684\u53d8\u91cf\u7684\u521d\u59cb\u503c
 var meizzWDay=new Array(39);               //\u5b9a\u4e49\u5199\u65e5\u671f\u7684\u6570\u7ec4
 
-document.onclick = function() //\u4efb\u610f\u70b9\u51fb\u65f6\u5173\u95ed\u8be5\u63a7\u4ef6 //ie6\u7684\u60c5\u51b5\u53ef\u4ee5\u7531\u4e0b\u9762\u7684\u5207\u6362\u7126\u70b9\u5904\u7406\u4ee3\u66ff
+function document.onclick() //\u4efb\u610f\u70b9\u51fb\u65f6\u5173\u95ed\u8be5\u63a7\u4ef6 //ie6\u7684\u60c5\u51b5\u53ef\u4ee5\u7531\u4e0b\u9762\u7684\u5207\u6362\u7126\u70b9\u5904\u7406\u4ee3\u66ff
 { 
   with(window.event)
   {
@@ -164,7 +164,7 @@ document.onclick = function() //\u4efb\u610f\u70b9\u51fb\u65f6\u5173\u95ed\u8be5
   }
 }
 
-document.onkeyup = function()  //\u6309Esc\u952e\u5173\u95ed\uff0c\u5207\u6362\u7126\u70b9\u5173\u95ed
+function document.onkeyup()  //\u6309Esc\u952e\u5173\u95ed\uff0c\u5207\u6362\u7126\u70b9\u5173\u95ed
   {
     if (window.event.keyCode==27){
   if(outObject)outObject.blur();
