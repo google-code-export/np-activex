@@ -1,3 +1,13 @@
+Version 1.3.9 ----
+Add: Support IDispatchEx for FakeDispatcher
+Fix: Add terminate zero in Debug info of FakeDispatcher
+Add: Support get Script property of Document(return defaultView) 
+Fix: Bug in Variant conversion(object types mistake when convert NPObject to Variant)
+Add: ID/Name of FakeDispatcher for debug Fix: Return value of GetProperty is incorrect. 
+Fix: VTB id of Dispatch only interfaces.
+Fix: Use NPIdentifier when call GetIDsOfNames directly.
+Fix: Reference not counted when convert from FakeDispatcher to NPObject
+
 Version 1.3.8 ----
 Fix: Support visit object by "document.ID"
 
