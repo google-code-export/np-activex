@@ -59,12 +59,18 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 	NPNFuncs.getproperty(npInstance, object, NPNFuncs.getstringidentifier("id"), &npName);
 	if (npName.type != NPVariantType_String || npName.value.stringValue.UTF8Length == 0)
 		NPNFuncs.getproperty(npInstance, object, NPNFuncs.getstringidentifier("name"), &npName);
-	if (npName.type == NPVariantType_String)
+	if (npName.type == NPVariantType_String) {
 		strncpy(name, npName.value.stringValue.UTF8Characters, npName.value.stringValue.UTF8Length);
+		name[npName.value.stringValue.UTF8Length] = 0;
+	}
+	if (NPNFuncs.hasmethod(npInstance, object, NPNFuncs.getstringidentifier("toString"))) {
+		NPNFuncs.invoke(npInstance, object, NPNFuncs.getstringidentifier("toString"), &npTag, 0, &npTag);
+		if (npTag.type == NPVariantType_String) {
+			strncpy(tag, npTag.value.stringValue.UTF8Characters, npTag.value.stringValue.UTF8Length);
+			tag[npTag.value.stringValue.UTF8Length] = 0;
+		}
+	}
 
-	NPNFuncs.invoke(npInstance, object, NPNFuncs.getstringidentifier("toString"), &npTag, 0, &npTag);
-	if (npTag.type == NPVariantType_String)
-		strncpy(tag, npTag.value.stringValue.UTF8Characters, npTag.value.stringValue.UTF8Length);
 	interfaceid = GUID_NULL;
 #endif
 }
@@ -108,6 +114,9 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 				itemIdentifier = NPNFuncs.getintidentifier(npvars[0].value.intValue);
 			else if (NPVARIANT_IS_STRING(npvars[0]))
 				itemIdentifier = NPNFuncs.getstringidentifier(npvars[0].value.stringValue.UTF8Characters);
+		}
+		else if (dispIdMember == 0x3E9 && (wFlags & DISPATCH_PROPERTYGET) && strcmp(str, "Script") == 0) {
+			identifier = NPNFuncs.getstringidentifier("defaultView");
 		}
 	}
 	else if (typeInfo == npTypeInfo && dispIdMember != NULL && dispIdMember != -1) {
@@ -208,6 +217,8 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 #ifdef DEBUG
 	if (hr == S_OK) {
 		interfaceid = riid;
+	} else {
+		// Unsupported Interface!
 	}
 #endif
 	return hr;
