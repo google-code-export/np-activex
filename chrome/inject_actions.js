@@ -134,8 +134,8 @@ function process(obj) {
 }
 
 function replaceDocument() {
-  log("detect all objects on page");
   var s = document.getElementsByTagName("object");
+  log("found " + s.length + " object(s) on page " + location.href);
   for (var i = 0; i < s.length; ++i) {
     process(s[i]);
   }
@@ -145,6 +145,7 @@ function onBeforeLoading(event) {
   var obj = event.target;
   if (obj.nodeName == "OBJECT") {
     if (obj.activex_process === undefined) {
+      log("BeforeLoading " + obj.id);
       obj.activex_process = true;
       process(obj);
     }
