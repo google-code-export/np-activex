@@ -41,6 +41,8 @@ static const GUID IID_IFakeDispatcher =
 
 ITypeInfo* FakeDispatcher::npTypeInfo = (ITypeInfo*)-1;
 
+#define DispatchLog(level, message, ...) np_log(this->npInstance, level, "Disp 0x%08x " message, this, ##__VA_ARGS__)
+
 FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *object)
 	: npInstance(npInstance), typeLib(typeLib),  npObject(object), typeInfo(NULL), internalObj(NULL), extended(NULL)
 {
@@ -53,26 +55,34 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 		internalObj = dynamic_cast<CAxHost*>(base->host);
 
 #ifdef DEBUG
-	NPVariantProxy npName, npTag;
 	name[0] = 0;
 	tag[0] = 0;
+	interfaceid = GUID_NULL;
+#endif
+
+	NPVariantProxy npName, npTag;
+	ATL::CStringA sname, stag;
 	NPNFuncs.getproperty(npInstance, object, NPNFuncs.getstringidentifier("id"), &npName);
 	if (npName.type != NPVariantType_String || npName.value.stringValue.UTF8Length == 0)
 		NPNFuncs.getproperty(npInstance, object, NPNFuncs.getstringidentifier("name"), &npName);
 	if (npName.type == NPVariantType_String) {
+		sname = CStringA(npName.value.stringValue.UTF8Characters, npName.value.stringValue.UTF8Length);
+#ifdef DEBUG
 		strncpy(name, npName.value.stringValue.UTF8Characters, npName.value.stringValue.UTF8Length);
 		name[npName.value.stringValue.UTF8Length] = 0;
+#endif
 	}
 	if (NPNFuncs.hasmethod(npInstance, object, NPNFuncs.getstringidentifier("toString"))) {
 		NPNFuncs.invoke(npInstance, object, NPNFuncs.getstringidentifier("toString"), &npTag, 0, &npTag);
 		if (npTag.type == NPVariantType_String) {
+			stag = CStringA(npTag.value.stringValue.UTF8Characters, npTag.value.stringValue.UTF8Length);
+#ifdef DEBUG
 			strncpy(tag, npTag.value.stringValue.UTF8Characters, npTag.value.stringValue.UTF8Length);
 			tag[npTag.value.stringValue.UTF8Length] = 0;
+#endif
 		}
 	}
-
-	interfaceid = GUID_NULL;
-#endif
+	DispatchLog(1, "Type: %s, Name: %s", stag.GetString(), sname.GetString());
 }
 
 /* [local] */ HRESULT STDMETHODCALLTYPE 
@@ -105,6 +115,7 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 	if (HasValidTypeInfo() && SUCCEEDED(typeInfo->GetDocumentation(dispIdMember, &pBstrName, NULL, NULL, NULL))) {
 		LPSTR str = OLE2A(pBstrName);
 		SysFreeString(pBstrName);
+		DispatchLog(2, "Invoke 0x%08x %d %s", dispIdMember, wFlags, str);
 
 		identifier = NPNFuncs.getstringidentifier(str);
 
@@ -164,9 +175,11 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 			hr = S_OK;
 	}
 
-	if (SUCCEEDED(hr))
+	if (SUCCEEDED(hr)) {
 		NPVar2Variant(&result, pVarResult, npInstance);
-
+	} else {
+		DispatchLog(2, "Invoke failed 0x%08x %d", dispIdMember, wFlags);
+	}
 	delete [] npvars;
 	return hr;
 }
@@ -227,6 +240,12 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 		// Unsupported Interface!
 	}
 #endif
+	if (FAILED(hr)) {
+		USES_CONVERSION;
+		LPOLESTR clsid;
+		StringFromCLSID(riid, &clsid);
+		DispatchLog(0, "Unsupported Interface %s", OLE2A(clsid)); 
+	}
 	return hr;
 }
 
@@ -238,6 +257,8 @@ FakeDispatcher::~FakeDispatcher(void)
 	if (extended) {
 		delete extended;
 	}
+	
+	DispatchLog(3, "Release");
 	NPNFuncs.releaseobject(npObject);
 	typeLib->Release();
 }
@@ -274,9 +295,10 @@ HRESULT FakeDispatcher::GetIDsOfNames(
 	if (HasValidTypeInfo()) {
 		return typeInfo->GetIDsOfNames(rgszNames, cNames, rgDispId);
 	} else {
-		typeInfo = npTypeInfo;
 		USES_CONVERSION;
+		typeInfo = npTypeInfo;
 		for (UINT i = 0; i < cNames; ++i) {
+			DispatchLog(2, "GetIDsOfNames %s", OLE2A(rgszNames[i]));
 			rgDispId[i] = (DISPID) NPNFuncs.getstringidentifier(OLE2A(rgszNames[i]));
 		}
 		return S_OK;
