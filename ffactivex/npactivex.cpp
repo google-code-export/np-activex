@@ -73,13 +73,13 @@ static const char PARAM_CODEBASEURL [] = "codeBase";
 static const char PARAM_ONEVENT[] = "Event_";
 
 static unsigned int log_level = -1;
-HRESULT LogNotImplemented(NPP instance, const char* className, const char* funcName) {
-	np_log(instance, 1, "Call NotImplemented Method%s::%s", className, funcName);
+
+// For catch breakpoints.
+HRESULT NotImpl() {
 	return E_NOTIMPL;
 }
 
-void
-log_activex_logging(NPP instance, unsigned int level, const char* filename, int line, char *message, ...) {
+void log_activex_logging(NPP instance, unsigned int level, const char* filename, int line, char *message, ...) {
 	if (instance == NULL || level > log_level) {
 		return;
 	}

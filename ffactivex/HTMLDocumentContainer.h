@@ -45,26 +45,23 @@ public:
 	HTMLDocumentContainer();
 	void Init(NPP instance, ITypeLib *htmlLib);
 	~HTMLDocumentContainer(void);
-	HRESULT notimpl() {
-		return LogNotImplemented(npp, "HTMLDocumentContainer", "XXXX");
-	}
 // IOleContainer
 	virtual HRESULT STDMETHODCALLTYPE EnumObjects( 
 		/* [in] */ DWORD grfFlags,
 		/* [out] */ __RPC__deref_out_opt IEnumUnknown **ppenum) {
-		return notimpl();
+		return LogNotImplemented(npp);
 	}
     virtual HRESULT STDMETHODCALLTYPE ParseDisplayName( 
 		/* [unique][in] */ __RPC__in_opt IBindCtx *pbc,
 		/* [in] */ __RPC__in LPOLESTR pszDisplayName,
 		/* [out] */ __RPC__out ULONG *pchEaten,
 		/* [out] */ __RPC__deref_out_opt IMoniker **ppmkOut) {
-		return notimpl();
+		return LogNotImplemented(npp);
 	}
         
     virtual HRESULT STDMETHODCALLTYPE LockContainer( 
 		/* [in] */ BOOL fLock) {
-		return notimpl();
+		return LogNotImplemented(npp);
 	}
 
 	// IWebBrowser2
@@ -73,215 +70,215 @@ public:
             /* [unique][optional][in] */ __RPC__in_opt VARIANT *Flags,
             /* [unique][optional][in] */ __RPC__in_opt VARIANT *TargetFrameName,
             /* [unique][optional][in] */ __RPC__in_opt VARIANT *PostData,
-            /* [unique][optional][in] */ __RPC__in_opt VARIANT *Headers) {return notimpl();};
+            /* [unique][optional][in] */ __RPC__in_opt VARIANT *Headers) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE QueryStatusWB( 
         /* [in] */ OLECMDID cmdID,
-        /* [retval][out] */ __RPC__out OLECMDF *pcmdf) {return notimpl();};
+        /* [retval][out] */ __RPC__out OLECMDF *pcmdf) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE ExecWB( 
         /* [in] */ OLECMDID cmdID,
         /* [in] */ OLECMDEXECOPT cmdexecopt,
         /* [unique][optional][in] */ __RPC__in_opt VARIANT *pvaIn,
-        /* [unique][optional][out][in] */ __RPC__inout_opt VARIANT *pvaOut) {return notimpl();};
+        /* [unique][optional][out][in] */ __RPC__inout_opt VARIANT *pvaOut) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE ShowBrowserBar( 
         /* [in] */ __RPC__in VARIANT *pvaClsid,
         /* [unique][optional][in] */ __RPC__in_opt VARIANT *pvarShow,
-        /* [unique][optional][in] */ __RPC__in_opt VARIANT *pvarSize) {return notimpl();};
+        /* [unique][optional][in] */ __RPC__in_opt VARIANT *pvarSize) {return LogNotImplemented(npp);};
         
     virtual /* [bindable][propget][id] */ HRESULT STDMETHODCALLTYPE get_ReadyState( 
-        /* [out][retval] */ __RPC__out READYSTATE *plReadyState) {return notimpl();};
+        /* [out][retval] */ __RPC__out READYSTATE *plReadyState) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Offline( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbOffline) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbOffline) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_Offline( 
-        /* [in] */ VARIANT_BOOL bOffline) {return notimpl();};
+        /* [in] */ VARIANT_BOOL bOffline) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Silent( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbSilent) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbSilent) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_Silent( 
-        /* [in] */ VARIANT_BOOL bSilent) {return notimpl();};
+        /* [in] */ VARIANT_BOOL bSilent) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_RegisterAsBrowser( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbRegister) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbRegister) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_RegisterAsBrowser( 
-        /* [in] */ VARIANT_BOOL bRegister) {return notimpl();};
+        /* [in] */ VARIANT_BOOL bRegister) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_RegisterAsDropTarget( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbRegister) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbRegister) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_RegisterAsDropTarget( 
-        /* [in] */ VARIANT_BOOL bRegister) {return notimpl();};
+        /* [in] */ VARIANT_BOOL bRegister) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_TheaterMode( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbRegister) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbRegister) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_TheaterMode( 
-        /* [in] */ VARIANT_BOOL bRegister) {return notimpl();};
+        /* [in] */ VARIANT_BOOL bRegister) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_AddressBar( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *Value) {*Value = True;return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *Value) {*Value = True;return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_AddressBar( 
-        /* [in] */ VARIANT_BOOL Value) {return notimpl();};
+        /* [in] */ VARIANT_BOOL Value) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Resizable( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *Value) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *Value) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_Resizable( 
-        /* [in] */ VARIANT_BOOL Value) {return notimpl();};
-    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE Quit( void) {return notimpl();};
+        /* [in] */ VARIANT_BOOL Value) {return LogNotImplemented(npp);};
+    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE Quit( void) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE ClientToWindow( 
         /* [out][in] */ __RPC__inout int *pcx,
-        /* [out][in] */ __RPC__inout int *pcy) {return notimpl();};
+        /* [out][in] */ __RPC__inout int *pcy) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE PutProperty( 
         /* [in] */ __RPC__in BSTR Property,
-        /* [in] */ VARIANT vtValue) {return notimpl();};
+        /* [in] */ VARIANT vtValue) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE GetProperty( 
         /* [in] */ __RPC__in BSTR Property,
-        /* [retval][out] */ __RPC__out VARIANT *pvtValue) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT *pvtValue) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Name( 
-        /* [retval][out] */ __RPC__deref_out_opt BSTR *Name) {return notimpl();};
+        /* [retval][out] */ __RPC__deref_out_opt BSTR *Name) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_HWND( 
-        /* [retval][out] */ __RPC__out SHANDLE_PTR *pHWND) {return notimpl();};
+        /* [retval][out] */ __RPC__out SHANDLE_PTR *pHWND) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_FullName( 
-        /* [retval][out] */ __RPC__deref_out_opt BSTR *FullName) {return notimpl();};
+        /* [retval][out] */ __RPC__deref_out_opt BSTR *FullName) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Path( 
-        /* [retval][out] */ __RPC__deref_out_opt BSTR *Path) {return notimpl();};
+        /* [retval][out] */ __RPC__deref_out_opt BSTR *Path) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Visible( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pBool) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pBool) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_Visible( 
-        /* [in] */ VARIANT_BOOL Value) {return notimpl();};
+        /* [in] */ VARIANT_BOOL Value) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_StatusBar( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pBool) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pBool) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_StatusBar( 
-        /* [in] */ VARIANT_BOOL Value) {return notimpl();};
+        /* [in] */ VARIANT_BOOL Value) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_StatusText( 
-        /* [retval][out] */ __RPC__deref_out_opt BSTR *StatusText) {return notimpl();};
+        /* [retval][out] */ __RPC__deref_out_opt BSTR *StatusText) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_StatusText( 
-        /* [in] */ __RPC__in BSTR StatusText) {return notimpl();};
+        /* [in] */ __RPC__in BSTR StatusText) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_ToolBar( 
-        /* [retval][out] */ __RPC__out int *Value) {return notimpl();};
+        /* [retval][out] */ __RPC__out int *Value) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_ToolBar( 
-        /* [in] */ int Value) {return notimpl();};
+        /* [in] */ int Value) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_MenuBar( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *Value) {return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *Value) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_MenuBar( 
-        /* [in] */ VARIANT_BOOL Value) {return notimpl();};
+        /* [in] */ VARIANT_BOOL Value) {return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_FullScreen( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbFullScreen) {*pbFullScreen = FALSE; return notimpl();};
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pbFullScreen) {*pbFullScreen = FALSE; return LogNotImplemented(npp);};
         
     virtual /* [helpcontext][helpstring][propput][id] */ HRESULT STDMETHODCALLTYPE put_FullScreen( 
-        /* [in] */ VARIANT_BOOL bFullScreen) {return notimpl();};
-	virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE GoBack( void) {return notimpl();}
+        /* [in] */ VARIANT_BOOL bFullScreen) {return LogNotImplemented(npp);};
+	virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE GoBack( void) {return LogNotImplemented(npp);}
         
-    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE GoForward( void) {return notimpl();}
+    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE GoForward( void) {return LogNotImplemented(npp);}
         
-    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE GoHome( void) {return notimpl();}
+    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE GoHome( void) {return LogNotImplemented(npp);}
         
-    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE GoSearch( void) {return notimpl();}
+    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE GoSearch( void) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE Navigate( 
         /* [in] */ __RPC__in BSTR URL,
         /* [unique][optional][in] */ __RPC__in_opt VARIANT *Flags,
         /* [unique][optional][in] */ __RPC__in_opt VARIANT *TargetFrameName,
         /* [unique][optional][in] */ __RPC__in_opt VARIANT *PostData,
-        /* [unique][optional][in] */ __RPC__in_opt VARIANT *Headers) {return notimpl();}
+        /* [unique][optional][in] */ __RPC__in_opt VARIANT *Headers) {return LogNotImplemented(npp);}
         
-    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE Refresh( void) {return notimpl();}
+    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE Refresh( void) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE Refresh2( 
-        /* [unique][optional][in] */ __RPC__in_opt VARIANT *Level) {return notimpl();}
+        /* [unique][optional][in] */ __RPC__in_opt VARIANT *Level) {return LogNotImplemented(npp);}
         
-    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE Stop( void) {return notimpl();}
+    virtual /* [helpcontext][helpstring][id] */ HRESULT STDMETHODCALLTYPE Stop( void) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Application( 
-        /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp) {return notimpl();}
+        /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Parent( 
-        /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp) {return notimpl();}
+        /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Container( 
-        /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp) {return notimpl();}
+        /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Document( 
         /* [retval][out] */ __RPC__deref_out_opt IDispatch **ppDisp);
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_TopLevelContainer( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pBool) {return notimpl();}
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pBool) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Type( 
-        /* [retval][out] */ __RPC__deref_out_opt BSTR *Type) {return notimpl();}
+        /* [retval][out] */ __RPC__deref_out_opt BSTR *Type) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Left( 
-        /* [retval][out] */ __RPC__out long *pl) {return notimpl();}
+        /* [retval][out] */ __RPC__out long *pl) {return LogNotImplemented(npp);}
         
     virtual /* [propput][id] */ HRESULT STDMETHODCALLTYPE put_Left( 
-        /* [in] */ long Left) {return notimpl();}
+        /* [in] */ long Left) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Top( 
-        /* [retval][out] */ __RPC__out long *pl) {return notimpl();}
+        /* [retval][out] */ __RPC__out long *pl) {return LogNotImplemented(npp);}
         
     virtual /* [propput][id] */ HRESULT STDMETHODCALLTYPE put_Top( 
-        /* [in] */ long Top) {return notimpl();}
+        /* [in] */ long Top) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Width( 
-        /* [retval][out] */ __RPC__out long *pl) {return notimpl();}
+        /* [retval][out] */ __RPC__out long *pl) {return LogNotImplemented(npp);}
         
     virtual /* [propput][id] */ HRESULT STDMETHODCALLTYPE put_Width( 
-        /* [in] */ long Width) {return notimpl();}
+        /* [in] */ long Width) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Height( 
-        /* [retval][out] */ __RPC__out long *pl) {return notimpl();}
+        /* [retval][out] */ __RPC__out long *pl) {return LogNotImplemented(npp);}
         
     virtual /* [propput][id] */ HRESULT STDMETHODCALLTYPE put_Height( 
-        /* [in] */ long Height) {return notimpl();}
+        /* [in] */ long Height) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_LocationName( 
-        /* [retval][out] */ __RPC__deref_out_opt BSTR *LocationName) {return notimpl();}
+        /* [retval][out] */ __RPC__deref_out_opt BSTR *LocationName) {return LogNotImplemented(npp);}
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_LocationURL( 
         /* [retval][out] */ __RPC__deref_out_opt BSTR *LocationURL);
         
     virtual /* [helpcontext][helpstring][propget][id] */ HRESULT STDMETHODCALLTYPE get_Busy( 
-        /* [retval][out] */ __RPC__out VARIANT_BOOL *pBool) {return notimpl();}
+        /* [retval][out] */ __RPC__out VARIANT_BOOL *pBool) {return LogNotImplemented(npp);}
 
 	virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount( 
-    /* [out] */ __RPC__out UINT *pctinfo) {return notimpl();}
+    /* [out] */ __RPC__out UINT *pctinfo) {return LogNotImplemented(npp);}
         
     virtual HRESULT STDMETHODCALLTYPE GetTypeInfo( 
         /* [in] */ UINT iTInfo,
         /* [in] */ LCID lcid,
-        /* [out] */ __RPC__deref_out_opt ITypeInfo **ppTInfo) {return notimpl();}
+        /* [out] */ __RPC__deref_out_opt ITypeInfo **ppTInfo) {return LogNotImplemented(npp);}
         
     virtual HRESULT STDMETHODCALLTYPE GetIDsOfNames( 
         /* [in] */ __RPC__in REFIID riid,
         /* [size_is][in] */ __RPC__in_ecount_full(cNames) LPOLESTR *rgszNames,
         /* [range][in] */ __RPC__in_range(0,16384) UINT cNames,
         /* [in] */ LCID lcid,
-        /* [size_is][out] */ __RPC__out_ecount_full(cNames) DISPID *rgDispId) {return notimpl();}
+        /* [size_is][out] */ __RPC__out_ecount_full(cNames) DISPID *rgDispId) {return LogNotImplemented(npp);}
         
     virtual /* [local] */ HRESULT STDMETHODCALLTYPE Invoke( 
         /* [in] */ DISPID dispIdMember,
@@ -291,7 +288,7 @@ public:
         /* [out][in] */ DISPPARAMS *pDispParams,
         /* [out] */ VARIANT *pVarResult,
         /* [out] */ EXCEPINFO *pExcepInfo,
-        /* [out] */ UINT *puArgErr) {return notimpl();}
+        /* [out] */ UINT *puArgErr) {return LogNotImplemented(npp);}
 BEGIN_COM_MAP(HTMLDocumentContainer)
     COM_INTERFACE_ENTRY(IOleContainer)
 	COM_INTERFACE_ENTRY(IServiceProvider)
