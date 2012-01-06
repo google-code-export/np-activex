@@ -368,7 +368,7 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetDispID(
     __RPC__in BSTR bstrName,
     DWORD grfdex,
     __RPC__out DISPID *pid) {
-	return LogNotImplemented(target->npInstance, "FakeDispatcherEx", "GetDispId");
+	return LogNotImplemented(target->npInstance);
 }
 
 HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::InvokeEx( 
@@ -379,40 +379,40 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::InvokeEx(
     __out_opt  VARIANT *pvarRes,
     __out_opt  EXCEPINFO *pei,
     __in_opt  IServiceProvider *pspCaller) {
-	return LogNotImplemented(target->npInstance, "FakeDispatcherEx", "InvokeEx");
+	return LogNotImplemented(target->npInstance);
 }
 
 HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::DeleteMemberByName( 
 	__RPC__in BSTR bstrName,
 	DWORD grfdex) {
-	return LogNotImplemented(target->npInstance, "FakeDispatcherEx", "DeleteMemberByName");
+	return LogNotImplemented(target->npInstance);
 }
 
 HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::DeleteMemberByDispID(DISPID id) {
-	return LogNotImplemented(target->npInstance, "FakeDispatcherEx", "DeleteMemberByDispID");
+	return LogNotImplemented(target->npInstance);
 }
 
 HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetMemberProperties(
 	DISPID id,
 	DWORD grfdexFetch,
 	__RPC__out DWORD *pgrfdex) {
-	return LogNotImplemented(target->npInstance, "FakeDispatcherEx", "GetMemberProperties");
+	return LogNotImplemented(target->npInstance);
 }
 
 HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetMemberName( 
 	DISPID id,
 	__RPC__deref_out_opt BSTR *pbstrName) {
-	return LogNotImplemented(target->npInstance, "FakeDispatcherEx", "GetMemberName");
+	return LogNotImplemented(target->npInstance);
 }
 
 HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetNextDispID( 
 	DWORD grfdex,
 	DISPID id,
 	__RPC__out DISPID *pid) {
-	return LogNotImplemented(target->npInstance, "FakeDispatcherEx", "GetNextDispID");
+	return LogNotImplemented(target->npInstance);
 }
 
 HRESULT STDMETHODCALLTYPE FakeDispatcher::FakeDispatcherEx::GetNameSpaceParent( 
 	__RPC__deref_out_opt IUnknown **ppunk) {
-	return LogNotImplemented(target->npInstance, "FakeDispatcherEx", "GetNameSpaceParent");
+	return LogNotImplemented(target->npInstance);
 }
