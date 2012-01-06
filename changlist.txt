@@ -1,3 +1,6 @@
+Version 1.3.10 ----
+Fix: Logging functions
+
 Version 1.3.9 ----
 Add: Support IDispatchEx for FakeDispatcher
 Fix: Add terminate zero in Debug info of FakeDispatcher
