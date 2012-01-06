@@ -13,9 +13,13 @@ function onControlLog(event) {
   log(message);
 }
 
+window.addEventListener(controlLogEvent, onControlLog, false);
+
 function log(message) {
   if (config == null || config.getLogEnabled()) {
-    console.log(message);
+    if (config != null) {
+      console.log(message);
+    }
     logs.push(message);
   }
 }
@@ -39,8 +43,9 @@ function init(response) {
     injectScript(chrome.extension.getURL("ie_script_declaration.js"));
   }
   if (config.getLogEnabled()) {
-    // injectScript(chrome.extension.getURL("inject_log.js"));
-    window.addEventListener(controlLogEvent, onControlLog, false);
+    for (var i = 0; i < logs.length; ++i) {
+      console.log(logs[i]);
+    }
   } else {
     logs = [];
   }
