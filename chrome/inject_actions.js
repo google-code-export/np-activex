@@ -8,7 +8,6 @@ function executeScriptInClient(command) {
   codediv.setAttribute("onclick", command);
   document.body.appendChild(codediv);
   codediv.click();
-  log("executed command in client: " + command);
   document.body.removeChild(codediv);
 }
 
@@ -84,7 +83,6 @@ function enableobj(obj) {
   if (obj.id) {
     command = "document.all." + obj.id + '.classid = "'
       + obj.getAttribute("classid") + '"';
-    console.log(command);
   }
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
@@ -97,7 +95,6 @@ function enableobj(obj) {
     command = "delete document." + obj.id + "\n";
     command += "document." + obj.id + '=' + obj.id;
     executeScriptInClient(command);
-    console.log(command);
   }
   log("Enable object, id: " + obj.id + " clsid: " + getClsid(obj));
   // executeScriptInClient(command);

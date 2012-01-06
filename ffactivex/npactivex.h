@@ -62,6 +62,7 @@ extern NPNetscapeFuncs NPNFuncs;
 
 
 #define np_log(instance, level, message, ...) log_activex_logging(instance, level, __FILE__, __LINE__, message, ##__VA_ARGS__)
+HRESULT LogNotImplemented(NPP instance, const char* className, const char* funcName);
 
 void
 log_activex_logging(NPP instance, unsigned int level, const char* file, int line, char *message, ...);

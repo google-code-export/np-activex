@@ -106,7 +106,6 @@ NPObject *CHost::RegisterObject() {
 	// It doesn't matter which npp in setting.
 	NPNFuncs.setproperty(instance, embed, NPNFuncs.getstringidentifier("object"), &var);
 	
-	np_log(instance, 3, "RegisterObject");
 	return lastObj;
 }
 

@@ -48,6 +48,7 @@ void HTMLDocumentContainer::Init(NPP instance, ITypeLib *htmlLib) {
 	}
 	npp = instance;
 }
+
 HRESULT HTMLDocumentContainer::get_LocationURL(BSTR *str) {
 	NPObjectProxy npWindow;
 	NPNFuncs.getvalue(npp, NPNVWindowNPObject, &npWindow);
