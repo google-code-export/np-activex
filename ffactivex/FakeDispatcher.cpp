@@ -240,11 +240,14 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 		// Unsupported Interface!
 	}
 #endif
+	USES_CONVERSION;
+	LPOLESTR clsid;
+	StringFromCLSID(riid, &clsid);
+
 	if (FAILED(hr)) {
-		USES_CONVERSION;
-		LPOLESTR clsid;
-		StringFromCLSID(riid, &clsid);
 		DispatchLog(0, "Unsupported Interface %s", OLE2A(clsid)); 
+	} else {
+		DispatchLog(0, "QueryInterface %s", OLE2A(clsid));
 	}
 	return hr;
 }
