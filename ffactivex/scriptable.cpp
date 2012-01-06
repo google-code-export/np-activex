@@ -141,9 +141,6 @@ bool Scriptable::IsProperty(DISPID member_id) {
 
 DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 
-	if (dispid != -1)
-		return false;	// submethod
-
 	bool found = false;
 	DISPID dID = -1;
 	USES_CONVERSION;
@@ -213,14 +210,19 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 
 bool Scriptable::Invoke(NPIdentifier name, const NPVariant *args, uint32_t argCount, NPVariant *result) {
 	if (invalid) return false;
+	
+	np_log(instance, 2, "Invoke %s", NPNFuncs.utf8fromidentifier(name));
 
 	DISPID id = ResolveName(name, INVOKE_FUNC);
-	return InvokeID(id, args, argCount, result);
+	bool ret = InvokeID(id, args, argCount, result);
+	if (!ret) {
+		np_log(instance, 0, "Invoke failed: %s", NPNFuncs.utf8fromidentifier(name));
+	}
+	return ret;
 }
 
 bool Scriptable::InvokeID(DISPID id,  const NPVariant *args, uint32_t argCount, NPVariant *result) {
 	if (-1 == id) {
-
 		return false;
 	}
 
@@ -283,6 +285,8 @@ bool Scriptable::HasProperty(NPIdentifier name) {
 bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 	if (invalid)
 		return false;
+	
+	np_log(instance, 2, "GetProperty %s", NPNFuncs.utf8fromidentifier(name));
 
 	static NPIdentifier classid = NPNFuncs.getstringidentifier("classid");
 	if (name == classid) {
@@ -308,9 +312,10 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 			return true;
 		}
 	}
-
+	np_log(instance, 2, "GetProperty %s", NPNFuncs.utf8fromidentifier(name));
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET);
 	if (-1 == id) {
+		np_log(instance, 0, "Cannot find property: %s", NPNFuncs.utf8fromidentifier(name));
 		return false;
 	}
 
@@ -324,12 +329,18 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 	CComVariant vResult;
 	if (IsProperty(id)) {
 		HRESULT hr = disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYGET, &params, &vResult, NULL, NULL);
-		
-		Variant2NPVar(&vResult, result, instance);
+		if (FAILED(hr)) {
+			np_log(instance, 0, "GetProperty failed: %s", NPNFuncs.utf8fromidentifier(name));
+			return false;
+		} else {
+			Variant2NPVar(&vResult, result, instance);
+			return true;
+		}
 	} else {
 		OBJECT_TO_NPVARIANT(ScriptFunc::GetFunctionObject(instance, this, id), *result);
+		return true;
 	}
-	return true;
+	return false;
 }
 
 bool Scriptable::SetProperty(NPIdentifier name, const NPVariant *value) {
@@ -401,7 +412,6 @@ Scriptable* Scriptable::FromAxHost(NPP npp, CAxHost* host)
 
 NPObject* Scriptable::_Allocate(NPP npp, NPClass *aClass)
 {
-	np_log(npp, 3, "Allocate obj");
 	return new Scriptable(npp);
 }
 

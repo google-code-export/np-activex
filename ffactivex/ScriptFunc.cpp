@@ -47,5 +47,9 @@ ScriptFunc* ScriptFunc::GetFunctionObject(NPP npp, Scriptable *script, MEMBERID 
 bool ScriptFunc::InvokeDefault(const NPVariant *args, uint32_t argCount, NPVariant *result) {
 	if (!script)
 		return false;
-	return script->InvokeID(dispid, args, argCount, result);
+	bool ret = script->InvokeID(dispid, args, argCount, result);
+	if (!ret) {
+		np_log(script->instance, 0, "Invoke failed, DISPID 0x%08x", dispid);
+	}
+	return ret;
 }
