@@ -46,7 +46,7 @@ public:
 	void Init(NPP instance, ITypeLib *htmlLib);
 	~HTMLDocumentContainer(void);
 	HRESULT notimpl() {
-		return E_NOTIMPL;
+		return LogNotImplemented(npp, "HTMLDocumentContainer", "XXXX");
 	}
 // IOleContainer
 	virtual HRESULT STDMETHODCALLTYPE EnumObjects( 

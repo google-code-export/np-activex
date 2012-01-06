@@ -9,21 +9,24 @@ function ActiveXConfig(settings)
   this.url_matches = expandMatches(settings.url_plain);
 }
 
+SettingVersion = 2;
+
 with (ActiveXConfig) {
   this.currentVersion = 2;
   this.convertVersion = function(orig) {
     if (typeof orig.version != "number") {
       orig.version = 0;
     }
-    if (orig.version <= 1) {
-      orig.version = 2;
+    if (orig.version == SettingVersion) {
+      return;
     }
     if (typeof orig.url_plain != "string")
       orig.url_plain = "";
     if (typeof orig.trust_clsids != "string")
       orig.trust_clsids = "";
-    if (typeof orig.logEnabled != "bool")
+    if (typeof orig.logEnabled != "boolean")
       orig.logEnabled = false;
+    orig.version = 2;
   }
 
   this.getDefaultSetting = function() {

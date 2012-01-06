@@ -5,35 +5,19 @@
 var controlLogFName="__npactivex_log";
 var controlLogEvent="__npactivex_log_event__";
 
+var config = null;
+
+var logs = [];
 function onControlLog(event) {
-  var data = JSON.parse(event.data);
-  data.logid = logid;
-  data.command = "controlLog";
-  chrome.extension.sendRequest(data, function(){});
+  var message = event.data;
+  log(message);
 }
 
-function setLogId(id) {
-  if (logid < 0) {
-    logid = id;
+function log(message) {
+  if (config == null || config.getLogEnabled()) {
+    console.log(message);
+    logs.push(message);
   }
-}
-
-function waitAndLog(text) {
-  if (!config || logid == -1) {
-    setTimeout(function(){waitAndLog(text)}, 200);
-  } else {
-    if (!config.logEnabled)
-      return;
-    if (logid == -2)
-      logid = -1;
-    chrome.extension.sendRequest(
-        {command:"log", content:text, url: location.href, logid:logid},
-        setLogId);
-  }
-}
-
-function log(text) {
-  waitAndLog(text);
 }
 
 function injectScript(filename) {
@@ -46,8 +30,6 @@ function injectScript(filename) {
       scriptobj, document.documentElement.firstChild);
 }
 
-var config = null;
-var logid = -2;
 var pendingObjects = [];
 function init(response) {
   config = new ActiveXConfig(response);
@@ -56,9 +38,11 @@ function init(response) {
     // without any restriction, for trusted sites only.
     injectScript(chrome.extension.getURL("ie_script_declaration.js"));
   }
-  if (config.logEnabled) {
+  if (config.getLogEnabled()) {
     // injectScript(chrome.extension.getURL("inject_log.js"));
     window.addEventListener(controlLogEvent, onControlLog, false);
+  } else {
+    logs = [];
   }
   for (var i = 0; i < pendingObjects.length; ++i) {
     process(pendingObjects[i]);

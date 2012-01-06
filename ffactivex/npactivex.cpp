@@ -64,22 +64,25 @@ static const bool TrustLocalhost = true;
 //
 
 static const char PARAM_ID[] = "id";
+static const char PARAM_NAME[] = "name";
 static const char PARAM_CLSID[] = "clsid";
 static const char PARAM_CLASSID[] = "classid";
 static const char PARAM_PROGID[] = "progid";
 static const char PARAM_DEBUG[] = "debugLevel";
-static const char PARAM_LOGGER[] = "logger";
 static const char PARAM_CODEBASEURL [] = "codeBase";
 static const char PARAM_ONEVENT[] = "Event_";
 
-static unsigned int log_level = 5;
+static unsigned int log_level = -1;
+HRESULT LogNotImplemented(NPP instance, const char* className, const char* funcName) {
+	np_log(instance, 1, "Call NotImplemented Method%s::%s", className, funcName);
+	return E_NOTIMPL;
+}
 
 void
 log_activex_logging(NPP instance, unsigned int level, const char* filename, int line, char *message, ...) {
 	if (instance == NULL || level > log_level) {
 		return;
 	}
-	NPVariantProxy result1;
 	NPObjectProxy globalObj = NULL;
 	NPIdentifier commandId = NPNFuncs.getstringidentifier("__npactivex_log");
 	NPNFuncs.getvalue(instance, NPNVWindowNPObject, &globalObj);
@@ -87,22 +90,23 @@ log_activex_logging(NPP instance, unsigned int level, const char* filename, int 
 		return;
 	}
 	int size = 0;
-
+	
 	va_list list;
 
 	ATL::CStringA str;
+	ATL::CStringA str2;
 	va_start(list, message);
 	str.FormatV(message, list);
+	str2.Format("0x%08x %s:%d %s", instance, filename, line, str.GetString());
 	va_end(list);
-	NPVariant vars[4];
-	STRINGZ_TO_NPVARIANT(filename, vars[0]);
-	INT32_TO_NPVARIANT(line, vars[1]);
-	int instid = (int)(instance);
-	INT32_TO_NPVARIANT(instid, vars[2]);
-	const char* formatted = str.GetString();
-	STRINGZ_TO_NPVARIANT(formatted, vars[3]);
-	NPNFuncs.invoke(instance, globalObj, commandId, vars, 4, &result1);
+	NPVariant vars[1];
+	const char* formatted = str2.GetString();
+	STRINGZ_TO_NPVARIANT(formatted, vars[0]);
+	
+	NPVariantProxy result1;
+	NPNFuncs.invoke(instance, globalObj, commandId, vars, 1, &result1);
 }
+
 void InstallLogAction(NPP instance) {
 	NPVariantProxy result1;
 	NPObjectProxy globalObj = NULL;
@@ -111,12 +115,15 @@ void InstallLogAction(NPP instance) {
 	if (NPNFuncs.hasmethod(instance, globalObj, commandId)) {
 		return;
 	}
-	const char* definition = "function __npactivex_log(file,line,instid,message){var controlLogEvent=\"__npactivex_log_event__\";var data=new Object;data.file=file;data.line=line;data.objId=instid;data.message=message;var stringData=JSON.stringify(data);var e=document.createEvent(\"TextEvent\");e.initTextEvent(controlLogEvent,false,false,null,stringData);window.dispatchEvent(e)}";
+	const char* definition = "function __npactivex_log(message)"
+	"{var controlLogEvent='__npactivex_log_event__';"
+	"var e=document.createEvent('TextEvent');e.initTextEvent(controlLogEvent,false,false,null,message);window.dispatchEvent(e)}";
 	NPString def;
 	def.UTF8Characters = definition;
 	def.UTF8Length = strlen(definition);
 	NPNFuncs.evaluate(instance, globalObj, &def, &result1);
 }
+
 void
 log_internal_console(NPP instance, unsigned int level, char *message, ...)
 {
@@ -389,6 +396,10 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 			*id = '{';
 			host->setClsID(id);
 		}
+		else if (0 == strnicmp(argn[i], PARAM_NAME, sizeof(PARAM_NAME)) || 
+			0 == strnicmp(argn[i], PARAM_ID, sizeof(PARAM_ID))) {
+			np_log(instance, 1, "instance %s: %s", argn[i], argv[i]);
+		}
 		else if (0 == strnicmp(argn[i], PARAM_CLSID, sizeof(PARAM_CLSID))) {
 			// The class id of the control we are asked to load
 
@@ -401,10 +412,6 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 		else if (0 == strnicmp(argn[i], PARAM_DEBUG, sizeof(PARAM_DEBUG))) {
 			// Logging verbosity
 			log_level = atoi(argv[i]);
-		}
-		else if (0 == strnicmp(argn[i], PARAM_LOGGER, sizeof(PARAM_LOGGER))) {
-			// Logger function
-			// logger = strdup(argv[i]);
 		}
 		else if (0 == strnicmp(argn[i], PARAM_ONEVENT, sizeof(PARAM_ONEVENT))) {
 			// A request to handle one of the activex's events in JS
@@ -446,6 +453,7 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 			//break;
 		}
 	}
+	np_log(instance, 1, "%08x AxHost.NPP_New: Create control finished", instance);
 	return NPERR_NO_ERROR;
 }
 /* 
