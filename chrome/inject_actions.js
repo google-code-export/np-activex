@@ -125,7 +125,7 @@ function injectIEScripts() {
   if (option.split(' ').indexOf("!all") == -1 
   && config.pageRule.userAgent != "chrome") {
     log("IE Script: " + option + " UserAgent: " + config.pageRule.userAgent);
-    var scriptFile = chrome.extension.getURL('ie_script_declaration2.js');
+    var scriptFile = chrome.extension.getURL('ie_script_declaration.js');
     var scriptobj = document.createElement("script");
     var req = new XMLHttpRequest();
     req.open("GET", scriptFile, false);

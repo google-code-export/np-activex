@@ -67,6 +67,17 @@ ActiveXConfig.prototype = {
   parseMiscSetting: function(setting) {
     return {};
   },
+
+  createRule: function() {
+    return {
+      title: "",
+      type: "wild",
+      value: "",
+      enabled: true,
+      scriptItems: "",
+      scriptFile: "",
+    };
+  },
   getPageConfig: function(href) {
     var ret = {};
     ret.pageSide = true;
@@ -112,7 +123,16 @@ ActiveXConfig.prototype = {
 
   isRuleMatched: function(rule, object, id) {
     if ((rule.type == "wild" || rule.type == "regex" ) && id >= 0) {
-      if (object.href && this.cache.regex[id].test(object.href)) {
+      var regex;
+      if (id >= 0) {
+        regex = this.cache.regex[id];
+      } else if (rule.type == 'wild') {
+        regex = this.convertUrlWildCharToRegex(this.rules[i].value);
+      } else if (rule.type == 'regex') {
+        regex = new RegExp(this.rules[i].value, 'i');
+      }
+
+      if (object.href && regex.test(object.href)) {
         return true;
       }
     } else if (rule.type == "clsid") {
@@ -208,5 +228,9 @@ function loadLocalSetting() {
   } else {
     return new ActiveXConfig(defaultSetting);
   }
+}
+
+function loadServerSetting(content) {
+  return JSON.parse(content);
 }
 

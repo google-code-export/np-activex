@@ -210,7 +210,7 @@
   if (options.createElement) {
     declareCreateElement(HTMLDocument.prototype, options.createObject);
   }
-  if (userAgent != "chrome" && userAgent in agents) {
+  if (userAgent in agents) {
     var agent = agents[userAgent];
 
     delete navigator.userAgent;
