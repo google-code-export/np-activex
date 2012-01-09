@@ -11,6 +11,7 @@ function executeScriptInClient(command) {
   document.body.removeChild(codediv);
 }
 
+// Allow form.id access
 function checkForm(new_obj) {
   var parent = new_obj.parentNode;
   while (parent && parent.nodeType == 1) {
@@ -41,49 +42,9 @@ getManager = function() {
     }
 }();
 
-function createReplaceObj(obj) {
-  // Traverse through attributes
-
-  var new_obj = document.createElement("embed");
-
-  new_obj.setAttribute("type", "application/x-itst-activex");
-  for (var attri = 0; attri < obj.attributes.length; ++attri) {
-    var attr = obj.attributes[attri];
-    if (attr.name == "classid") {
-      var clsid = attr.value;
-      var compos = clsid.indexOf(":");
-      if (clsid.substring(0, compos).toLowerCase() != "clsid") break;
-      clsid = clsid.substring(compos + 1);
-      new_obj.setAttribute("clsid", "{" + clsid + "}");
-
-    } else if (attr.name.substr(0, 2) == "on") {
-      new_obj.setAttribute("" + attr.name, attr.value);
-    } else if (attr.name == "codebase") {
-      var codebase = attr.value;
-      var reg = new RegExp("^[a-z]+://.*");
-      if (reg.exec(attr.value) == null) codebase = location.origin + codebase;
-      new_obj.setAttribute("codeBaseUrl", codebase);
-    } else {
-      new_obj.setAttribute(attr.name, attr.value);
-    }
-
-  } // for attrubites
-  //  new_obj.innerHTML = obj.innerHTML;
-  new_obj.original_obj = obj;
-  if (!new_obj.hasAttribute("clsid")) {
-    return null;
-  }
-  return new_obj;
-}
-
-var pageEnabled = undefined;
 var hostElement = null;
 function enableobj(obj) {
   var command = "";
-  if (obj.id) {
-    command = "document.all." + obj.id + '.classid = "'
-      + obj.getAttribute("classid") + '"';
-  }
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
   obj.removeAttribute("classid");
@@ -91,11 +52,14 @@ function enableobj(obj) {
   // Use <object> so obj doesn't need reconstruction.
   obj.outerHTML = '<object type="application/x-itst-activex" '
     + obj.outerHTML.substring(8);
+    
+  // Allow access by document.id
   if (obj.id) {
     command = "delete document." + obj.id + "\n";
     command += "document." + obj.id + '=' + obj.id;
     executeScriptInClient(command);
   }
+
   log("Enable object, id: " + obj.id + " clsid: " + getClsid(obj));
   // executeScriptInClient(command);
 }
@@ -112,19 +76,23 @@ function getClsid(obj) {
 }
 
 function process(obj) {
+  if (obj.activex_process)
+    return;
   if (obj.type != "" || !obj.hasAttribute("classid"))
     return;
+
+  obj.activex_process = true;
+
   if (config == null) {
     // Delay the process of this object.
     // Hope config will be load soon.
+    log('Pending object ', obj.id);
     pendingObjects.push(obj);
     return;
   }
-  if (pageEnabled === undefined)
-    pageEnabled = config.isUrlMatched(location.href);
   var clsid = getClsid(obj);
 
-  if (pageEnabled || config.isClsidTrusted(clsid)) {
+  if (config.shouldEnable({href: location.href, clsid:clsid})) {
     var new_obj = obj; 
     enableobj(obj);
     if (obj.id != "") {
@@ -144,10 +112,32 @@ function replaceDocument() {
 function onBeforeLoading(event) {
   var obj = event.target;
   if (obj.nodeName == "OBJECT") {
-    if (obj.activex_process === undefined) {
-      log("BeforeLoading " + obj.id);
-      obj.activex_process = true;
-      process(obj);
-    }
+    log("BeforeLoading " + obj.id);
+    process(obj);
   }
 }
+
+function injectIEScripts() {
+  if (!config.pageRule) {
+    return;
+  }
+  var option = config.pageRule.scriptSetting.toLowerCase();
+  if (option.split(' ').indexOf("!all") == -1 
+  && config.pageRule.userAgent != "chrome") {
+    log("IE Script: " + option + " UserAgent: " + config.pageRule.userAgent);
+    var scriptFile = chrome.extension.getURL('ie_script_declaration2.js');
+    var scriptobj = document.createElement("script");
+    var req = new XMLHttpRequest();
+    req.open("GET", scriptFile, false);
+    req.send();
+
+    scriptobj.innerHTML = req.responseText;
+    scriptobj.innerHTML +=
+    "('" + option + "', '" + config.pageRule.userAgent + "')";
+
+    document.documentElement.insertBefore(
+      scriptobj, document.documentElement.firstChild);
+    scriptobj.parentElement.removeChild(scriptobj);
+  }
+}
+

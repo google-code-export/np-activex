@@ -4,12 +4,17 @@
 
 function loadI18n() {
   document.title = chrome.i18n.getMessage("option_title")
-    var spans = document.getElementsByTagName("span");
+  var spans = document.querySelectorAll('[i18n]');
   for (var i = 0; i < spans.length; ++i) {
     var obj = spans[i];
-    if (!obj.hasAttribute("i18n"))
-      continue;
-    obj.innerText = chrome.i18n.getMessage(obj.getAttribute("i18n"));
+    v = chrome.i18n.getMessage(obj.getAttribute("i18n"));
+    if (v == "")
+      v = obj.getAttribute('i18n');
+    if (obj.tagName == 'INPUT') {
+      obj.value = v;
+    } else {
+      obj.innerText = v;
+    }
   }
 }
 window.addEventListener("load", loadI18n, false);

@@ -16,7 +16,7 @@ function onControlLog(event) {
 window.addEventListener(controlLogEvent, onControlLog, false);
 
 function log(message) {
-  if (config == null || config.getLogEnabled()) {
+  if (config == null || config.logEnabled) {
     if (config != null) {
       console.log(message);
     }
@@ -37,12 +37,8 @@ function injectScript(filename) {
 var pendingObjects = [];
 function init(response) {
   config = new ActiveXConfig(response);
-  if (config.isUrlMatched(location.href)) {
-    // Inject this script makes site use new ActiveXObject to create objects
-    // without any restriction, for trusted sites only.
-    injectScript(chrome.extension.getURL("ie_script_declaration.js"));
-  }
-  if (config.getLogEnabled()) {
+  injectIEScripts();
+  if (config.logEnabled) {
     for (var i = 0; i < logs.length; ++i) {
       console.log(logs[i]);
     }
@@ -56,6 +52,6 @@ function init(response) {
 }
 
 chrome.extension.sendRequest(
-    {command:"Configuration", url:location.href}, init);
+    {command:"Configuration", href:location.href}, init);
 
 window.addEventListener("beforeload", onBeforeLoading, true);

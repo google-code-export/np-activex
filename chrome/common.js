@@ -4,8 +4,8 @@
 
 var responseCommands = new Object();
 
-responseCommands.Configuration = function(request, tab) {
-  return setting.toSeriable();
+responseCommands.Configuration = function(request, tab, sendResponse) {
+  sendResponse(setting.getPageConfig(request.href));
 }
 
 function startListener() {
@@ -16,12 +16,13 @@ function startListener() {
         console.error("Illegal call");
         return;
       }
+
       var resp = responseCommands[request.command];
       if (resp) {
-        var response = resp(request, sender.tab);
-        if (sendResponse) {
-          sendResponse(response);
-        }
+        resp(request, sender.tab, sendResponse);
+      } else {
+        console.error("Unknown command " + request.command);
       }
     });
 }
+
