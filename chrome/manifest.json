@@ -4,7 +4,9 @@
   "description": "__MSG_plug_desp__",
   "permissions": [
     "<all_urls>",
-    "tabs"
+    "tabs",
+    "webRequestBlocking",
+    "webRequest"
   ],
   "default_locale": "en",
   "background_page": "background.html",
