@@ -19,12 +19,13 @@ function onBeforeSendHeaders(details) {
   var rule = setting.getFirstMatchedRule(
     {href: details.url}, setting.cache.userAgent);
 
-  if (!rule || rule.userAgent == "chrome") {
+  if (!rule || !(rule.userAgent in agents)) {
     return {};
   }
   for (var i = 0; i < details.requestHeaders.length; ++i) {
     if (details.requestHeaders[i].name == 'User-Agent') {
       details.requestHeaders[i].value = agents[rule.userAgent];
+      break;
     }
   }
   console.log('update useragent ' + details.url);

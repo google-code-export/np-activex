@@ -74,6 +74,7 @@ var table;
 
 var misc = {
   validate: validateRule,
+  create: setting.createRule
 };
 
 function save() {
@@ -83,7 +84,37 @@ function save() {
 
 $(document).ready(function() {
   table = new List(settingProps, $('#tbSetting'), setting.rules, misc);
-  table.init();
   $(table).bind('updated', save);
+  $('#addRule').bind('click', function() {
+    var line = table.addNewLine();
+    table.startEdit(line);
+  });
+  $(table).bind('select', function() {
+    var line = table.selectedLine;
+    if (line == -1) {
+      $('#moveUp').attr('disabled', 'disabled');
+      $('#moveDown').attr('disabled', 'disabled');
+    } else {
+      if (line != 0) {
+        $('#moveUp').removeAttr('disabled');
+      } else {
+        $('#moveUp').attr('disabled', 'disabled');
+      }
+      if (line != setting.rules.length - 1) {
+        $('#moveDown').removeAttr('disabled');
+      } else {
+        $('#moveDown').attr('disabled', 'disabled');
+      }
+    }
+  });
+  $('#moveUp').click(function() {
+    var line = table.selectedLine;
+    table.swap(line, line - 1, true);
+  });
+  $('#moveDown').click(function() {
+    var line = table.selectedLine;
+    table.swap(line, line + 1, true);
+  });
+  table.init();
 });
 

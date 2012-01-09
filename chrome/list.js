@@ -12,8 +12,12 @@ function List(props, main, items, misc) {
   this.props = props;
   this.main = main;
   this.items = items;
-  this.selectedLine = -1;
+  this.selectedLine = -2;
   this.misc = misc;
+  if (!this.misc.newLineStyle) {
+    this.misc.newLineStyle = "manual"
+  }
+
   $(main).addClass('list');
 }
 
@@ -38,6 +42,7 @@ List.prototype = {
       });
       $(main).append(headergroup).append(contents);
       load();
+      selectLine(-1);
     }
   },
   updatePropDisplay : function(line, item, prop) {
@@ -113,6 +118,9 @@ List.prototype = {
       this.updateLine(line);
       this.contents.append(line);
     }
+    if (this.misc.newLineStyle == "auto") {
+      this.addNewLine();
+    }
   },
   bindItem: function(line, id) {
     line[0].itemid = id;
@@ -149,10 +157,12 @@ List.prototype = {
     }
     line.addClass('editing');
     this.selectLine(line);
+    var list = this;
     setTimeout(function() {
       if (!line[0].contains(document.activeElement)) {
         $('.valinput', line).first().focus();
       }
+      list.validate(line);
     }, 50);
   },
   finishEdit: function(line) {
@@ -164,7 +174,8 @@ List.prototype = {
         }
         var newval = getLineNewValue(line);
         var id = getBindedId(line);
-        if (isValid(line)) {
+        var valid = isValid(line);
+        if (valid) {
           var val;
           if (id >= 0) {
             val = getBindedItem(line);
@@ -189,6 +200,9 @@ List.prototype = {
             line.removeClass('newline');
             bindItem(line, items.length - 1);
             $(this).trigger('add', val);
+            if (this.misc.newLineStyle == "auto") {
+              this.addNewLine();
+            }
           }
           line.trigger('updated');
         }
@@ -196,12 +210,17 @@ List.prototype = {
       }
     }, 50);
   },
+
   cancelEdit: function(line) {
     line.removeClass('editing');
     line.removeClass('error');
+    if (line.hasClass('newline') && this.misc.newLineStyle == "manual") {
+      line.remove();
+    }
     this.updateLine(line);
   },
-  addNewItemLine: function() {
+
+  addNewLine: function() {
     with(this) {
       var line = createLine().addClass('newline');
       if (misc.create) {
@@ -211,6 +230,7 @@ List.prototype = {
       }
       bindItem(line, -1);
       contents.append(line);
+      return line;
     }
   },
   isValid: function(line) {
@@ -283,7 +303,7 @@ List.prototype = {
       id = this.getBindedId(line);
     }
     console.log('select ' + id);
-    
+
     if (this.selectedLine == id) {
       return;
     }
@@ -296,11 +316,11 @@ List.prototype = {
       this.selectedLine = -1;
     }
 
+    this.selectedLine = id;
     if (line != null) {
       line.addClass('selected');
       line.trigger('select');
     }
     $(this).trigger('select');
-    this.selectedLine = id;
   }
 };
