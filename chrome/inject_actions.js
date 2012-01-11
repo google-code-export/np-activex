@@ -117,23 +117,29 @@ function onBeforeLoading(event) {
   }
 }
 
-function injectIEScripts() {
+function setUserAgent() {
   if (!config.pageRule) {
     return;
   }
-  var option = config.pageRule.scriptSetting.toLowerCase();
-  if (option.split(' ').indexOf("!all") == -1 
-  && config.pageRule.userAgent != "chrome") {
-    log("IE Script: " + option + " UserAgent: " + config.pageRule.userAgent);
-    var scriptFile = chrome.extension.getURL('ie_script_declaration.js');
-    var scriptobj = document.createElement("script");
-    var req = new XMLHttpRequest();
-    req.open("GET", scriptFile, false);
-    req.send();
 
-    scriptobj.innerHTML = req.responseText;
-    scriptobj.innerHTML +=
-    "('" + option + "', '" + config.pageRule.userAgent + "')";
+  var agent = agents[config.pageRule.userAgent];
+  if (agent && agent != '') {
+    log("Set userAgent: " + config.pageRule.userAgent);
+
+    var js = "(function(agent) {";
+    js += "delete navigator.userAgent;";
+    js += "navigator.userAgent = agent;";
+
+    js += "delete navigator.appVersion;";
+    js += "navigator.appVersion = agent.substr(agent.indexOf('/') + 1);";
+
+    js += "if (agent.indexOf('MSIE') >= 0) {";
+    js += "delete navigator.appName;";
+    js += 'navigator.appName = "Microsoft Internet Explorer";}})("';
+    js += agent;
+    js += '")';
+    var scriptobj = document.createElement("script");
+    scriptobj.innerHTML = js;
 
     document.documentElement.insertBefore(
       scriptobj, document.documentElement.firstChild);

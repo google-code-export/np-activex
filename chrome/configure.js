@@ -2,47 +2,84 @@
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
 
+/* 
+Rule: {
+  title,          description
+  type,           Can be "wild", "regex", "clsid"
+  value,          pattern, correspond to type
+  scriptItems,    
+  scriptFile,     script to inject
+  hint,           some message to display when created
+  supported       Whether this extension support this site now
+}
+Order: {
+  status:           enabled / disabled / intersted / ignore / custom
+  position:       default / custom
+  identifier:     index
+}
+ServerSide: 
+ActiveXConfig: {
+  version:        version
+  rules:          object of user-defined rules, propertied by identifiers
+  defaultRules:   ojbect of default rules
+  scripts:        mapping of workaround scripts, by identifiers. metadatas
+  localScripts:   contents of scripts.
+  order:          the order of rules
+  notify:         array, notify user when it's available.
+  cache:          to accerlerate processing
+  misc:{          
+    lastUpdate:   last timestamp of updating
+    logEnabled:   log
+    verbose:      verbose level of logging
+  }
+}                 
+PageSide: 
+ActiveXConfig: {
+  pageSide:       Flag of pageside.
+  pageRule:       If page is matched.
+  clsidRules:     If page is not matched or disabled. valid CLSID rules
+  logEnabled:     log
+  verbose:        verbose level of logging
+}                 
+ */
+
 function ActiveXConfig(settings)
 {
   settings.__proto__ = ActiveXConfig.prototype;
   if (settings.version != 3)
     settings.convertVersion();
-  settings.loadCache();
+  settings.updateCache();
   return settings;
 }
 
-/* 
- Rule: {
-   title,       // description
-   type,        // Can be "wild", "regex", "clsid"
-   value,       // pattern, correspond to type
-   enabled,     // Enable page objects
-   scriptItems, //
-   scriptFile,  // script to inject
-   hint,        // some message to display when created
-   supported,   // Whether this extension support this site now
-   serverid     // Used to identify rule when updated
- }
- ActiveXConfig: {
-   version:     // version
-   rules:       // array of Rule
-   lastupdate:  // last timestamp of updating
-   logEnabled:  // log
-   verbose:     // verbose level of logging
-   // In returned values only
-   pageRule:    // If page is matched.
-   clsidRules:  // If not matched or disabled. CLSID rules
- }
- */
+var settingKey = 'setting2'
+
 
 clsidPattern = /[^0-9A-F][0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}[^0-9A-F]/;
 
+var agents = {
+  ie9: "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0)",
+  ie8: "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; Trident/4.0)",
+  ie7: "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0)",
+  ff7win: "Mozilla/5.0 (Windows NT 6.1; Intel Mac OS X 10.6; rv:7.0.1) Gecko/20100101 Firefox/7.0.1", 
+  ff7mac: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:7.0.1) Gecko/20100101 Firefox/7.0.1",
+  ip5: "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3",
+  ipad5: "Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
+};
+
 var defaultSetting = {
   version: 3,
-  rules: [],
-  lastupdate: -1,
-  logEnabled: false,
-  verbose: 3
+  rules: {},
+  defaultRules: {},
+  scripts: {},
+  localScripts: {},
+  order: [],
+  notify: [],
+  misc: {
+    lastUpdate: 0,
+    logEnabled: false,
+    verbose: 3
+  }
 };
 
 ActiveXConfig.prototype = {
@@ -53,12 +90,12 @@ ActiveXConfig.prototype = {
 
   // Only used for user-scripts
   shouldEnable: function(object) {
-    if (this.pageRule && this.pageRule.enabled) {
+    if (this.pageRule) {
       return true;
     }
     var clsidRule = this.getFirstMatchedRule(object, this.clsidRules);
     if (clsidRule) {
-      return clsidRule.enabled;
+      return true;
     } else {
       return false;
     }
@@ -70,20 +107,19 @@ ActiveXConfig.prototype = {
 
   createRule: function() {
     return {
-      title: "",
+      title: "Rule",
       type: "wild",
       value: "",
-      enabled: true,
+      userAgent: "",
       scriptItems: "",
-      scriptFile: "",
     };
   },
   getPageConfig: function(href) {
     var ret = {};
     ret.pageSide = true;
     ret.version = this.version;
-    ret.verbose = this.verbose;
-    ret.logEnabled = this.logEnabled;
+    ret.verbose = this.misc.verbose;
+    ret.logEnabled = this.misc.logEnabled;
     ret.pageRule = this.getFirstMatchedRule({href:href});
     if (!ret.pageRule) {
       ret.clsidRules = this.clsidRules;
@@ -92,11 +128,13 @@ ActiveXConfig.prototype = {
   },
 
   getFirstMatchedRule: function(object, rules) {
+    var useCache = false;
     if (!rules) {
-      rules = this.rules;
+      rules = this.cache.validRules;
+      useCache = true;
     }
     for (var i = 0; i < rules.length; ++i) {
-      if (this.isRuleMatched(rules[i], object, this.pageSide ? -1 : i)) {
+      if (this.isRuleMatched(rules[i], object, useCache ? i : -1)) {
         return rules[i];
       }
     }
@@ -122,14 +160,14 @@ ActiveXConfig.prototype = {
   },
 
   isRuleMatched: function(rule, object, id) {
-    if ((rule.type == "wild" || rule.type == "regex" ) && id >= 0) {
+    if (rule.type == "wild" || rule.type == "regex" ) {
       var regex;
       if (id >= 0) {
         regex = this.cache.regex[id];
       } else if (rule.type == 'wild') {
         regex = this.convertUrlWildCharToRegex(this.rules[i].value);
       } else if (rule.type == 'regex') {
-        regex = new RegExp(this.rules[i].value, 'i');
+        regex = new RegExp('^' + this.rules[i].value + '$', 'i');
       }
 
       if (object.href && regex.test(object.href)) {
@@ -175,35 +213,57 @@ ActiveXConfig.prototype = {
     }
   },
 
-  update: function() {
+  update: function(item, original) {
     if (this.pageSide) {
       return;
     }
-    this.loadCache();
+    if (updater) {
+      updater.trigger('setting');
+    }
+    if (item == 'defaultRules') {
+      for (var i in this.defaultRules) {
+        if (!(i in original)) {
+          this.order.push({
+            position: 'default',
+            status: 'disabled',
+            identifier: i
+          });
+          console.log("Add new default rule: " + i);
+        }
+      }
+    }
+    this.updateCache(item);
     this.save();
   },
 
-  loadCache: function() {
+  updateCache: function(item) {
     if (this.pageSide) {
       return;
     }
     this.cache = {
+      validRules: [],
       regex: [],
       clsidRules: [],
       userAgentRules: []
     }
-    for (var i = 0; i < this.rules.length; ++i) {
-      if (this.rules[i].type == 'clsid') {
-        this.clsidRules.push(this.rules[i]);
-      } else if (this.rules[i].type == 'wild') {
-        this.cache.regex[i] =
-        this.convertUrlWildCharToRegex(this.rules[i].value);
-      } else if (this.rules[i].type == 'regex') {
-        this.cache.regex[i] = new RegExp(this.rules[i].value, 'i');
-      }
+    for (var i = 0; i < this.order.length; ++i) {
+      if (this.order[i].status == 'custom' || this.order[i].status == 'enabled') {
+        var rule = this.getItem(this.order[i]);
+        var cacheId = this.cache.validRules.push(rule) - 1;
 
-      if (this.rules[i].userAgent != 'chrome') {
-        this.cache.userAgentRules.push(this.rules[i]);
+        if (rule.type == 'clsid') {
+          this.clsidRules.push(rule);
+        } else if (rule.type == 'wild') {
+          this.cache.regex[cacheId] =
+          this.convertUrlWildCharToRegex(rule.value);
+        } else if (rule.type == 'regex') {
+          this.cache.regex[cacheId] = new RegExp('^' + rule.value + '$', 'i');
+        }
+
+        if (rule.userAgent != '') {
+          this.cache.userAgentRules.push(rule);
+        }
+
       }
     }
   },
@@ -213,24 +273,40 @@ ActiveXConfig.prototype = {
       // Don't include cache in localStorage.
       var cache = this.cache;
       delete this.cache;
-      localStorage.setting2 = JSON.stringify(this);
+      localStorage[settingKey] = JSON.stringify(this);
       this.cache = cache;
     }
+  },
+
+  createIdentifier: function() {
+    return Date.now() + "_" + Math.round(Math.random() * 65536);
+  },
+
+  getItem: function(orderItem) {
+    if (orderItem.position == 'custom') {
+      return this.rules[orderItem.identifier];
+    } else {
+      return this.defaultRules[orderItem.identifier];
+    }
   }
-  
+
 }
 
 function loadLocalSetting() {
   var setting = null;
-  if (localStorage.setting2) {
-    setting = JSON.parse(localStorage.setting2);
-    return new ActiveXConfig(setting);
-  } else {
-    return new ActiveXConfig(defaultSetting);
+  if (localStorage[settingKey]) {
+    try{ 
+      setting = JSON.parse(localStorage[settingKey]);
+    } catch (e){}
   }
+  if (setting == null) {
+    setting = JSON.parse(JSON.stringify(defaultSetting));
+  }
+
+  return new ActiveXConfig(setting);
 }
 
-function loadServerSetting(content) {
-  return JSON.parse(content);
+function clearSetting() {
+  localStorage.removeItem(settingKey);
+  setting = loadLocalSetting();
 }
-
