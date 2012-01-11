@@ -1,4 +1,4 @@
-List.types.input = function(p, extra) {
+List.types.input = function(p, prop) {
   p[0].listdata = this;
   this.p = p;
   var input = this.input = $('<input></input>').addClass('valinput');
@@ -32,17 +32,18 @@ List.types.input.prototype.__defineGetter__('value', function() {
   return this.input.val();
 });
 
-List.types.select = function(p, extra) {
+List.types.select = function(p, prop) {
   p[0].listdata = this;
   this.p = p;
   var input = this.input = $('<select></select>').addClass('valinput');
   this.label = $('<span></span>').addClass('valdisp');
-  if (extra.option == 'static') {
-    this.loadOptions(extra.options);
+  if (prop.option == 'static') {
+    this.loadOptions(prop.options);
   }
+  var select = this;
   this.input.change(function(e) {
     if (p.hasClass('readonly')) {
-      this.value = this.lastval;
+      select.value = select.lastval;
     } else {
       p.trigger('change');
     }
@@ -76,13 +77,14 @@ List.types.select.prototype.__defineSetter__('value', function(val) {
   this.label.text(this.mapping[val]);
 });
 
-List.types.checkbox = function(p, extra) {
+List.types.checkbox = function(p, prop) {
   p[0].listdata = this;
   this.p = p;
   var input = this.input = $('<input type="checkbox">').addClass('valcheck');
+  var box = this;
   this.input.change(function(e) {
     if (p.hasClass('readonly')) {
-      this.value = this.lastval;
+      box.value = box.lastval;
     } else {
       p.trigger('change');
     }
@@ -99,13 +101,21 @@ List.types.checkbox.prototype.__defineSetter__('value', function(val) {
   this.input[0].checked = val;
 });
 
-List.types.button = function(p, extra) {
+List.types.button = function(p, prop) {
   p[0].listdata = this;
   this.p = p;
   var input = this.input = $('<button>');
+  if (prop.caption) {
+    input.text(prop.caption);
+  }
   input.click(function(e) {
     p.trigger('command');
     return false;
   });
   p.append(this.input);
 };
+
+List.types.button.prototype.__defineGetter__('value', function() {
+  return undefined;
+});
+

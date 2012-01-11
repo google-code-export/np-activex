@@ -8,17 +8,66 @@
  }
  */
 
-function List(props, main, items, misc) {
-  this.props = props;
-  this.main = main;
-  this.items = items;
+function List(config) {
+  this.config = config;
+  this.props = config.props;
+  this.main = config.main;
   this.selectedLine = -2;
-  this.misc = misc;
-  if (!this.misc.newLineStyle) {
-    this.misc.newLineStyle = "manual"
+  this.lines = [];
+
+  if (!config.getItemProp) {
+    config.getItemProp = function(id, prop) {
+      return config.getItem(id)[prop];
+    }
+  }
+  if (!config.setItemProp) {
+    config.setItemProp = function(id, prop, value) {
+      config.getItem(id)[prop] = value;
+    }
+  }
+  if (!config.getItem) {
+    config.getItem = function(id) {
+      return config.getItems()[id];
+    }
+  }
+  if (!config.move) {
+    config.move = function(a, b) {
+      var list = config.getItems();
+      var tmp = list[a];
+      // remove a
+      list.splice(a, 1);
+      // insert b
+      list.splice(b, 0, tmp);
+    }
+  };
+  if (!config.insert) {
+    config.insert = function(id, newItem) {
+      config.getItems().splice(id, 0, newItem);
+    }
+  }
+  if (!config.remove) {
+    config.remove = function(a) {
+      config.move(a, config.count() - 1);
+      config.getItems().pop();
+    }
+  }
+  if (!config.validate) {
+    config.validate = function() {return true;};
+  }
+  if (!config.count) {
+    config.count = function() {
+      return config.getItems().length;
+    }
+  }
+  if (!config.patch) {
+    config.patch = function(id, newVal) {
+      for (var name in newVal) {
+        config.setItemProp(id, name, newVal[name]);
+      }
+    }
   }
 
-  $(main).addClass('list');
+  config.main.addClass('list');
 }
 
 List.types = {};
@@ -40,30 +89,42 @@ List.prototype = {
       contents.scroll(function() {
         headergroup.css('left', -(contents.scrollLeft()) + 'px');
       });
+      contents.click(function(e) {
+        if (e.target == contents[0]) {
+          selectLine(-1);
+        }
+      });
       $(main).append(headergroup).append(contents);
       load();
       selectLine(-1);
     }
   },
-  updatePropDisplay : function(line, item, prop) {
+  updatePropDisplay : function(line, prop) {
     var name = prop.property;
     obj = $('[property=' + name + ']', line);
     var ctrl = obj[0].listdata;
-    ctrl.value = item[name];
+    var id = this.getLineId(line);
+    if (id < 0) {
+      var value = this.config.defaultValue[name];
+      if (value) {
+        ctrl.value = value;
+      }
+      obj.trigger('createNew');
+    } else {
+      ctrl.value = this.config.getItemProp(id, name);
+      obj.trigger('update');
+    }
   },
   updateLine: function(line) {
-    var item = this.getBindedItem(line);
-    if (item == null) {
-      return;
-    }
     for (var i = 0; i < this.props.length; ++i) {
-      this.updatePropDisplay(line, item, this.props[i]);
+      this.updatePropDisplay(line, this.props[i]);
     }
+    line.trigger('update');
   },
   createLine: function() {
     with (this) {
       var line = $('<div></div>').addClass('itemline');
-      bindItem(line, -1);
+      bindId(line, -1);
       var inner = $('<div>');
       line.append(inner);
       // create input boxes
@@ -72,7 +133,7 @@ List.prototype = {
         var ctrl = $('<div></div>').attr('property', prop.property)
         .addClass('listvalue').attr('tabindex', -1);
 
-        var valueobj = new List.types[prop.type](ctrl, prop.extra);
+        var valueobj = new List.types[prop.type](ctrl, prop);
 
         var data = {list: this, line: line, prop: prop};
         for (var e in prop.events)  {
@@ -87,6 +148,7 @@ List.prototype = {
             cancelEdit(line);
           }
         });
+        ctrl.trigger('create');
         inner.append(ctrl);
       }
       // Event listeners
@@ -99,6 +161,9 @@ List.prototype = {
       line.focusout(function(e) {
         finishEdit(line);
       });
+      for (var e in this.config.lineEvents) {
+        line.bind(e, {list: this, line: line}, this.config.lineEvents[e]);
+      }
       var list = this;
       line.bind('updating', function() {
         $(list).trigger('updating');
@@ -109,30 +174,45 @@ List.prototype = {
       return line;
     }
   },
+  refresh: function(lines) {
+    var all = false;
+    if (lines === undefined) {
+      all = true;
+      lines = [];
+    }
+    for (var i = this.lines.length; i < this.config.count(); ++i) {
+      var line = this.createLine();
+      this.bindId(line, i);
+      line.insertBefore(this.newLine);
+      lines.push(i);
+    }
+    while (this.lines.length > this.config.count()) {
+      this.lines.pop().remove();
+    }
+    if (all) {
+      for (var i = 0; i < this.lines.length; ++i) {
+        this.updateLine(this.lines[i]);
+      }
+    } else {
+      for (var i = 0; i < lines.length; ++i) {
+        this.updateLine(this.lines[lines[i]]);
+      }
+    }
+  },
   load: function() {
     this.contents.empty();
-    for (var i = 0; i < this.items.length; ++i) {
-      var item = this.items[i];
-      var line = this.createLine();
-      this.bindItem(line, i);
-      this.updateLine(line);
-      this.contents.append(line);
-    }
-    if (this.misc.newLineStyle == "auto") {
-      this.addNewLine();
-    }
+    this.lines = [];
+    this.addNewLine();
+    this.refresh();
   },
-  bindItem: function(line, id) {
+  bindId: function(line, id) {
     line[0].itemid = id;
-  },
-  getBindedId: function(line) {
-    return line[0].itemid;
-  },
-  getBindedItem: function(line) {
-    if (line[0].itemid < 0) {
-      return null;
+    if (id >= 0) {
+      this.lines[id] = line;
     }
-    return this.items[line[0].itemid];
+  },
+  getLineId: function(line) {
+    return line[0].itemid;
   },
   getLineNewValue: function(line) {
     var ret = {};
@@ -167,79 +247,58 @@ List.prototype = {
   },
   finishEdit: function(line) {
     var list = this;
-    setTimeout(function() {
+    function doFinishEdit() {
       with(list) {
         if (line[0].contains(document.activeElement)) {
           return;
         }
-        var newval = getLineNewValue(line);
-        var id = getBindedId(line);
         var valid = isValid(line);
         if (valid) {
-          var val;
-          if (id >= 0) {
-            val = getBindedItem(line);
-          } else if (misc.create) {
-            val = misc.create();
-          } else {
-            val = {};
-          }
+          var id = getLineId(line);
+          var newval = getLineNewValue(line);
+
           if (id >= 0) {
             line.trigger('updating');
-          }
-          if (misc.patch) {
-            misc.patch(val, newval);
+            config.patch(id, newval);
           } else {
-            for (var p in newval) {
-              val[p] = newval[p];
+            $(this).trigger('updating');
+            if(config.insert(config.count(), newval)) {
+              line.removeClass('newline');
+              bindId(line, config.count() - 1);
+              this.selectLine = config.count() - 1;
+              $(list).trigger('add', id);
+              addNewLine();
             }
           }
 
-          if (id < 0) {
-            items.push(val);
-            line.removeClass('newline');
-            bindItem(line, items.length - 1);
-            $(this).trigger('add', val);
-            if (this.misc.newLineStyle == "auto") {
-              this.addNewLine();
-            }
-          }
           line.trigger('updated');
         }
         cancelEdit(line);
       }
-    }, 50);
+    };
+    setTimeout(doFinishEdit, 50);
   },
 
   cancelEdit: function(line) {
     line.removeClass('editing');
     line.removeClass('error');
-    if (line.hasClass('newline') && this.misc.newLineStyle == "manual") {
-      line.remove();
-    }
     this.updateLine(line);
   },
 
   addNewLine: function() {
     with(this) {
       var line = createLine().addClass('newline');
-      if (misc.create) {
-        this.emptyVal = misc.create();
-      } else {
-        this.emptyVal = {};
-      }
-      bindItem(line, -1);
+      this.newLine = line;
+      bindId(line, -1);
       contents.append(line);
+      this.updateLine(line);
       return line;
     }
   },
   isValid: function(line) {
-    if (this.misc.validate) {
-      var orig = this.getBindedItem(line);
-      var obj = this.getLineNewValue(line);
-      return valid = this.misc.validate(orig, obj);
-    }
-    return true;
+    var id = this.getLineId(line);
+    var obj = this.getLineNewValue(line);
+    return valid = this.config.validate(id, obj);
   },
   validate: function(line) {
     if (this.isValid(line)) {
@@ -248,18 +307,15 @@ List.prototype = {
       line.addClass('error');
     }
   },
-  swap: function(a, b, keepSelect) {
-    var items = this.items;
-    var len = items.length;
+  move: function(a, b, keepSelect) {
+    var len = this.config.count();
     if (a == b || a < 0 || b < 0 || a >= len || b >= len) {
       return;
     }
-    var tmp = items[a];
-    items[a] = items[b];
-    items[b] = tmp;
-    var lines = $('.itemline', this.main);
-    this.updateLine(this.getLine(a));
-    this.updateLine(this.getLine(b));
+    this.config.move(a, b);
+    for (var i = Math.min(a, b); i <= Math.max(a, b); ++i) {
+      this.updateLine(this.getLine(i));
+    }
     if (keepSelect) {
       if (this.selectedLine == a) {
         this.selectLine(b);
@@ -269,25 +325,23 @@ List.prototype = {
     }
   },
   getLine: function(id) {
-    if (id < 0 || id >= this.items.length) {
+    if (id < 0 || id >= this.config.count()) {
       return null;
     }
-    var lines = $('.itemline', this.main);
-    return lines.slice(id, id + 1);
+    return this.lines[id];
   },
   remove: function(id) {
-    if (id < 0 || id >= this.items.length) {
+    if (id < 0 || id >= this.config.count()) {
       return;
     }
     $(this).trigger('updating');
+
     this.getLine(id).trigger('removing');
-    var len = this.items.length;
-    for (var i = id; i < len - 1; ++i) {
-      this.swap(i, i + 1, false);
+    if (!this.config.remove(id)) {
+      return;
     }
     this.getLine(len - 1).remove();
 
-    this.items.pop();
     if (id != len - 1) {
       this.selectLine(id);
     } else {
@@ -300,9 +354,8 @@ List.prototype = {
     if (typeof id == "number") {
       line = this.getLine(id);
     } else {
-      id = this.getBindedId(line);
+      id = this.getLineId(line);
     }
-    console.log('select ' + id);
 
     if (this.selectedLine == id) {
       return;
