@@ -37,8 +37,7 @@ function injectScript(filename) {
 var pendingObjects = [];
 function init(response) {
   config = new ActiveXConfig(response);
-  console.log("ActiveX config loaded");
-  injectIEScripts();
+  setUserAgent();
   if (config.logEnabled) {
     for (var i = 0; i < logs.length; ++i) {
       console.log(logs[i]);
@@ -46,6 +45,7 @@ function init(response) {
   } else {
     logs = [];
   }
+  log('pagerule:' + JSON.stringify(config.pagerule));
   for (var i = 0; i < pendingObjects.length; ++i) {
     process(pendingObjects[i]);
   }
