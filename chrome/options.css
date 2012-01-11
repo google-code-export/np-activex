@@ -1,3 +1,18 @@
+#overlay {
+  position: fixed;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: none;
+  background-color: darkgray;
+  opacity: 0.8;
+}
+
+.itemline.newline:not(.editing) {
+  display:none;
+}
 div[property=dodelete] {
   width: 16px
 }
@@ -16,9 +31,60 @@ div[property=enabled] {
 div[property=userAgent] {
   width: 70px
 }
+
 div[property=scriptSetting] {
   width: 200px
 }
 div[property=script] {
   width: 200px
+}
+
+div [property=add] {
+  width: 80px;
+}
+
+[property=status] button {
+  width: 70px;
+}
+
+.itemline:not(.newline) [property=dodelete] button {
+  opacity: 0;
+}
+
+.itemline:not(.newline):hover [property=dodelete] button {
+  display: inline-block;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAiElEQVR42r2RsQrDMAxEBRdl8SDcX8lQPGg1GBI6lvz/h7QyRRXV0qUULwfvwZ1tenw5PxToRPWMC52eA9+WDnlh3HFQ/xBQl86NFYJqeGflkiogrOvVlIFhqURFVho3x1moGAa3deMs+LS30CAhBN5nNxeT5hbJ1zwmji2k+aF6NENIPf/hs54f0sZFUVAMigAAAABJRU5ErkJggg==");
+  margin: 2px;
+  opacity: 1;
+  -webkit-transition: .15s opacity;
+  width: 16px;
+  height: 16px;
+  background-color: transparent;
+  border: none;
+}
+
+.itemline [property=dodelete] button:hover {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAqklEQVR4XqWRMQ6DMAxF/1Fyilyj2SmIBUG5QcTCyJA5Z8jGhlBPgRi4TmoDraVmKFJlWYrlp/g5QfwRlwEVNWVa4WzfH9jK6kCkEkBjwxOhLghheMWMELUAqqwQ4OCbnE4LJnhr5IYdqQt4DJQjhe9u4vBBmnxHHNzRFkDGjHDo0VuTAqy2vAG4NkvXXDHxbGsIGlj3e835VFNtdugma/Jk0eXq0lP//5svi4PtO01oFfYAAAAASUVORK5CYII=") !important;
+}
+
+.itemline [property=dodelete] button:active {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAARElEQVQoz2P4z4AfMlBLAYMdwxkghgEwD1XBGTC0g0sDIaYJECVwFqoChBK4WegKkJWArSJZAQErCDqSKG/iCyhaRhYA9LDIbULDzlIAAAAASUVORK5CYII=") !important;
+}
+
+#addPanel {
+  display: none;
+  position: fixed;
+  z-index: 2;
+  top: 100px;
+  width: 800px;
+  left: 50%;
+  margin-left:-400px;
+}
+
+#tbServer, #tbServerStatus {
+  float: left;
+}
+
+#tbServer {
+  width: 600px;
 }
