@@ -19,11 +19,18 @@
     </div>
     <div>
       <button id="addRule" i18n="Add"></button>
+      <button id="deleteRule" i18n="delete"></button>
       <button id="moveUp" i18n="moveUp"></button>
       <button id="moveDown" i18n="moveDown"></button>
     </div>
-
-    <input id="log_enable" type="checkbox" onclick="setLog()">
+    <div id="serverStatus">
+      <div>
+        <span i18n="lastupdatetime"></span>
+        <span id="lastUpdate"></span>
+      </div>
+      <button id="doUpdate" i18n="doUpdate"></button>
+    </div>
+    <input id="log_enable" type="checkbox">
     <span i18n="log_enable">
     </span>
     </input>
