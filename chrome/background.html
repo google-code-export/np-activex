@@ -1,9 +1,12 @@
+<script src="jquery-1.7.min.js" > </script>
 <script src="common.js" > </script>
 <script src="configure.js"> </script>
 <script src="web.js"> </script>
+<script src="configUpdate.js"> </script>
 <script>
   var setting = loadLocalSetting();
   startListener();
-
   registerRequestListener();
+
+  updater.update();
 </script>
