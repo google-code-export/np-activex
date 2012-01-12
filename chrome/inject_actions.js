@@ -117,6 +117,15 @@ function onBeforeLoading(event) {
   }
 }
 
+function executeHelperScript(script) {
+  var scriptobj = document.createElement("script");
+  scriptobj.innerHTML = script;
+
+  document.documentElement.insertBefore(scriptobj,
+    document.documentElement.firstChild);
+  scriptobj.parentElement.removeChild(scriptobj);
+}
+
 function setUserAgent() {
   if (!config.pageRule) {
     return;
@@ -138,12 +147,7 @@ function setUserAgent() {
     js += 'navigator.appName = "Microsoft Internet Explorer";}})("';
     js += agent;
     js += '")';
-    var scriptobj = document.createElement("script");
-    scriptobj.innerHTML = js;
-
-    document.documentElement.insertBefore(
-      scriptobj, document.documentElement.firstChild);
-    scriptobj.parentElement.removeChild(scriptobj);
+    executeHelperScript(js);
   }
 }
 

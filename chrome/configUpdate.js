@@ -30,10 +30,8 @@ var interval = 1000 * 3600 * 5;
 
 function UpdateSession() {
   var val = $({});
-  val.total = 1;
-  val.finished = 0;
-  val.error = 0;
   val.__proto__ = UpdateSession.prototype;
+  val.reset();
   val.updateToken = undefined;
   return val;
 }
@@ -66,25 +64,38 @@ UpdateSession.prototype = {
     }
   },
 
-  updateFile: function(file, callback, type) {
+  updateFile: function(request) {
+    ++this.total;
     var a = this;
-    ++a.total;
-    $.ajax({
-      url: file,
-      ifModified: true,
-      success: function(nv, status, xhr) {
-        if (callback && status == 'success') {
-          callback(file, nv);
-        }
-        a.progress();
-      },
-      dataType: type,
-      error: function() {a.onUpdateError()}
-    })
+
+    if (request.url.match(/^.*:\/\//) == null) {
+      request.url = server + request.url;
+    }
+    if (!request.ifModified) {
+      request.ifModified = true;
+    }
+
+    var old_success = request.success;
+    request.success = function(nv, status, xhr) {
+      if (old_success && status == 'success') {
+        old_success.call(this, nv, status, xhr);
+      }
+      a.progress();
+    }
+
+    var old_error = request.error;
+    request.error = function(jqXHR, textStatus, errorThrown) {
+      if (old_error && status == 'success') {
+        old_error.call(this, jqXHR, textStatus, errorThrown);
+      }
+      a.onUpdateError(jqXHR, textStatus, errorThrown);
+    }
+    $.ajax(request)
   },
 
   reset: function() {
     this.finished = this.total = this.error = 0;
+    this.items = {};
   },
 
   update: function() {
@@ -102,11 +113,19 @@ UpdateSession.prototype = {
     with(this) {
       reset();
       trigger('updating');
-      updateFile(server + 'setting.json', function(file, nv) {
-        trigger('itemupdated', ['setting', nv]);
+
+      updateFile({
+        url: 'setting.json',
+        success: function(nv, status, xhr) {
+          trigger('itemupdated', ['setting', nv]);
+        }
       });
-      updateFile(server + 'scripts.json', function(file, nv) {
-        trigger('itemupdated', ['scripts', nv]);
+
+      updateFile({
+        url: 'scripts.json',
+        success: function(nv, status, xhr) {
+          trigger('itemupdated', ['scripts', nv]);
+        }
       });
     }
   }
@@ -138,14 +157,18 @@ updater.bind('updating', function() {
 
 updater.bind('itemupdated', function(e, item, nv) {
   console.log('itemUpdated ' + item);
+  updater.items[item] = true;
   if (item == 'setting') {
     var old = setting.defaultRules;
     setting.defaultRules = nv;
     setting.update('defaultRules', old);
-  } else if (item == 'script') {
+  } else if (item == 'scripts') {
     var old = setting.scripts;
     setting.scripts = nv;
     setting.update('scripts', old);
+  }
+  if (updater.items['setting'] && updater.items['scripts']) {
+    setting.updateAllScripts();
   }
 });
 
