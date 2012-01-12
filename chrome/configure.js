@@ -122,7 +122,7 @@ ActiveXConfig.prototype = {
     ret.logEnabled = this.misc.logEnabled;
     ret.pageRule = this.getFirstMatchedRule({href:href});
     if (!ret.pageRule) {
-      ret.clsidRules = this.clsidRules;
+      ret.clsidRules = this.cache.clsidRules;
     } else {
       ret.script = this.getScripts(ret.pageRule.script);
     }
