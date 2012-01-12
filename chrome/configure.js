@@ -359,14 +359,23 @@ ActiveXConfig.prototype = {
   },
 
   createIdentifier: function() {
-    return Date.now() + "_" + Math.round(Math.random() * 65536);
+    var base =  'custom_' + Date.now() + "_" + this.order.length + "_";
+    var ret;
+    do {
+      ret = base + Math.round(Math.random() * 65536);
+    } while (this.getItem(ret));
+    return ret;
   },
 
-  getItem: function(orderItem) {
-    if (orderItem.position == 'custom') {
-      return this.rules[orderItem.identifier];
+  getItem: function(item) {
+    var identifier = item;
+    if (typeof identifier != 'string') {
+      identifier = item.identifier;
+    }
+    if (identifier in this.rules) {
+      return this.rules[identifier];
     } else {
-      return this.defaultRules[orderItem.identifier];
+      return this.defaultRules[identifier];
     }
   }
 
