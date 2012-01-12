@@ -7,8 +7,7 @@ Rule: {
   title,          description
   type,           Can be "wild", "regex", "clsid"
   value,          pattern, correspond to type
-  scriptItems,    
-  scriptFile,     script to inject
+  script,         script to inject. Separated by ' '
   hint,           some message to display when created
   supported       Whether this extension support this site now
 }
@@ -36,6 +35,7 @@ ActiveXConfig: {
 PageSide: 
 ActiveXConfig: {
   pageSide:       Flag of pageside.
+  script:         Helper script to execute
   pageRule:       If page is matched.
   clsidRules:     If page is not matched or disabled. valid CLSID rules
   logEnabled:     log
@@ -52,8 +52,8 @@ function ActiveXConfig(settings)
   return settings;
 }
 
-var settingKey = 'setting2'
-
+var settingKey = 'setting2';
+var scriptPrefix = 'script_';
 
 clsidPattern = /[^0-9A-F][0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}[^0-9A-F]/;
 
@@ -123,6 +123,8 @@ ActiveXConfig.prototype = {
     ret.pageRule = this.getFirstMatchedRule({href:href});
     if (!ret.pageRule) {
       ret.clsidRules = this.clsidRules;
+    } else {
+      ret.script = this.getScripts(ret.pageRule.script);
     }
     return ret;
   },
@@ -183,6 +185,84 @@ ActiveXConfig.prototype = {
       }
     }
     return false;
+  },
+
+  getScripts: function(script) {
+    if (!script) {
+      return "";
+    }
+    var items = script.split(' ');
+    var ret = "";
+    for (var i = 0; i < items.length; ++i) {
+      ret += '// ' + items[i] + '\n';
+      ret += this.getScriptContent(items[i]);
+      ret += '\n\n';
+    }
+    return ret;
+  },
+
+  getScriptContent: function(scriptid) {
+    this.updateScript(scriptid, false);
+    var local = this.localScripts[scriptid];
+
+    if (!local) {
+      // The script not found.
+      return "";
+    }
+
+    var id = scriptPrefix + scriptid;
+    return localStorage[id];
+  },
+
+  updateAllScripts: function() {
+    console.log('updateAllScripts');
+    for (var i = 0; i < this.order.length; ++i) {
+      var rule = this.getItem(this.order[i]);
+      var script = rule.script;
+      if (!script) {
+        return "";
+      }
+      var items = script.split(' ');
+      for (var i = 0; i < items.length; ++i) {
+        this.updateScript(items[i], true);
+      }
+    }
+  },
+
+  updateScript: function(id, async) {
+    var remote = this.scripts[id];
+    var local = this.localScripts[id];
+    if (!remote || remote.updating) {
+      return;
+    }
+    if (local && local.version >= remote.version) {
+      return;
+    }
+
+    if (!updater) {
+      // Should run update from background
+      throw "No updater";
+    }
+
+    remote.updating = true;
+
+    updater.updateFile({
+      url: remote.url,
+      async: async,
+      complete: function() {
+        delete remote.updating;
+      },
+      context: this,
+      success: function(nv, status, xhr) {
+        delete remote.updating;
+        localStorage[scriptPrefix + id] = nv;
+        this.localScripts[id] = remote;
+        this.save();
+      },
+      // Don't evaluate this.
+      dataType: "text"
+    });
+
   },
 
   convertUrlWildCharToRegex: function(wild) {
