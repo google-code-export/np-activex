@@ -1,9 +1,9 @@
-// Copyright (c) 2010 eagleonhill(qiuc12@gmail.com). All rights reserved.
+// Copyright (c) 2012 eagleonhill(qiuc12@gmail.com). All rights reserved.
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
 
 // Permission for experimental not given.
-var handler = (chrome.experimental.webRequest || chrome.webRequest);
+var handler = chrome.webRequest;
 
 function onBeforeSendHeaders(details) {
   var rule = setting.getFirstMatchedRule(
