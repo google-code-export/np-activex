@@ -9,21 +9,9 @@
 //   status
 //   lastUpdate
 
-
-//var server = "http://settings.np-activex.googlecode.com/hg/";
-var server="http://localhost:5454/setting/";
-
-var serverConfig = {
-  setting: [
-  ],
-  scripts: [
-  ],
-  timestamp: {
-    setting: -1,
-    scripts: -1
-  },
-  lastUpdate: 0
-};
+// Can be used for debugging.
+var defaultServer = "http://settings.np-activex.googlecode.com/hg/";
+var server=localStorage.updateServer || defaultRules;
 
 // Update per 5 hours.
 var interval = 1000 * 3600 * 5;
@@ -31,8 +19,8 @@ var interval = 1000 * 3600 * 5;
 function UpdateSession() {
   var val = $({});
   val.__proto__ = UpdateSession.prototype;
-  val.reset();
   val.updateToken = undefined;
+  val.reset();
   return val;
 }
 
