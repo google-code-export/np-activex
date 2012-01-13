@@ -129,14 +129,8 @@ $(document).ready(function() {
       return setting.order.length;
     },
     insert: function(id, newItem) {
-      var identifier = setting.createIdentifier();
-      newItem.identifier = identifier;
-      setting.rules[identifier] = newItem;
-      setting.order.splice(id, 0, {
-        status: 'custom',
-        position: 'custom',
-        identifier: identifier
-      });
+      setting.addCustomRule(newItem);
+      this.move(setting.order.length - 1, id);
       return true;
     },
     remove: function(id) {
