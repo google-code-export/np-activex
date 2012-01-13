@@ -81,6 +81,11 @@ function List(config) {
   config.main.addClass('list');
 }
 
+List.ids = {
+  noline: -1,
+  newLine: -2
+};
+
 List.types = {};
 
 List.prototype = {
@@ -102,12 +107,12 @@ List.prototype = {
       });
       contents.click(function(e) {
         if (e.target == contents[0]) {
-          selectLine(-1);
+          selectLine(List.ids.noline);
         }
       });
       $(main).append(headergroup).append(contents);
       load();
-      selectLine(-1);
+      selectLine(List.ids.noline);
     }
   },
   updatePropDisplay : function(line, prop) {
@@ -135,7 +140,7 @@ List.prototype = {
   createLine: function() {
     with (this) {
       var line = $('<div></div>').addClass('itemline');
-      bindId(line, -1);
+      bindId(line, List.ids.noline);
       var inner = $('<div>');
       line.append(inner);
       // create input boxes
@@ -248,6 +253,7 @@ List.prototype = {
     }
     line.addClass('editing');
     this.selectLine(line);
+    this.showLine(line);
     var list = this;
     setTimeout(function() {
       if (!line[0].contains(document.activeElement)) {
@@ -293,6 +299,10 @@ List.prototype = {
   cancelEdit: function(line) {
     line.removeClass('editing');
     line.removeClass('error');
+    var id = this.getLineId(line);
+    if (id == List.ids.newLine && this.selectedLine == id) {
+      this.selectedLine = List.ids.noline;
+    }
     this.updateLine(line);
   },
 
@@ -300,7 +310,7 @@ List.prototype = {
     with(this) {
       var line = createLine().addClass('newline');
       this.newLine = line;
-      bindId(line, -1);
+      bindId(line, -2);
       contents.append(line);
       this.updateLine(line);
       return line;
@@ -336,6 +346,9 @@ List.prototype = {
     }
   },
   getLine: function(id) {
+    if (id == List.ids.newLine) {
+      return this.newLine;
+    }
     if (id < 0 || id >= this.config.count()) {
       return null;
     }
@@ -356,7 +369,7 @@ List.prototype = {
     if (id != len - 1) {
       this.selectLine(id);
     } else {
-      this.selectLine(-1);
+      this.selectLine(List.ids.noline);
     }
     $(this).trigger('updated');
   },
@@ -377,7 +390,7 @@ List.prototype = {
       this.cancelEdit(oldline);
       oldline.removeClass('selected');
       oldline.trigger('deselect');
-      this.selectedLine = -1;
+      this.selectedLine = List.ids.noline;
     }
 
     this.selectedLine = id;
