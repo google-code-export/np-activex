@@ -1,3 +1,6 @@
+Version 1.3.12 ----
+Fix: script insert in Chrome 18 (documentElement->document)
+
 Version 1.3.11 ----
 Force to use IE UserAgent.
 
