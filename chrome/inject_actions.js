@@ -2,13 +2,14 @@
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
 
-function executeScriptInClient(command) {
-  var codediv = document.createElement("button");
-  codediv.setAttribute("style", "display:hidden");
-  codediv.setAttribute("onclick", command);
-  document.body.appendChild(codediv);
-  codediv.click();
-  document.body.removeChild(codediv);
+function executeScript(script) {
+  var scriptobj = document.createElement("script");
+  scriptobj.innerHTML = script;
+
+  var element = document.head || document.body ||
+  document.documentElement || document;
+  element.insertBefore(scriptobj, element.firstChild);
+  scriptobj.parentElement.removeChild(scriptobj);
 }
 
 // Allow form.id access
@@ -17,7 +18,7 @@ function checkForm(new_obj) {
   while (parent && parent.nodeType == 1) {
     if (parent.nodeName.toLowerCase() == "form") {
       command = "document.all." + parent.name + "." + new_obj.id + " = document.all." + new_obj.id;
-      executeScriptInClient(command);
+      executeScript(command);
     }
     parent = parent.parentNode;
   }
@@ -57,11 +58,11 @@ function enableobj(obj) {
   if (obj.id) {
     command = "delete document." + obj.id + "\n";
     command += "document." + obj.id + '=' + obj.id;
-    executeScriptInClient(command);
+    executeScript(command);
   }
 
   log("Enable object, id: " + obj.id + " clsid: " + getClsid(obj));
-  // executeScriptInClient(command);
+  // executeScript(command);
 }
 
 function getClsid(obj) {
@@ -117,15 +118,6 @@ function onBeforeLoading(event) {
   }
 }
 
-function executeHelperScript(script) {
-  var scriptobj = document.createElement("script");
-  scriptobj.innerHTML = script;
-
-  document.documentElement.insertBefore(scriptobj,
-    document.documentElement.firstChild);
-  scriptobj.parentElement.removeChild(scriptobj);
-}
-
 function setUserAgent() {
   if (!config.pageRule) {
     return;
@@ -147,7 +139,7 @@ function setUserAgent() {
     js += 'navigator.appName = "Microsoft Internet Explorer";}})("';
     js += agent;
     js += '")';
-    executeHelperScript(js);
+    executeScript(js);
   }
 }
 
