@@ -397,7 +397,27 @@ List.prototype = {
     if (line != null) {
       line.addClass('selected');
       line.trigger('select');
+      this.showLine(line);
     }
     $(this).trigger('select');
+  },
+  showLine: function(line) {
+    var showtop = this.contents.scrollTop();
+    var showbottom = showtop + this.contents.height();
+
+    var top = line.offset().top - this.contents.offset().top
+    + this.contents.scrollTop();
+
+    // Include the scroll bar
+    var bottom = top + line.height() + 20;
+
+    console.log(top + ' ' + bottom + ' ' + showtop + ' ' + showbottom);
+    if (top < showtop) {
+      // show at top
+      this.contents.scrollTop(top);
+    } else if (bottom > showbottom) {
+      // show at bottom
+      this.contents.scrollTop(Math.max(0, bottom - this.contents.height()));
+    }
   }
 };
