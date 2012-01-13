@@ -1,6 +1,6 @@
 ﻿{
   "name": "Bank of China Script helper",
-  "version": "1.0",
+  "version": "1.1",
   "description": "中国银行ActiveX脚本辅助工具。",
   "permissions": [
     "https://ebs.boc.cn/*"

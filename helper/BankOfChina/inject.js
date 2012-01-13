@@ -23,7 +23,11 @@ function addscript(url) {
   req.open("GET", chrome.extension.getURL(url), false);
   req.send();
   obj.innerHTML = req.responseText;
-  document.documentElement.appendChild(obj);
+  if (document.documentElement) {
+    document.documentElement.appendChild(obj);
+  } else {
+    document.appendChild(obj);
+  }
 }
 
 for (var i = 0; i < scripts.length; ++i) {
