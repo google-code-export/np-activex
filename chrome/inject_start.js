@@ -24,21 +24,11 @@ function log(message) {
   }
 }
 
-function injectScript(filename) {
-  var scriptobj = document.createElement("script");
-  var req = new XMLHttpRequest();
-  req.open("GET", filename, false);
-  req.send();
-  scriptobj.innerHTML = req.responseText;
-  document.documentElement.insertBefore(
-      scriptobj, document.documentElement.firstChild);
-}
-
 var pendingObjects = [];
 function init(response) {
   config = new ActiveXConfig(response);
   setUserAgent();
-  executeHelperScript(config.script);
+  executeScript(config.script);
   if (config.logEnabled) {
     for (var i = 0; i < logs.length; ++i) {
       console.log(logs[i]);
@@ -46,7 +36,7 @@ function init(response) {
   } else {
     logs = [];
   }
-  log('pagerule:' + JSON.stringify(config.pagerule));
+  log('pagerule:' + JSON.stringify(config.pageRule));
   for (var i = 0; i < pendingObjects.length; ++i) {
     process(pendingObjects[i]);
   }
