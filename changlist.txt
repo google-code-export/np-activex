@@ -1,3 +1,6 @@
+Version 1.3.11 ----
+Force to use IE UserAgent.
+
 Version 1.3.10 ----
 Fix: Logging functions
 
