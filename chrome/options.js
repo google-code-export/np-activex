@@ -89,7 +89,7 @@ function doSave() {
 function setReadonly(e) {
   var line = e.data.line;
   var id = e.data.list.getLineId(line);
-  if (id == -1) {
+  if (id < 0) {
     return;
   }
   var order = setting.order[id];
@@ -157,7 +157,7 @@ $(document).ready(function() {
   });
   $(table).bind('select', function() {
     var line = table.selectedLine;
-    if (line == -1) {
+    if (line < 0) {
       $('#moveUp').attr('disabled', 'disabled');
       $('#moveDown').attr('disabled', 'disabled');
       $('#deleteRule').attr('disabled', 'disabled');
