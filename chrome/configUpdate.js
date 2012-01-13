@@ -15,7 +15,7 @@
 
 // Can be used for debugging.
 var defaultServer = "http://settings.np-activex.googlecode.com/hg/";
-var server=localStorage.updateServer || defaultRules;
+var server=localStorage.updateServer || defaultServer;
 
 // Update per 5 hours.
 var interval = 1000 * 3600 * 5;
