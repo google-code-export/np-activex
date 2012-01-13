@@ -12,13 +12,13 @@
   "background_page": "background.html",
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": ["<all_urls>"],
       "all_frames": true,
       "js": ["configure.js", "inject_actions.js", "inject_start.js"],
       "run_at":"document_start"
     },
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": ["<all_urls>"],
       "all_frames": true,
       "js": ["inject_doreplace.js"],
       "run_at":"document_end"
