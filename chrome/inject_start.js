@@ -30,8 +30,11 @@ function injectScript(filename) {
   req.open("GET", filename, false);
   req.send();
   scriptobj.innerHTML = req.responseText;
-  document.documentElement.insertBefore(
-      scriptobj, document.documentElement.firstChild);
+  var doc = document.documentElement;
+  if (!doc) {
+    doc = document;
+  }
+  doc.insertBefore(scriptobj, doc.firstChild);
 }
 
 var pendingObjects = [];
