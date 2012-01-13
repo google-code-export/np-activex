@@ -15,6 +15,11 @@ function List(config) {
   this.selectedLine = -2;
   this.lines = [];
 
+  if (!config.getItems) {
+    config.getItems = function() {
+      return config.items;
+    }
+  }
   if (!config.getItemProp) {
     config.getItemProp = function(id, prop) {
       return config.getItem(id)[prop];
@@ -32,12 +37,14 @@ function List(config) {
   }
   if (!config.move) {
     config.move = function(a, b) {
-      var list = config.getItems();
-      var tmp = list[a];
-      // remove a
-      list.splice(a, 1);
-      // insert b
-      list.splice(b, 0, tmp);
+      if (a != b && a >= 0 && b >= 0 && a < this.count() && b < this.count()) {
+        var list = config.getItems();
+        var tmp = list[a];
+        // remove a
+        list.splice(a, 1);
+        // insert b
+        list.splice(b, 0, tmp);
+      }
     }
   };
   if (!config.insert) {

@@ -43,16 +43,39 @@ ActiveXConfig: {
 }                 
  */
 
-function ActiveXConfig(settings)
+function ActiveXConfig(input)
 {
-  settings.__proto__ = ActiveXConfig.prototype;
-  if (settings.version != 3)
-    settings.convertVersion();
-  settings.updateCache();
+  var settings;
+  if (input === undefined) {
+    var defaultSetting = {
+      version: 3,
+      rules: {},
+      defaultRules: {},
+      scripts: {},
+      localScripts: {},
+      order: [],
+      notify: [],
+      misc: {
+        lastUpdate: 0,
+        logEnabled: false,
+        verbose: 3
+      }
+    };
+    input = defaultSetting;
+  } 
+
+  if (input.version == '3') {
+    settings = input;
+    settings.__proto__ = ActiveXConfig.prototype;
+    settings.updateCache();
+  } else {
+    settings = ActiveXConfig.convertVersion(input);
+    settings.updateCache();
+  }
   return settings;
 }
 
-var settingKey = 'setting2';
+var settingKey = 'setting';
 var scriptPrefix = 'script_';
 
 clsidPattern = /[^0-9A-F][0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}[^0-9A-F]/;
@@ -67,27 +90,62 @@ var agents = {
   ipad5: "Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
 };
 
-var defaultSetting = {
-  version: 3,
-  rules: {},
-  defaultRules: {},
-  scripts: {},
-  localScripts: {},
-  order: [],
-  notify: [],
-  misc: {
-    lastUpdate: 0,
-    logEnabled: false,
-    verbose: 3
+ActiveXConfig.convertVersion = function(setting) {
+  if (setting.version == 3) {
+    return setting;
+  } else if (setting.version == 2) {
+    function parsePattern(pattern) {
+      pattern = pattern.trim();
+      var title = pattern.match(/###(.*)/);
+      if (title != null) {
+        return {
+          pattern: pattern.match(/(.*)###/)[1].trim(),
+          title: title[1].trim()
+        }
+      } else {
+        return {
+          pattern: pattern,
+          title: "Rule"
+        }
+      }
+    }
+
+    var ret = new ActiveXConfig();
+
+    if (setting.logEnabled) {
+      ret.misc.logEnabled = true;
+    }
+    var urls = setting.url_plain.split('\n');
+    for (var i = 0; i < urls.length; ++i) {
+      var rule = ret.createRule();
+
+      var pattern = parsePattern(urls[i]);
+      rule.title = pattern.title;
+      var url = pattern.pattern;
+      
+      if (url.substr(0, 2) == 'r/') {
+        rule.type == 'regex';
+        rule.value = url.substr(2);
+      } else {
+        rule.type == 'wild';
+        rule.value = url;
+      }
+      ret.addCustomRule(rule);
+    }
+    var clsids = setting.trust_clsids.split('\n');
+    for (var i = 0; i < clsids.length; ++i) {
+      var rule = ret.createRule();
+      rule.type = 'clsid';
+      var pattern = parsePattern(clsids[i]);
+      rule.title = pattern.title;
+      rule.value = pattern.pattern;
+      ret.addCustomRule(rule);
+    }
+    return ret;
   }
-};
+}
 
 ActiveXConfig.prototype = {
-  convertVersion: function() {
-    this.version = 3;
-    this.update();
-  },
-
   // Only used for user-scripts
   shouldEnable: function(object) {
     if (this.pageRule) {
@@ -101,10 +159,6 @@ ActiveXConfig.prototype = {
     }
   },
 
-  parseMiscSetting: function(setting) {
-    return {};
-  },
-
   createRule: function() {
     return {
       title: "Rule",
@@ -113,6 +167,19 @@ ActiveXConfig.prototype = {
       userAgent: "",
       scriptItems: "",
     };
+  },
+  addCustomRule: function(newItem) {
+    if (!this.validateRule(newItem)) {
+      return;
+    }
+    var identifier = this.createIdentifier();
+    newItem.identifier = identifier;
+    this.rules[identifier] = newItem;
+    this.order.push({
+      status: 'custom',
+      position: 'custom',
+      identifier: identifier
+    });
   },
   getPageConfig: function(href) {
     var ret = {};
@@ -149,6 +216,7 @@ ActiveXConfig.prototype = {
       if (rule.type == 'wild') {
         ret &= this.convertUrlWildCharToRegex(rule.value) != null;
       } else if (rule.type == 'regex') {
+        ret &= rule.value != '';
         var r = new RegExp(rule.value, 'i');
       } else if (rule.type == 'clsid') {
         var v = rule.value.toUpperCase();
@@ -382,14 +450,13 @@ ActiveXConfig.prototype = {
 }
 
 function loadLocalSetting() {
-  var setting = null;
+  var setting = undefined;
   if (localStorage[settingKey]) {
     try{ 
       setting = JSON.parse(localStorage[settingKey]);
-    } catch (e){}
-  }
-  if (setting == null) {
-    setting = JSON.parse(JSON.stringify(defaultSetting));
+    } catch (e){
+      setting = undefined;
+    }
   }
 
   return new ActiveXConfig(setting);
