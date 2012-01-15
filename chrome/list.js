@@ -104,16 +104,17 @@ List.prototype = {
         attr('property', props[i].property).html(props[i].header);
         headergroup.append(header);
       }
-      this.contents = $('<div class="listitems"></div>');
-      contents.scroll(function() {
-        headergroup.css('left', -(contents.scrollLeft()) + 'px');
+      this.scrolls = $('<div>').addClass('listscroll');
+      this.contents = $('<div class="listitems"></div>').appendTo(scrolls);
+      scrolls.scroll(function() {
+        headergroup.css('left', -(scrolls.scrollLeft()) + 'px');
       });
       contents.click(function(e) {
         if (e.target == contents[0]) {
           selectLine(List.ids.noline);
         }
       });
-      $(main).append(headergroup).append(contents);
+      $(main).append(headergroup).append(scrolls);
       load();
       selectLine(List.ids.noline);
     }
@@ -410,22 +411,20 @@ List.prototype = {
     $(this).trigger('select');
   },
   showLine: function(line) {
-    var showtop = this.contents.scrollTop();
-    var showbottom = showtop + this.contents.height();
+    var showtop = this.scrolls.scrollTop();
+    var showbottom = showtop + this.scrolls.height();
 
-    var top = line.offset().top - this.contents.offset().top
-    + this.contents.scrollTop();
+    var top = line.offset().top - this.contents.offset().top;
 
     // Include the scroll bar
     var bottom = top + line.height() + 20;
 
-    console.log(top + ' ' + bottom + ' ' + showtop + ' ' + showbottom);
     if (top < showtop) {
       // show at top
-      this.contents.scrollTop(top);
+      this.scrolls.scrollTop(top);
     } else if (bottom > showbottom) {
       // show at bottom
-      this.contents.scrollTop(Math.max(0, bottom - this.contents.height()));
+      this.scrolls.scrollTop(Math.max(0, bottom - this.scrolls.height()));
     }
   }
 };
