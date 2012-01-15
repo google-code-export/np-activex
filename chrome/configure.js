@@ -39,30 +39,34 @@ with (ActiveXConfig) {
   this.convertUrlWildCharToRegex = function(wild)
   {
     try {
-      // Remove comment and trim.
-      wild = wild.toLowerCase().replace(/\s*###.*$/, "").
-        replace(/\s*$/, "").replace(/^\s*/, "");
-      if (wild.substr(0, 2) == "r/")
-        return new RegExp(wild.substr(2));
-      if (wild == "<all_urls>")
-        wild = "*://*/*";
-      var schemePos = wild.indexOf("://");
-      if (schemePos == -1) return null;
-      var scheme = wild.substr(0, schemePos);
-      if (scheme == "*") scheme = "https?";
-      if (scheme != "http" && scheme != "https" && scheme != "https?")
-        return null;
+      function escapeRegex(str, star) {
+        if (!star) star = '*';
+        str = str.replace('\\', '/');
+        var escapeChars = /([\.\\\/\?\{\}\+\[\]])/g;
+        return str.replace(escapeChars, "\\$1").replace('*', star);
+      }
 
-      var hostPos = wild.indexOf("/", schemePos + 3);
-      if (hostPos == -1) return null;
-      var host = wild.substring(schemePos + 3, hostPos);
-      if (host.indexOf('*', 1) != -1)
+      wild = wild.toLowerCase().replace(/###.*$/, '').trim();
+      if (wild.substr(0, 2) == 'r/') {
+        return new RegExp(wild.substr(2), 'i');
+      }
+      if (wild == "<all_urls>") {
+        wild = "*://*/*";
+      }
+      var pattern = /^(.*?):\/\/(\*?[^\/\*]*)\/(.*)$/i;
+      // pattern: [all, scheme, host, page]
+      var parts = pattern.exec(wild);
+      if (parts == null) {
         return null;
-      host = host.replace("*", "[^\/]*").replace(/\./g, "\\.");
-      var left = wild.substring(hostPos + 1).
-        replace(/([\.\\\/\?\{\}])/g, "\\$1").replace("*", "\.*");
-      var regex = "^" + scheme + ":\\/\\/" + host + "\\/" + left + "$";
-      return new RegExp(regex);
+      }
+      var scheme = parts[1];
+      var host = parts[2];
+      var page = parts[3];
+      
+      var regex = '^' + escapeRegex(scheme, '[^:]*') + ':\\/\\/';
+      regex += escapeRegex(host, '[^\\/]*') + '/';
+      regex += escapeRegex(page, '.*');
+      return new RegExp(regex, 'i');
     } catch (e) {
       return null;
     }
