@@ -282,7 +282,7 @@ List.prototype = {
             config.patch(id, newval);
           } else {
             $(this).trigger('updating');
-            if(config.insert(config.count(), newval)) {
+            if(!config.insert(config.count(), newval)) {
               line.removeClass('newline');
               bindId(line, config.count() - 1);
               this.selectLine = config.count() - 1;
@@ -365,7 +365,7 @@ List.prototype = {
 
     var len = this.lines.length;
     this.getLine(id).trigger('removing');
-    if (!this.config.remove(id)) {
+    if (this.config.remove(id)) {
       return;
     }
     this.getLine(len - 1).remove();
