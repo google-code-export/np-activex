@@ -77,6 +77,9 @@ function List(config) {
       }
     }
   }
+  if (!config.defaultValue) {
+    config.defaultValue = {};
+  }
 
   config.main.addClass('list');
 }
@@ -310,7 +313,7 @@ List.prototype = {
     with(this) {
       var line = createLine().addClass('newline');
       this.newLine = line;
-      bindId(line, -2);
+      bindId(line, List.ids.noline);
       contents.append(line);
       this.updateLine(line);
       return line;
@@ -349,7 +352,7 @@ List.prototype = {
     if (id == List.ids.newLine) {
       return this.newLine;
     }
-    if (id < 0 || id >= this.config.count()) {
+    if (id < 0 || id >= this.lines.length) {
       return null;
     }
     return this.lines[id];
@@ -360,11 +363,16 @@ List.prototype = {
     }
     $(this).trigger('updating');
 
+    var len = this.lines.length;
     this.getLine(id).trigger('removing');
     if (!this.config.remove(id)) {
       return;
     }
     this.getLine(len - 1).remove();
+
+    for (var i = id; i < len - 1; ++i) {
+      this.updateLine(this.getLine(i));
+    }
 
     if (id != len - 1) {
       this.selectLine(id);
