@@ -135,16 +135,14 @@ $(document).ready(function() {
     insert: function(id, newItem) {
       setting.addCustomRule(newItem);
       this.move(setting.order.length - 1, id);
-      return true;
     },
     remove: function(id) {
       if (setting.order[id].position != 'custom') {
-        return false;
+        return true;
       }
       var identifier = setting.order[id].identifier;
       delete setting.rules[identifier];
       setting.order.splice(id, 1);
-      return true;
     },
     validate: function(id, rule) {
       return setting.validateRule(rule);
