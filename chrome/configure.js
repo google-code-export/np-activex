@@ -4,18 +4,20 @@
 
 /* 
 Rule: {
-  title,          description
-  type,           Can be "wild", "regex", "clsid"
-  value,          pattern, correspond to type
-  script,         script to inject. Separated by ' '
-  hint,           some message to display when created
-  supported       Whether this extension support this site now
+  identifier:     an unique identifier
+  title:          description
+  type:           Can be "wild", "regex", "clsid"
+  value:          pattern, correspond to type
+  userAgent:      the useragent value. See var "agents" for options.
+  script:         script to inject. Separated by spaces
 }
+
 Order: {
-  status:           enabled / disabled / intersted / ignore / custom
+  status:         enabled / disabled / custom
   position:       default / custom
-  identifier:     index
+  identifier:     identifier of rule
 }
+
 ServerSide: 
 ActiveXConfig: {
   version:        version
@@ -26,6 +28,7 @@ ActiveXConfig: {
   order:          the order of rules
   notify:         array, notify user when it's available.
   cache:          to accerlerate processing
+  issues:         //TODO: The bugs/unsuppoted sites that we have accepted.
   misc:{          
     lastUpdate:   last timestamp of updating
     logEnabled:   log
@@ -55,6 +58,7 @@ function ActiveXConfig(input)
       localScripts: {},
       order: [],
       notify: [],
+      issues: [],
       misc: {
         lastUpdate: 0,
         logEnabled: false,

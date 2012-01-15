@@ -211,10 +211,7 @@ function setStatus(e) {
     var order = setting.order[id];
     var rule = setting.getItem(order);
     var s, color;
-    if (rule.notsupport) {
-      s = 'Unavailable';
-      color = 'gray';
-    } else if (order.status == 'enabled') {
+    if (order.status == 'enabled') {
       s = 'Enabled';
       color = '#0A0';
     } else if (order.status == 'disabled') {
