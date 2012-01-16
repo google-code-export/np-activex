@@ -1,3 +1,9 @@
+Version 1.3.14 ----
+IE UserAgent only applies to ICBC.
+
+Version 1.3.13 ----
+Use new pattern matching & allow file scheme access.
+
 Version 1.3.12 ----
 Fix: script insert in Chrome 18 (documentElement->document)
 
