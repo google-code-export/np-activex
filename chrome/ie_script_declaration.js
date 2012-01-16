@@ -127,6 +127,9 @@ function __declareClsid(proto) {
 }
 
 function __declareIEUserAgent() {
+  if (!/https:\/\/.*\.icbc\.com\.cn\/.*/.exec(location.href)) {
+    return;
+  }
   delete navigator.appName;
   navigator.appName='Microsoft Internet Explorer';
 
