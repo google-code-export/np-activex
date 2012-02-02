@@ -35,10 +35,12 @@ ActiveXConfig: {
     verbose:      verbose level of logging
   }
 }                 
+
 PageSide: 
 ActiveXConfig: {
   pageSide:       Flag of pageside.
-  script:         Helper script to execute
+  pageScript:     Helper script to execute on context of page
+  extScript:      Helper script to execute on context of extension
   pageRule:       If page is matched.
   clsidRules:     If page is not matched or disabled. valid CLSID rules
   logEnabled:     log
@@ -185,6 +187,7 @@ ActiveXConfig.prototype = {
       identifier: identifier
     });
   },
+
   getPageConfig: function(href) {
     var ret = {};
     ret.pageSide = true;
@@ -195,7 +198,9 @@ ActiveXConfig.prototype = {
     if (!ret.pageRule) {
       ret.clsidRules = this.cache.clsidRules;
     } else {
-      ret.script = this.getScripts(ret.pageRule.script);
+      var script = this.getScripts(ret.pageRule.script);
+      ret.pageScript = script.page;
+      ret.extScript = script.extension;
     }
     return ret;
   },
@@ -260,15 +265,21 @@ ActiveXConfig.prototype = {
   },
 
   getScripts: function(script) {
+    var ret = {
+      page: "",
+      extension: ""
+    };
     if (!script) {
-      return "";
+      return ret;
     }
     var items = script.split(' ');
-    var ret = "";
     for (var i = 0; i < items.length; ++i) {
-      ret += '// ' + items[i] + '\n';
-      ret += this.getScriptContent(items[i]);
-      ret += '\n\n';
+      var name = items[i];
+      var val = '// ';
+      val += items[i] + '\n';
+      val += this.getScriptContent(name);
+      val += '\n\n';
+      ret[this.scripts[name].context] += val;
     }
     return ret;
   },
