@@ -1,8 +1,9 @@
 <html>
   <head>
     <style>
-      .urllist { width:40em; height:18em; } .clsidlist { width:40em; height:12em;
-      } .description { width:1000; padding-bottom:30px }
+      .urllist { width:50em; height:18em; }
+      .clsidlist { width:50em; height:12em; }
+      .description { width:1000px; margin:20px 0px }
     </style>
     <script src="/i18n.js">
     </script>
@@ -32,41 +33,36 @@
   </head>
 
   <body onload="loadSettings()" onunload="saveSettings()">
-    <div class="description">
-      <p><span i18n="given_setting"></span></p>
+    <div style="padding-left:40px">
+      <div class="description" style="font-size: 25px; color: blue">
+        <div i18n="welcome"></div>
+      </div>
+      <div class="description">
+        <div i18n="url_desp"></div>
+        <div i18n="url_format"></div>
+        <div i18n="url_regex"></div>
+      </div>
+      <div class="description">
+        <div i18n="given_setting"></div>
+      </div>
+      <textarea class="urllist" id="urllist" onchange="saveSettings()">
+      </textarea>
+      <div class="description">
+        <div i18n="clsid_desp"></div>
+        <div i18n="clsid_format"></div>
+      </div>
+      <textarea class="clsidlist" id="clsidlist" onchange="saveSettings()">
+      </textarea>
+      <div class="description" style="color:red; font-size: 20px">
+        <a href="http://code.google.com/p/np-activex/issues/list">
+          <div i18n="submit_issue"></div>
+        </a>
+      </div>
+      <input id="log_enable" type="checkbox" onclick="setLog()">
+        <span i18n="log_enable"></span>
+      </input>
+      <div i18n="copyright">
+      </div>
     </div>
-    <div class="description" style="text-color:red">
-      <a href="http://code.google.com/p/np-activex/issues/list">
-        <p><span i18n="submit_issue"></span></p>
-      </a>
-    </div>
-    <div class="description">
-      <p><span i18n="url_desp"></span></p>
-      <p><span i18n="url_format"></span></p>
-      <p><span i18n="url_regex"></span></p>
-    </div>
-    <textarea class="urllist" id="urllist" onchange="saveSettings()">
-    </textarea>
-    <br/>
-    <div class="description">
-      <p><span i18n="clsid_desp"></span></p>
-      <p><span i18n="clsid_format"></span></p>
-    </div>
-    <textarea class="clsidlist" id="clsidlist" onchange="saveSettings()">
-    </textarea>
-    <br/>
-    <input id="log_enable" type="checkbox" onclick="setLog()">
-    <span i18n="log_enable">
-    </span>
-    </input>
-    <br />
-    <a href="/log.html">
-      <span i18n="log_link">
-      </span>
-    </a>
-    <p>
-    <span i18n="copyright">
-    </span>
-    </p>
   </body>
 </html>
