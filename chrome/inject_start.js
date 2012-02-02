@@ -27,8 +27,12 @@ function log(message) {
 var pendingObjects = [];
 function init(response) {
   config = new ActiveXConfig(response);
+
+  eval(config.extScript);
+  executeScript(config.pageScript);
+
   setUserAgent();
-  executeScript(config.script);
+
   if (config.logEnabled) {
     for (var i = 0; i < logs.length; ++i) {
       console.log(logs[i]);
