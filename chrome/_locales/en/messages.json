@@ -1,4 +1,7 @@
 ﻿{
+  "welcome": {
+    "message": "Welcome to use ActiveX for Chrome. <br />Before get started, please finish the following configures for your security."
+  },
   "plug_desp": {
     "message": "Allow your chrome using ActiveX plugins."
   },
@@ -6,19 +9,19 @@
     "message": "ActiveX for Chrome Settings"
   },
   "url_desp": {
-    "message": "The urls in the following list, one per line, will be qualified to load ActiveX plugins whenever possible"
+    "message": "Specify the sites that allow to use ActiveX controls. Input one pattern per line."
   },
   "url_format": {
-    "message" : "The format should be like <scheme>://<host>/<path> . Use * to present any strings. Note the / after host cannot be omitted. For example: http://*.google.com/*,  *://*.bar.com/foo/*"
+    "message" : "The format should be like scheme://host/path . Use * to present any strings, ex, \"http://*.google.com/*\", \"*://*.bar.com/foo/*\" (without quates). Please note the slash after host CANNOT be omitted."
   },
   "url_regex": {
     "message" : "To use Regular Expression, add \"/r\" before this line"
   },
   "clsid_desp": {
-    "message": "The trusted CLSIDs, one per line. All the plugins within the following CLSIDs will be actived on every page."
+    "message": "The trusted CLSIDs, one per line. All controls whose CLSIDs are in the following list will be actived."
   },
   "clsid_format": {
-    "message": "Input with the barket and minus sign.\nFor example, {ACACC6EB-1FBA-4E13-A729-1234567854F8} ."
+    "message": "Use the format like {ACACC6EB-1FBA-4E13-A729-1234567854F8} ."
   },
   "log_title": {
     "message": "ActiveX log"

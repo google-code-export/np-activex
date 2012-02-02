@@ -1,32 +1,35 @@
 ﻿{
+  "welcome": {
+    "message": "欢迎使用ActiveX for Chrome. 在开始前，请设置允许使用ActiveX控件的网站。"
+  },
   "plug_desp": {
-    "message": "使Chrome支持ActiveX控件。"
+    "message": "在Chrome上直接使用ActiveX控件。"
   },
   "option_title": {
     "message": "ActiveX for Chrome设置"
   },
   "url_desp": {
-    "message": "当打开以下列表列出的URL时，页面中的ActiveX控件会自动激活。按行分隔。"
+    "message": "请输入需要使用ActiveX控件的网站的URL，每行一项。"
   },
   "url_format": {
-    "message" : "URL的输入格式为 <scheme>://<host>/<path> .可使用*代替任意数量字符。注意<host>后面的/及<path>不可省略，如https://*.foo.com/*"
+    "message" : "URL的输入格式为 scheme://host/path .可使用*代替任意数量字符。注意host后面的斜杠不可省略，如“https://*.icbc.com.cn/*”, “*://*.google.com/*”"
   },
   "url_regex": {
     "message" : "如要使用正则表达式，请在该行前加上 r/。如:r/https:\\/\\/[a-z\\.]*\\.com\\/[0-9]*.html"
   },
   "clsid_desp": {
-    "message": "可信的CLSID列表，按行分隔。这些CLSID的控件将在所有网页中启用。"
+    "message": "按控件类型匹配，请在下面输入可信控件的CLSID，按行分隔。这些CLSID的控件将在所有网页中启用。"
   },
   "clsid_format": {
     "message": "输入时不能省略{}及连接符 - 。例如： {ACACC6EB-1FBA-4E13-A729-1234567854F8} 。"
   },
   "given_setting": {
-    "message": "你可以在http://code.google.com/p/np-activex/wiki/ChinaSettings查看提供的预定义选项。"
+    "message": "你可以在<a href=\"http://code.google.com/p/np-activex/wiki/ChinaSettings\">此处</a>查看一些中国的网上银行推荐设置"
   },
   "copyright": {
     "message": "本插件由eagleonhill制作"
   },
   "submit_issue": {
-    "message": "若需要汇报不兼容网站，请点击此处！！"
+    "message": "若需要汇报不兼容网站，请点击此处，以方便我们修复。"
   }
 }
