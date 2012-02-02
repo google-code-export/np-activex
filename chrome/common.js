@@ -25,3 +25,11 @@ function startListener() {
       }
     });
 }
+
+function showWelcome(firstRun) {
+  var url = 'options.html';
+  if (firstRun) {
+    url += '?first=1';
+  }
+  open(url);
+}

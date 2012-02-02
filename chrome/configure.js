@@ -145,11 +145,19 @@ with (ActiveXConfig) {
 
 function loadLocalSetting() {
   var setting = null;
+  var first = false;
   if (localStorage.setting) {
     setting = JSON.parse(localStorage.setting);
   } else {
-    return new ActiveXConfig(getDefaultSetting());
+    first = true;
+    setting = getDefaultSetting();
   }
-  return new ActiveXConfig(setting);
+  var config = new ActiveXConfig(setting);
+  if (!setting.notified && config.url_matches.length == 0) {
+    showWelcome(first);
+  }
+  setting.notified = true;
+  config.save();
+  return config;
 }
 
