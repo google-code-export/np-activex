@@ -26,3 +26,51 @@ function startListener() {
     });
 }
 
+(function (){
+  var tabStatus = {};
+  var greenIcon = chrome.extension.getURL('icon16.png');
+  var grayIcon = chrome.extension.getURL('icon16-gray.png');
+  var errorIcon = chrome.extension.getURL('icon16-error.png');
+  responseCommands.ResetPageIcon = function(request, tab, sendResponse) {
+    delete tabStatus[tab.id];
+    chrome.pageAction.hide(tab.id);
+  };
+  responseCommands.DetectControl = function(request, tab, sendResponse) {
+    chrome.pageAction.show(tab.id);
+    if (!tabStatus[tab.id]) {
+      tabStatus[tab.id] = {count: 0, actived: 0, error: 0};
+    } 
+    var status = tabStatus[tab.id];
+    if (request.actived) {
+      ++status.actived;
+    }
+    ++status.count;
+    var title = "";
+    // TODO: error counting
+    if (status.error != 0) {
+      chrome.pageAction.setIcon({
+        tabId: tab.id,
+        path: errorIcon
+      });
+      title = $$('page_action_error');
+    } else if (status.count != status.actived) {
+      // Disabled..
+      chrome.pageAction.setIcon({
+        tabId: tab.id,
+        path: grayIcon
+      });
+      title = $$('page_action_disabled');
+    } else {
+      // OK
+      chrome.pageAction.setIcon({
+        tabId: tab.id,
+        path: greenIcon
+      });
+      title = $$('page_action_ok');
+    }
+    chrome.pageAction.setTitle({
+      tabId: tab.id,
+      title: title
+    });
+  }
+}());

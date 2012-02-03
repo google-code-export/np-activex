@@ -13,6 +13,11 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
+      "js": ["page_load.js"],
+      "run_at":"document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
       "all_frames": true,
       "js": ["configure.js", "inject_actions.js", "inject_start.js"],
       "run_at":"document_start"
@@ -28,6 +33,7 @@
              "48": "icon48.png",
              "128": "icon128.png" 
            },
+  "page_action": {},
   "options_page": "options.html",
   "plugins": [{
      "path": "npactivex.dll",
