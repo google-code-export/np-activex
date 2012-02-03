@@ -9,7 +9,7 @@ function executeScript(script) {
   var element = document.head || document.body ||
   document.documentElement || document;
   element.insertBefore(scriptobj, element.firstChild);
-  scriptobj.parentElement.removeChild(scriptobj);
+  element.removeChild(scriptobj);
 }
 
 // Allow form.id access
