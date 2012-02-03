@@ -42,6 +42,7 @@ function init(response) {
   }
   log('pagerule:' + JSON.stringify(config.pageRule));
   for (var i = 0; i < pendingObjects.length; ++i) {
+    pendingObjects[i].activex_process = false;
     process(pendingObjects[i]);
   }
   delete pendingObjects;
