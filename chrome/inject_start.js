@@ -40,15 +40,41 @@ function init(response) {
   } else {
     logs = [];
   }
-  log('pagerule:' + JSON.stringify(config.pageRule));
+  log('Page rule:' + JSON.stringify(config.pageRule));
   for (var i = 0; i < pendingObjects.length; ++i) {
     pendingObjects[i].activex_process = false;
     process(pendingObjects[i]);
+    cacheConfig();
   }
   delete pendingObjects;
 }
 
+function cacheConfig() {
+  sessionStorage.activex_config_cache = JSON.stringify(config);
+}
+
+function loadConfig(response) {
+  if (config) {
+    config = new ActiveXConfig(response);
+  } else {
+    init(response);
+  }
+  if (config.pageRule) {
+    cacheConfig();
+  }
+}
+
+function loadSessionConfig() {
+  var cache = sessionStorage.activex_config_cache;
+  if (cache) {
+    log('Loading config from session cache');
+    init(JSON.parse(cache));
+  }
+}
+
+loadSessionConfig();
+
 chrome.extension.sendRequest(
-    {command:"Configuration", href:location.href}, init);
+  {command:"Configuration", href:location.href}, loadConfig);
 
 window.addEventListener("beforeload", onBeforeLoading, true);
