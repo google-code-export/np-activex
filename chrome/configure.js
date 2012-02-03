@@ -244,9 +244,9 @@ ActiveXConfig.prototype = {
       if (id >= 0) {
         regex = this.cache.regex[id];
       } else if (rule.type == 'wild') {
-        regex = this.convertUrlWildCharToRegex(this.rules[i].value);
+        regex = this.convertUrlWildCharToRegex(rule.value);
       } else if (rule.type == 'regex') {
-        regex = new RegExp('^' + this.rules[i].value + '$', 'i');
+        regex = new RegExp('^' + rule.value + '$', 'i');
       }
 
       if (object.href && regex.test(object.href)) {
@@ -254,8 +254,8 @@ ActiveXConfig.prototype = {
       }
     } else if (rule.type == "clsid") {
       if (object.clsid) {
-        var v1 = clsidPattern.match(rule.value.toUpperCase())[0];
-        var v2 = clsidPattern.match(object.clsid.toUpperCase())[0];
+        var v1 = clsidPattern.exec(rule.value.toUpperCase())[0];
+        var v2 = clsidPattern.exec(object.clsid.toUpperCase())[0];
         if (v1 == v2 && v1) {
           return true;
         }
@@ -383,9 +383,6 @@ ActiveXConfig.prototype = {
     if (this.pageSide) {
       return;
     }
-    if (updater) {
-      updater.trigger('setting');
-    }
     if (item == 'defaultRules') {
       for (var i in this.defaultRules) {
         if (!(i in original)) {
@@ -399,6 +396,9 @@ ActiveXConfig.prototype = {
       }
     }
     this.updateCache(item);
+    if (updater) {
+      updater.trigger('setting');
+    }
     this.save();
   },
 
@@ -418,7 +418,7 @@ ActiveXConfig.prototype = {
         var cacheId = this.cache.validRules.push(rule) - 1;
 
         if (rule.type == 'clsid') {
-          this.clsidRules.push(rule);
+          this.cache.clsidRules.push(rule);
         } else if (rule.type == 'wild') {
           this.cache.regex[cacheId] =
           this.convertUrlWildCharToRegex(rule.value);
