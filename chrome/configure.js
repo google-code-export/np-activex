@@ -386,12 +386,7 @@ ActiveXConfig.prototype = {
     if (item == 'defaultRules') {
       for (var i in this.defaultRules) {
         if (!(i in original)) {
-          this.order.push({
-            position: 'default',
-            status: 'disabled',
-            identifier: i
-          });
-          console.log("Add new default rule: " + i);
+          this.addDefaultRule(i);
         }
       }
     }
@@ -401,7 +396,48 @@ ActiveXConfig.prototype = {
     }
     this.save();
   },
-
+  addDefaultRule: function(id) {
+    var rule = this.defaultRules[id];
+    console.log("Add new default rule: ", rule);
+    var custom = null;
+    if (rule.type == 'clsid') {
+      for (var i in this.rules) {
+        var info = {href: "not-a-URL-/", clsid: rule.value};
+        if (this.isRuleMatched(this.rules[i], info, -1)) {
+          custom = this.rules[i];
+          break;
+        }
+      }
+    } else if (rule.keyword && rule.testUrl) {
+      // Try to find matching custom rule
+      for (var i in this.rules) {
+        if (this.isRuleMatched(this.rules[i], {href: rule.testUrl}, -1)) {
+          if (this.rules[i].value.toLowerCase().indexOf(rule.keyword) != -1) {
+            custom = this.rules[i];
+            break;
+          }
+        }
+      }
+    }
+    var newStatus = 'disabled';
+    if (custom) {
+      console.log('Convert custom rule', custom, ' to default', rule);
+      // Found a custom rule which is similiar to this default rule.
+      newStatus = 'enabled';
+      // Remove old one
+      delete this.rules[custom.identifier];
+      for (var i = 0; i < this.order.length; ++i) {
+        if (this.order[i].identifier == custom.identifier) {
+          this.order.splice(i, 1);
+        }
+      }
+    }
+    this.order.push({
+      position: 'default',
+      status: newStatus,
+      identifier: id
+    });
+  },
   updateCache: function(item) {
     if (this.pageSide) {
       return;
