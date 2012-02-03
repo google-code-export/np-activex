@@ -76,6 +76,11 @@ function getClsid(obj) {
   return "{" + clsid + "}";
 }
 
+function notify(data) {
+  data.command = 'DetectControl';
+  chrome.extension.sendRequest(data);
+}
+
 function process(obj) {
   if (obj.activex_process)
     return;
@@ -99,6 +104,9 @@ function process(obj) {
     if (obj.id != "") {
       checkForm(new_obj);
     }
+    notify({href: location.href, clsid: clsid, actived: true});
+  } else {
+    notify({href: location.href, clsid: clsid, actived: false});
   }
 }
 
