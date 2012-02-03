@@ -18,8 +18,6 @@ function onBeforeSendHeaders(details) {
       break;
     }
   }
-  console.log('update useragent ' + details.url);
-  console.log(agents[rule.userAgent]);
   return {requestHeaders: details.requestHeaders};
 }
 
