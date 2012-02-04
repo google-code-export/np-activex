@@ -2,6 +2,7 @@
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
 
+var baseDir = '/setting/';
 var rules = [];
 var scripts = [];
 
@@ -91,7 +92,7 @@ var ruleProps = [ {
 
 var currentScript = -1;
 function showScript(id) {
-  var url = '../' + scripts[id].url;
+  var url = baseDir + scripts[id].url;
   currentScript = id;
   $(scriptEditor).text('Loading.....');
   $(scriptEditor).load(url, undefined, function(value) {
@@ -101,7 +102,7 @@ function showScript(id) {
 }
 
 function saveToFile(file, value) {
-  $.ajax('upload.php', {
+  $.ajax(baseDir + 'upload.php', {
     type: "POST",
     data: {
       file: file,
@@ -116,7 +117,7 @@ function saveScript(id) {
   if (value == origScript) {
     return;
   }
-  var file = '../' + scripts[id].url;
+  var file = scripts[id].url;
   ++scripts[id].version;
   scriptList.updateLine(scriptList.getLine(id));
   saveToFile(file, value);
@@ -269,18 +270,18 @@ function serialize(list) {
 }
 
 function save() {
-  saveToFile('../setting.json', serialize(rules));
-  saveToFile('../scripts.json', serialize(scripts));
+  saveToFile('setting.json', serialize(rules));
+  saveToFile('scripts.json', serialize(scripts));
   dirty= false;
   freezeIdentifier(ruleList);
   freezeIdentifier(scriptList);
 }
 
 function reload() {
-  $.ajax('../setting.json', {
+  $.ajax(baseDir + 'setting.json', {
     success: loadRules
   });
-  $.ajax('../scripts.json', {
+  $.ajax(baseDir + 'scripts.json', {
     success: loadScripts
   });
   dirty = false;
