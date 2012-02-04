@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="list.css" />
+    <link rel="stylesheet" type="text/css" href="editor.css" />
+		<link type="text/css" href="jquery-ui-1.8.17.custom.css" rel="stylesheet" />
+    <script src="jquery-1.7.min.js"></script>
+		<script src="jquery-ui-1.8.17.custom.min.js"></script>
+    <script src="list.js"></script>
+    <script src="listtypes.js"></script>
+    <script src="editor.js"></script>
+  </head>
+  <body>
+    <div id="tabs">
+      <ul>
+        <li><a href="#rules">Rules</a></li>
+        <li><a href="#scripts">Scripts</a></li>
+      </ul>
+      <div id="rules">
+        <div id="ruleTable">
+        </div>
+        <div>
+          <button id="addRule">Add</button>
+          <button id="deleteRule">Delete</button>
+          <button class="doSave">Save</button>
+        </div>
+      </div>
+      <div id="scripts">
+        <div id="scriptTable">
+        </div>
+        <div>
+          <button id="addScript">Add</button>
+          <button id="deleteScript">Delete</button>
+          <button class="doSave">Save</button>
+        </div>
+      </div>
+    </div>
+    <div id="scriptDialog">
+      <textarea id="scriptEditor"></textarea>
+    </div>
+  </body>
+</html>
