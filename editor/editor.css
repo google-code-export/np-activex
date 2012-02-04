@@ -30,6 +30,10 @@ div[property=script] {
   width: 200px
 }
 
+div[property=description] {
+  width: 300px
+}
+
 div[property=url] {
   width: 300px
 }

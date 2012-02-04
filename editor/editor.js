@@ -5,6 +5,7 @@
 var baseDir = '/setting/';
 var rules = [];
 var scripts = [];
+var issues = [];
 
 var dirty = false;
 
@@ -159,6 +160,38 @@ var scriptProps = [{
   }
 }];
 
+var issueProps = [{
+  header: "Identifier",
+  property: "identifier",
+  type: "input"
+}, {
+  header: "Mode",
+  property: "type",
+  type: "select",
+  option: "static",
+  options: [
+    {value: "wild", text: "WildChar"},
+    {value: "regex", text: "RegEx"},
+    {value: "clsid", text: "CLSID"}
+  ]
+}, {
+  header: "Pattern",
+  property: "value",
+  type: "input"
+}, {
+  header: "Description",
+  property: "description",
+  type: "input"
+}, {
+  header: "IssueId",
+  property: "issueId",
+  type: "input"
+}, {
+  header: "url",
+  property: "url",
+  type: "input"
+}];
+
 // The JSON formatter is from http://joncom.be/code/javascript-json-formatter/
 function FormatJSON(oData, sIndent) {
   function RealTypeOf(v) {
@@ -251,6 +284,15 @@ function loadRules(value) {
   freezeIdentifier(ruleList);
 }
 
+function loadIssues(value) {
+  issues = [];
+  for (var i in value) {
+    issues.push(value[i]);
+  }
+  issueList.refresh();
+  freezeIdentifier(issueList);
+}
+
 function loadScripts(value) {
   scripts = [];
   for (var i in value) {
@@ -272,6 +314,7 @@ function serialize(list) {
 function save() {
   saveToFile('setting.json', serialize(rules));
   saveToFile('scripts.json', serialize(scripts));
+  saveToFile('issues.json', serialize(issues));
   dirty= false;
   freezeIdentifier(ruleList);
   freezeIdentifier(scriptList);
@@ -284,6 +327,9 @@ function reload() {
   $.ajax(baseDir + 'scripts.json', {
     success: loadScripts
   });
+  $.ajax(baseDir + 'issues.json', {
+    success: loadIssues
+  });
   dirty = false;
 }
 
@@ -292,7 +338,7 @@ function freezeIdentifier(list) {
   .addClass('readonly');
 }
 
-var scriptList, ruleList;
+var scriptList, ruleList, issueList;
 
 var scriptItems = [];
 
@@ -325,6 +371,16 @@ $(document).ready(function() {
     dirty = true;
   });
 
+  issueList = new List({
+    props: issueProps,
+    main: $('#issueTable'),
+    getItems: function() {return issues;}
+  });
+  issueList.init();
+  $(issueList).bind('updated', function() {
+    dirty = true;
+  });
+
   reload();
 
   window.onbeforeunload=function() {
@@ -336,14 +392,22 @@ $(document).ready(function() {
   $('#addRule').click(function() {
     ruleList.startEdit(ruleList.newLine);
   }).button();
-  $('#addScript').click(function() {
-    scriptList.startEdit(scriptList.newLine);
-  }).button();
   $('#deleteRule').click(function() {
     ruleList.remove(ruleList.selectedLine);
   }).button();
+
+  $('#addScript').click(function() {
+    scriptList.startEdit(scriptList.newLine);
+  }).button();
   $('#deleteScript').click(function() {
     scriptList.remove(scriptList.selectedLine);
+  }).button();
+
+  $('#addIssue').click(function() {
+    issueList.startEdit(issueList.newLine);
+  }).button();
+  $('#deleteIssue').click(function() {
+    issueList.remove(issueList.selectedLine);
   }).button();
 
   $('.doSave').each(function() {
