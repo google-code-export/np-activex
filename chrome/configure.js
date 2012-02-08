@@ -18,17 +18,25 @@ Order: {
   identifier:     identifier of rule
 }
 
+Issue: {
+  type:           Can be "wild", "regex", "clsid"
+  value:          pattern, correspond to type
+  description:    The description of this issue
+  issueId:        Issue ID on issue tracking page
+  url:            optional, support page for issue tracking. 
+                  Use code.google.com if omitted.
+}
+
 ServerSide: 
 ActiveXConfig: {
   version:        version
   rules:          object of user-defined rules, propertied by identifiers
   defaultRules:   ojbect of default rules
   scripts:        mapping of workaround scripts, by identifiers. metadatas
-  localScripts:   contents of scripts.
+  localScripts:   metadatas of local scripts.
   order:          the order of rules
-  notify:         array, notify user when it's available.
   cache:          to accerlerate processing
-  issues:         //TODO: The bugs/unsuppoted sites that we have accepted.
+  issues:         The bugs/unsuppoted sites that we have accepted.
   misc:{          
     lastUpdate:   last timestamp of updating
     logEnabled:   log
@@ -73,11 +81,10 @@ function ActiveXConfig(input)
   if (input.version == '3') {
     settings = input;
     settings.__proto__ = ActiveXConfig.prototype;
-    settings.updateCache();
   } else {
     settings = ActiveXConfig.convertVersion(input);
-    settings.updateCache();
   }
+  settings.updateCache();
   return settings;
 }
 
@@ -217,6 +224,14 @@ ActiveXConfig.prototype = {
       }
     }
     return null;
+  },
+
+  getMatchedIssue: function(filter) {
+    for (var i in this.issues) {
+      if (this.isRuleMatched(this.issues[i], filter)) {
+        return this.issues[i];
+      }
+    }
   },
 
   validateRule: function(rule) {

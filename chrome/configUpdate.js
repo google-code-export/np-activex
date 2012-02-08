@@ -119,6 +119,14 @@ UpdateSession.prototype = {
           trigger('itemupdated', ['scripts', nv]);
         }
       });
+
+      updateFile({
+        url: 'issues.json',
+        success: function(nv, status, xhr) {
+          trigger('itemupdated', ['issues', nv]);
+        }
+      });
+
     }
   }
 }
@@ -150,17 +158,23 @@ updater.bind('updating', function() {
 updater.bind('itemupdated', function(e, item, nv) {
   console.log('itemUpdated ' + item);
   updater.items[item] = true;
-  if (item == 'setting') {
-    var old = setting.defaultRules;
-    setting.defaultRules = nv;
-    setting.update('defaultRules', old);
-  } else if (item == 'scripts') {
-    var old = setting.scripts;
-    setting.scripts = nv;
-    setting.update('scripts', old);
-  }
-  if (updater.items['setting'] && updater.items['scripts']) {
-    setting.updateAllScripts();
+  if (item == 'issues') {
+    var old = setting.issues;
+    setting.issues = nv;
+    setting.update('issues', old);
+  } else {
+    if (item == 'setting') {
+      var old = setting.defaultRules;
+      setting.defaultRules = nv;
+      setting.update('defaultRules', old);
+    } else if (item == 'scripts') {
+      var old = setting.scripts;
+      setting.scripts = nv;
+      setting.update('scripts', old);
+    }
+    if (updater.items['setting'] && updater.items['scripts']) {
+      setting.updateAllScripts();
+    }
   }
 });
 
