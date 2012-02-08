@@ -35,6 +35,11 @@ function startListener() {
     delete tabStatus[tab.id];
     chrome.pageAction.hide(tab.id);
   };
+
+  chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+    delete tabStatus[tabId];
+  });
+
   responseCommands.DetectControl = function(request, tab, sendResponse) {
     chrome.pageAction.show(tab.id);
     if (!tabStatus[tab.id]) {
@@ -46,7 +51,10 @@ function startListener() {
     }
     ++status.count;
     var title = "";
-    // TODO: error counting
+    if (setting.getMatchedIssue(request)) {
+      ++status.error;
+    }
+
     if (status.error != 0) {
       chrome.pageAction.setIcon({
         tabId: tab.id,
