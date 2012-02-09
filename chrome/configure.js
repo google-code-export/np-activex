@@ -218,20 +218,24 @@ ActiveXConfig.prototype = {
       rules = this.cache.validRules;
       useCache = true;
     }
-    for (var i = 0; i < rules.length; ++i) {
-      if (this.isRuleMatched(rules[i], object, useCache ? i : -1)) {
-        return rules[i];
+    if (Array.isArray(rules)) {
+      for (var i = 0; i < rules.length; ++i) {
+        if (this.isRuleMatched(rules[i], object, useCache ? i : -1)) {
+          return rules[i];
+        }
+      }
+    } else {
+      for (var i in rules) {
+        if (this.isRuleMatched(rules[i], filter)) {
+          return rules[i];
+        }
       }
     }
     return null;
   },
 
   getMatchedIssue: function(filter) {
-    for (var i in this.issues) {
-      if (this.isRuleMatched(this.issues[i], filter)) {
-        return this.issues[i];
-      }
-    }
+    return getFirstMatchedRule(filter);
   },
 
   validateRule: function(rule) {
