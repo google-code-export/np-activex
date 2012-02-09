@@ -79,8 +79,9 @@ function getClsid(obj) {
 }
 
 function notify(data) {
+  connect();
   data.command = 'DetectControl';
-  chrome.extension.sendRequest(data);
+  port.postMessage(data);
 }
 
 function process(obj) {
@@ -101,6 +102,7 @@ function process(obj) {
     pendingObjects.push(obj);
     return;
   }
+  connect();
   var clsid = getClsid(obj);
 
   if (config.shouldEnable({href: location.href, clsid:clsid})) {
@@ -117,7 +119,7 @@ function process(obj) {
 
 function replaceDocument() {
   var s = document.getElementsByTagName("object");
-  log("found " + s.length + " object(s) on page " + location.href);
+  log("found " + s.length + " object(s) on page");
   for (var i = 0; i < s.length; ++i) {
     process(s[i]);
   }

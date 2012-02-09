@@ -2,83 +2,135 @@
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
 
-var responseCommands = new Object();
-
-responseCommands.Configuration = function(request, tab, sendResponse) {
-  sendResponse(setting.getPageConfig(request.href));
-}
+var tabStatus = {};
 
 function startListener() {
-  chrome.extension.onRequest.addListener
-    (function(request, sender, sendResponse) {
+  chrome.extension.onConnect.addListener(function(port) {
+    if (!port.sender.tab) {
+      console.error('Not connect from tab');
+      return;
+    }
+    initPort(port);
+  });
+  chrome.extension.onRequest.addListener(
+    function(request, sender, sendResponse) {
       if (!sender.tab) {
-        // Must call from some tab.
-        console.error("Illegal call");
-        return;
-      }
-
-      var resp = responseCommands[request.command];
-      if (resp) {
-        resp(request, sender.tab, sendResponse);
+        console.error('Request from non-tab');
+      } else if (request.command == 'Configuration') {
+        sendResponse(setting.getPageConfig(request.href));
       } else {
-        console.error("Unknown command " + request.command);
+        sendResponse({});
       }
-    });
+    }
+  );
 }
 
-(function (){
-  var tabStatus = {};
-  var greenIcon = chrome.extension.getURL('icon16.png');
-  var grayIcon = chrome.extension.getURL('icon16-gray.png');
-  var errorIcon = chrome.extension.getURL('icon16-error.png');
-  responseCommands.ResetPageIcon = function(request, tab, sendResponse) {
-    delete tabStatus[tab.id];
-    chrome.pageAction.hide(tab.id);
-  };
+var greenIcon = chrome.extension.getURL('icon16.png');
+var grayIcon = chrome.extension.getURL('icon16-gray.png');
+var errorIcon = chrome.extension.getURL('icon16-error.png');
+var responseCommands = {};
 
-  chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-    delete tabStatus[tabId];
-  });
-
-  responseCommands.DetectControl = function(request, tab, sendResponse) {
-    chrome.pageAction.show(tab.id);
-    if (!tabStatus[tab.id]) {
-      tabStatus[tab.id] = {count: 0, actived: 0, error: 0};
-    } 
-    var status = tabStatus[tab.id];
-    if (request.actived) {
-      ++status.actived;
-    }
-    ++status.count;
-    var title = "";
-    if (setting.getMatchedIssue(request)) {
-      ++status.error;
-    }
-
-    if (status.error != 0) {
-      chrome.pageAction.setIcon({
-        tabId: tab.id,
-        path: errorIcon
-      });
-      title = $$('page_action_error');
-    } else if (status.count != status.actived) {
-      // Disabled..
-      chrome.pageAction.setIcon({
-        tabId: tab.id,
-        path: grayIcon
-      });
-      title = $$('page_action_disabled');
-    } else {
-      // OK
-      chrome.pageAction.setIcon({
-        tabId: tab.id,
-        path: greenIcon
-      });
-      title = $$('page_action_ok');
-    }
-    chrome.pageAction.setTitle({
-      tabId: tab.id,
-      title: title
-    });
+function initPort(port) {
+  var tabId = port.sender.tab.id;
+  if (!(tabId in tabStatus)) {
+    tabStatus[tabId] = {
+      count: 0,
+      actived: 0,
+      error: 0,
+      logs: {},
+      objs: {},
+      frames: 0,
+      tracking: false
+    };
   }
-}());
+  var status = tabStatus[tabId];
+  var frameId = tabStatus[tabId].frames++;
+  status.logs[frameId] = [];
+  status.objs[frameId] = [];
+
+  port.onMessage.addListener(function(request) {
+    var resp = responseCommands[request.command];
+    if (resp) {
+      delete request.command;
+      resp(request, tabId, frameId);
+    } else {
+      console.error("Unknown command " + request.command);
+    }
+  });
+  port.onDisconnect.addListener(function() {
+    for (var i = 0; i < status.objs[frameId].length; ++i) {
+      countTabObject(status, status.objs[frameId][i], -1);
+    }
+    showTabStatus(tabId);
+    if (!status.tracking) {
+      // Clean up.
+      status.logs[frameId] = [];
+      status.objs[frameId] = [];
+    }
+  });
+}
+
+chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
+  //resetTab(tabId);
+});
+
+function countTabObject(status, info, delta) {
+  if (info.actived) {
+    status.actived += delta;
+  }
+  status.count += delta;
+  if (info.error || setting.getMatchedIssue(info)) {
+    info.error = true;
+    status.error += delta;
+  }
+}
+
+function showTabStatus(tabId) {
+  var status = tabStatus[tabId];
+  var title = "";
+  if (status.count == 0) {
+    chrome.pageAction.hide(tabId);
+  } else {
+    chrome.pageAction.show(tabId);
+  }
+
+  if (status.count == 0) {
+    // Do nothing..
+  } else if (status.error != 0) {
+    chrome.pageAction.setIcon({
+      tabId: tabId,
+      path: errorIcon
+    });
+    title = $$('page_action_error');
+  } else if (status.count != status.actived) {
+    // Disabled..
+    chrome.pageAction.setIcon({
+      tabId: tabId,
+      path: grayIcon
+    });
+    title = $$('page_action_disabled');
+  } else {
+    // OK
+    chrome.pageAction.setIcon({
+      tabId: tabId,
+      path: greenIcon
+    });
+    title = $$('page_action_ok');
+  }
+  chrome.pageAction.setTitle({
+    tabId: tabId,
+    title: title
+  });
+}
+
+responseCommands.DetectControl = function(request, tabId, frameId) {
+  var status = tabStatus[tabId];
+  status.objs[frameId].push(request);
+
+  countTabObject(status, request, 1);
+  showTabStatus(tabId);
+}
+
+responseCommands.Log = function(request, tabId, frameId) {
+  tabStatus[tabId].logs[frameId].push(request.message);
+}
