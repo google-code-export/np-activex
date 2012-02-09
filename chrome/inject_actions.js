@@ -2,6 +2,8 @@
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
 
+var FLASH_CLSID = '{d27cdb6e-ae6d-11cf-96b8-444553540000}';
+
 function executeScript(script) {
   var scriptobj = document.createElement("script");
   scriptobj.innerHTML = script;
@@ -86,6 +88,9 @@ function process(obj) {
     return;
   if (obj.type != "" || !obj.hasAttribute("classid"))
     return;
+  if (getClsid(obj).toLowerCase() == FLASH_CLSID) {
+    return;
+  }
 
   obj.activex_process = true;
 
