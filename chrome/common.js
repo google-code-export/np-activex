@@ -134,3 +134,27 @@ responseCommands.DetectControl = function(request, tabId, frameId) {
 responseCommands.Log = function(request, tabId, frameId) {
   tabStatus[tabId].logs[frameId].push(request.message);
 }
+
+function generateLogFile(tabId) {
+  var status = tabStatus[tabId];
+  if (!status) {
+    return '';
+  }
+  var ret = '';
+  for (var i = 0; i < status.frames; ++i) {
+    if (i) {
+      ret += '\n\n';
+    }
+    ret += 'Frame ' + (i + 1) + '\n\n';
+    ret += 'Objects:\n';
+    for (var j = 0; j < status.objs[i].length; ++j) {
+      ret += JSON.stringify(status.objs[i][j]) + '\n';
+    }
+    ret += '\n';
+    ret += 'Log:\n';
+    for (var j = 0; j < status.logs[i].length; ++j) {
+      ret += status.logs[i][j] + '\n';
+    }
+  }
+  return ret;
+}
