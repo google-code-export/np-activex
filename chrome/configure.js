@@ -193,6 +193,7 @@ ActiveXConfig.prototype = {
       position: 'custom',
       identifier: identifier
     });
+    this.update()
   },
 
   getPageConfig: function(href) {
@@ -226,7 +227,7 @@ ActiveXConfig.prototype = {
       }
     } else {
       for (var i in rules) {
-        if (this.isRuleMatched(rules[i], filter)) {
+        if (this.isRuleMatched(rules[i], object)) {
           return rules[i];
         }
       }
@@ -235,7 +236,18 @@ ActiveXConfig.prototype = {
   },
 
   getMatchedIssue: function(filter) {
-    return getFirstMatchedRule(filter);
+    return this.getFirstMatchedRule(filter, this.issues);
+  },
+
+  activeRule: function(rule) {
+    for (var i = 0; i < this.order.length; ++i) {
+      if (this.order[i].identifier == rule.identifier) {
+        if (this.order[i].status == 'disabled') {
+          this.order[i].status = 'enabled';
+        }
+        break;
+      }
+    }
   },
 
   validateRule: function(rule) {
