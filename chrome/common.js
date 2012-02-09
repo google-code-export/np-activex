@@ -37,6 +37,7 @@ function initPort(port) {
       count: 0,
       actived: 0,
       error: 0,
+      issueId: null,
       logs: {},
       objs: {},
       frames: 0,
@@ -79,9 +80,11 @@ function countTabObject(status, info, delta) {
     status.actived += delta;
   }
   status.count += delta;
-  if (info.error || setting.getMatchedIssue(info)) {
+  var issue;
+  if (info.error || (issue = setting.getMatchedIssue(info))) {
     info.error = true;
     status.error += delta;
+    status.issueId = issue.identifier;
   }
 }
 
@@ -96,7 +99,7 @@ function showTabStatus(tabId) {
 
   chrome.pageAction.setPopup({
     tabId: tabId,
-    popup: 'popup.html?tab=' + tabId
+    popup: 'popup.html?tabid=' + tabId
   });
   if (status.count == 0) {
     // Do nothing..
