@@ -94,6 +94,10 @@ function showTabStatus(tabId) {
     chrome.pageAction.show(tabId);
   }
 
+  chrome.pageAction.setPopup({
+    tabId: tabId,
+    popup: 'popup.html?tab=' + tabId
+  });
   if (status.count == 0) {
     // Do nothing..
   } else if (status.error != 0) {
