@@ -40,6 +40,7 @@ ActiveXConfig: {
   misc:{          
     lastUpdate:   last timestamp of updating
     logEnabled:   log
+    tracking:     Allow GaS tracking.
     verbose:      verbose level of logging
   }
 }                 
@@ -72,6 +73,7 @@ function ActiveXConfig(input)
       misc: {
         lastUpdate: 0,
         logEnabled: false,
+        tracking: true,
         verbose: 3
       }
     };
@@ -162,13 +164,13 @@ ActiveXConfig.prototype = {
   // Only used for user-scripts
   shouldEnable: function(object) {
     if (this.pageRule) {
-      return true;
+      return this.pageRule;
     }
     var clsidRule = this.getFirstMatchedRule(object, this.clsidRules);
     if (clsidRule) {
-      return true;
+      return clsidRule;
     } else {
-      return false;
+      return null;
     }
   },
 
@@ -194,6 +196,7 @@ ActiveXConfig.prototype = {
       identifier: identifier
     });
     this.update()
+    trackAddCustomRule(newItem);
   },
 
   getPageConfig: function(href) {
