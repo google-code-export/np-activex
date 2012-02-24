@@ -73,7 +73,13 @@ function initPort(port) {
       countTabObject(status, status.objs[frameId][i], -1);
     }
     showTabStatus(tabId);
-    if (!status.tracking) {
+    if (status.tracking) {
+      if (status.count == 0) {
+        // Open the log page.
+        window.open('log.html?tabid=' + tabId);
+        status.tracking = false;
+      }
+    } else {
       // Clean up.
       status.logs[frameId] = [];
       status.objs[frameId] = [];
@@ -82,7 +88,11 @@ function initPort(port) {
 }
 
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-  //resetTab(tabId);
+  var TIMEOUT = 1000 * 60 * 5;
+  // clean up after 5 mins.
+  window.setTimeout(function() {
+    delete tabStatus[tabId];
+  }, TIMEOUT);
 });
 
 function countTabObject(status, info, delta) {
@@ -95,6 +105,8 @@ function countTabObject(status, info, delta) {
     trackNotUse(info.href);
   }
   status.count += delta;
+  console.log(status.count);
+  console.trace();
   var issue = setting.getMatchedIssue(info);
   if (issue) {
     status.error += delta;
