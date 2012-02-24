@@ -116,45 +116,49 @@ function countTabObject(status, info, delta) {
 }
 
 function showTabStatus(tabId) {
-  var status = tabStatus[tabId];
-  var title = "";
-  if (status.count == 0) {
-    chrome.pageAction.hide(tabId);
-  } else {
-    chrome.pageAction.show(tabId);
-  }
+  try {
+    var status = tabStatus[tabId];
+    var title = "";
+    if (status.count == 0) {
+      chrome.pageAction.hide(tabId);
+    } else {
+      chrome.pageAction.show(tabId);
+    }
 
-  chrome.pageAction.setPopup({
-    tabId: tabId,
-    popup: 'popup.html?tabid=' + tabId
-  });
-  if (status.count == 0) {
-    // Do nothing..
-  } else if (status.error != 0) {
-    chrome.pageAction.setIcon({
+    chrome.pageAction.setPopup({
       tabId: tabId,
-      path: errorIcon
+      popup: 'popup.html?tabid=' + tabId
     });
-    title = $$('page_action_error');
-  } else if (status.count != status.actived) {
-    // Disabled..
-    chrome.pageAction.setIcon({
+    if (status.count == 0) {
+      // Do nothing..
+    } else if (status.error != 0) {
+      chrome.pageAction.setIcon({
+        tabId: tabId,
+        path: errorIcon
+      });
+      title = $$('status_error');
+    } else if (status.count != status.actived) {
+      // Disabled..
+      chrome.pageAction.setIcon({
+        tabId: tabId,
+        path: grayIcon
+      });
+      title = $$('status_disabled');
+    } else {
+      // OK
+      chrome.pageAction.setIcon({
+        tabId: tabId,
+        path: greenIcon
+      });
+      title = $$('status_ok');
+    }
+    chrome.pageAction.setTitle({
       tabId: tabId,
-      path: grayIcon
+      title: title
     });
-    title = $$('page_action_disabled');
-  } else {
-    // OK
-    chrome.pageAction.setIcon({
-      tabId: tabId,
-      path: greenIcon
-    });
-    title = $$('page_action_ok');
+  } catch (e) {
+    // Tab is closed
   }
-  chrome.pageAction.setTitle({
-    tabId: tabId,
-    title: title
-  });
 }
 
 responseCommands.DetectControl = function(request, tabId, frameId) {
