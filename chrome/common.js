@@ -3,6 +3,16 @@
 // found in the LICENSE file.
 
 var tabStatus = {};
+var version;
+
+(function getVersion() {
+  $.ajax('manifest.json', {
+    success: function (v){
+      v = JSON.parse(v);
+      version = v.version;
+    }
+  });
+})();
 
 function startListener() {
   chrome.extension.onConnect.addListener(function(port) {
@@ -155,11 +165,14 @@ function generateLogFile(tabId) {
     return '';
   }
   var ret = '';
+  ret += 'UserAgent: ' + navigator.userAgent + '\n';
+  ret += 'Extension version: ' + version + '\n';
+  ret += '\n';
   for (var i = 0; i < status.frames; ++i) {
     if (i) {
       ret += '\n\n';
     }
-    ret += 'Frame ' + (i + 1) + '\n\n';
+    ret += '------------ Frame ' + (i + 1) + ' ------------------\n';
     ret += 'Objects:\n';
     for (var j = 0; j < status.objs[i].length; ++j) {
       ret += JSON.stringify(status.objs[i][j]) + '\n';
