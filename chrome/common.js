@@ -10,6 +10,7 @@ var version;
     success: function (v){
       v = JSON.parse(v);
       version = v.version;
+      trackVersion();
     }
   });
 })();

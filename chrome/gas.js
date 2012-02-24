@@ -37,6 +37,10 @@ function trackIssue(issue) {
   _gaq.push(['_trackEvent', 'usage', 'error', '' + issue.identifier]);
 }
 
+function trackVersion(version) {
+  _gaq.push(['_trackEvent', 'option', 'version', version]);
+}
+
 function serializeRule(rule) {
   return rule.type[0] + ' ' + rule.value;
 }
