@@ -1,0 +1,19 @@
+.status {
+  font-size: 18px;
+  margin: 0 5px;
+}
+
+button {
+  width: 170px;
+  height: 30px;
+  margin: 4px;
+}
+
+button.defaultRule {
+  background-color: #0A0;
+}
+
+button.customRule {
+  background-color: #33f;
+}
+
