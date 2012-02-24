@@ -394,7 +394,8 @@ List.prototype = {
 
     // Can't select the new line.
     if (line && line.hasClass('newline')) {
-      return;
+      line = null;
+      id = List.ids.noline;
     }
     if (this.selectedLine == id) {
       return;

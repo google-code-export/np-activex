@@ -78,6 +78,10 @@ function cacheConfig() {
 function loadConfig(response) {
   if (config) {
     config = new ActiveXConfig(response);
+    var cache = sessionStorage.activex_config_cache;
+    if (cache) {
+      cacheConfig();
+    }
   } else {
     init(response);
   }

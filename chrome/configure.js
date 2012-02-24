@@ -251,6 +251,7 @@ ActiveXConfig.prototype = {
         break;
       }
     }
+    this.update();
   },
 
   validateRule: function(rule) {
