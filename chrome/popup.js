@@ -37,7 +37,9 @@ $(document).ready(function() {
       var issueUrl = "http://code.google.com/p/np-activex/issues/detail?id=";
       url = issueUrl + issue.issueId;
     }
-    $('#issue_track').attr('href', url);
+    $('#issue_track').click(function() {
+      window.open(url);
+    });
     $('#issue_view').show();
   }
 });
@@ -99,7 +101,7 @@ function showEnableBtns() {
 $(document).ready(function() {
   $('#submitissue').click(function() {
     tabInfo.tracking = true;
-    alert($$('issue_submitting'));
+    alert($$('issue_submitting_desp'));
   });
 });
 

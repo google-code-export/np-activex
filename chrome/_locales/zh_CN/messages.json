@@ -1,32 +1,108 @@
 ﻿{
   "plug_desp": {
-    "message": "使Chrome支持ActiveX控件。"
+    "message": "在Chrome中使用ActiveX控件"
+  },
+  "copyright": {
+    "message": "本扩展由eagleonhill制作"
+  },
+  "issue_page": {
+    "message": "如果你发现错误，请在此汇报给我们！"
   },
   "option_title": {
     "message": "ActiveX for Chrome设置"
   },
-  "url_desp": {
-    "message": "当打开以下列表列出的URL时，页面中的ActiveX控件会自动激活。按行分隔。"
+  "add": {
+    "message": "添加"
   },
-  "url_format": {
-    "message" : "URL的输入格式为 <scheme>://<host>/<path> .可使用*代替任意数量字符。注意<host>后面的/及<path>不可省略，如https://*.foo.com/*"
+  "delete": {
+    "message": "删除"
   },
-  "url_regex": {
-    "message" : "如要使用正则表达式，请在该行前加上 r/。如:r/https:\\/\\/[a-z\\.]*\\.com\\/[0-9]*.html"
+  "moveUp": {
+    "message": "上移"
   },
-  "clsid_desp": {
-    "message": "可信的CLSID列表，按行分隔。这些CLSID的控件将在所有网页中启用。"
+  "moveDown": {
+    "message": "下移"
   },
-  "clsid_format": {
-    "message": "输入时不能省略{}及连接符 - 。例如： {ACACC6EB-1FBA-4E13-A729-1234567854F8} 。"
+  "lastupdatetime": {
+    "message": "最后更新于"
   },
-  "given_setting": {
-    "message": "你可以在http://code.google.com/p/np-activex/wiki/ChinaSettings查看提供的预定义选项。"
+  "doUpdate": {
+    "message": "立即更新"
   },
-  "copyright": {
-    "message": "本插件由eagleonhill制作"
+  "log_enable": {
+    "message": "显示日志"
   },
-  "submit_issue": {
-    "message": "若需要汇报不兼容网站，请点击此处！！"
+  "tracking": {
+    "message": "允许发送统计数据"
+  },
+  "title": {
+    "message": "标题"
+  },
+  "mode": {
+    "message": "模式"
+  },
+  "WildChar": {
+    "message": "通配符"
+  },
+  "RegEx": {
+    "message": "正则表达式"
+  },
+  "CLSID": {
+    "message": "CLSID"
+  },
+  "pattern": {
+    "message": "匹配内容"
+  },
+  "user_agent": {
+    "message": "用户代理"
+  },
+  "helper_script": {
+    "message": "其它兼容脚本"
+  },
+  "update_progress": {
+    "message": "更新中 "
+  },
+  "status_ok": {
+    "message": "当前页面上的控件运行正常。"
+  },
+  "submitissue": {
+    "message": "报告问题"
+  },
+  "status_disabled": {
+    "message": "在当前页面发现未激活的控件，点击激活"
+  },
+  "status_error": {
+    "message": "有些控件可能不能正常运行"
+  },
+  "issue_desp": {
+    "message": "我们已经确认一些问题，导致当前页面的控件无法正常使用。我们将尽快修复。"
+  },
+  "issue_track": {
+    "message": "更多信息"
+  },
+  "refresh_needed": {
+    "message": "请刷新页面以应用更改"
+  },
+  "enable_default_rule": {
+    "message": "激活推荐规则 $rule$",
+    "placeholders": {
+      "rule": {
+        "content": "$1"
+      }
+    }
+  },
+  "add_rule_site": {
+    "message": "激活在 $site$ 上的所有控件",
+    "placeholders": {
+      "site": {
+        "content": "$1"
+      }
+    }
+  },
+  "add_rule_clsid": {
+    "message": "激活全部有同类CLSID的控件"
+  },
+  "issue_submitting_desp": {
+    "message": "请继续正常操作当前页面。报告向导将在页面关闭或跳转时打开。"
   }
 }

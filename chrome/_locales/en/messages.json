@@ -1,46 +1,108 @@
 ﻿{
   "plug_desp": {
-    "message": "Allow your chrome using ActiveX plugins."
-  },
-  "option_title": {
-    "message": "ActiveX for Chrome Settings"
-  },
-  "url_desp": {
-    "message": "The urls in the following list, one per line, will be qualified to load ActiveX plugins whenever possible"
-  },
-  "url_format": {
-    "message" : "The format should be like <scheme>://<host>/<path> . Use * to present any strings. Note the / after host cannot be omitted. For example: http://*.google.com/*,  *://*.bar.com/foo/*"
-  },
-  "url_regex": {
-    "message" : "To use Regular Expression, add \"/r\" before this line"
-  },
-  "clsid_desp": {
-    "message": "The trusted CLSIDs, one per line. All the plugins within the following CLSIDs will be actived on every page."
-  },
-  "clsid_format": {
-    "message": "Input with the barket and minus sign.\nFor example, {ACACC6EB-1FBA-4E13-A729-1234567854F8} ."
-  },
-  "log_title": {
-    "message": "ActiveX log"
-  },
-  "log_head": {
-    "message": "Log for tab $tabid$",
-    "placeholders": {
-      "tabid": {
-        "content": "$1"
-      }
-    }
-  },
-  "log_link": {
-    "message": "View ActiveX log"
-  },
-  "log_enable": {
-    "message": "Enable Log"
+    "message": "Use ActiveX controls in your Chrome"
   },
   "copyright": {
     "message": "This extension is made by eagleonhill."
   },
-  "submit_issue": {
-    "message": "To submit an issue, or for technical support, click here!!"
+  "issue_page": {
+    "message": "If you find some problems, report it here!!"
+  },
+  "option_title": {
+    "message": "ActiveX for Chrome Settings"
+  },
+  "add": {
+    "message": "Add"
+  },
+  "delete": {
+    "message": "Remove"
+  },
+  "moveUp": {
+    "message": "Move up"
+  },
+  "moveDown": {
+    "message": "Move down"
+  },
+  "lastupdatetime": {
+    "message": "Last update at"
+  },
+  "doUpdate": {
+    "message": "Update now"
+  },
+  "log_enable": {
+    "message": "Enable Log"
+  },
+  "tracking": {
+    "message": "Allow sending statistics data to us for better development"
+  },
+  "title": {
+    "message": "Title"
+  },
+  "mode": {
+    "message": "Mode"
+  },
+  "WildChar": {
+    "message": "WildChar"
+  },
+  "RegEx": {
+    "message": "RegEx"
+  },
+  "CLSID": {
+    "message": "CLSID"
+  },
+  "pattern": {
+    "message": "Pattern"
+  },
+  "user_agent": {
+    "message": "User Agent"
+  },
+  "helper_script": {
+    "message": "Other helper scripts"
+  },
+  "update_progress": {
+    "message": "Updating "
+  },
+  "status_ok": {
+    "message": "The controls on this page are working."
+  },
+  "submitissue": {
+    "message": "Report problems"
+  },
+  "status_disabled": {
+    "message": "Some ActiveX controls are detected, but not actived."
+  },
+  "status_error": {
+    "message": "Some ActiveX controls might not be working correctly."
+  },
+  "issue_desp": {
+    "message": "We've already found some problems which may cause the controls not working correctly. Fix soon."
+  },
+  "issue_track": {
+    "message": "Find details on the problem"
+  },
+  "refresh_needed": {
+    "message": "Refresh page to apply"
+  },
+  "enable_default_rule": {
+    "message": "Active predefined rule $rule$",
+    "placeholders": {
+      "rule": {
+        "content": "$1"
+      }
+    }
+  },
+  "add_rule_site": {
+    "message": "Active all controls on site $site$",
+    "placeholders": {
+      "site": {
+        "content": "$1"
+      }
+    }
+  },
+  "add_rule_clsid": {
+    "message": "Active controls with same CLSID"
+  },
+  "issue_submitting_desp": {
+    "message": "Please continue operating normally on this page. Report guide will pop after the current page is closed"
   }
 }
