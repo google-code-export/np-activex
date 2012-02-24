@@ -95,9 +95,12 @@ var currentScript = -1;
 function showScript(id) {
   var url = baseDir + scripts[id].url;
   currentScript = id;
-  $(scriptEditor).text('Loading.....');
-  $(scriptEditor).load(url, undefined, function(value) {
-    origScript = value;
+  $(scriptEditor).val('Loading.....');
+  $.ajax(url, {
+    success: function(value) {
+      origScript = value;
+      $(scriptEditor).val(value);
+    }
   });
   $('#scriptDialog').dialog('open');
 }
@@ -155,7 +158,7 @@ var scriptProps = [{
       $('button', this).text('Show');
     },
     command: function(e) {
-      showScript(e.data.list.getLineId(e.data.line), true);
+      showScript(Number(e.data.line.attr('row')), true);
     }
   }
 }];
@@ -390,21 +393,21 @@ $(document).ready(function() {
   }
 
   $('#addRule').click(function() {
-    ruleList.startEdit(ruleList.newLine);
+    ruleList.editNewLine();
   }).button();
   $('#deleteRule').click(function() {
     ruleList.remove(ruleList.selectedLine);
   }).button();
 
   $('#addScript').click(function() {
-    scriptList.startEdit(scriptList.newLine);
+    scriptList.editNewLine();
   }).button();
   $('#deleteScript').click(function() {
     scriptList.remove(scriptList.selectedLine);
   }).button();
 
   $('#addIssue').click(function() {
-    issueList.startEdit(issueList.newLine);
+    issueList.editNewLine();
   }).button();
   $('#deleteIssue').click(function() {
     issueList.remove(issueList.selectedLine);
