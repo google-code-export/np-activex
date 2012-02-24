@@ -4,10 +4,12 @@
 <script src="configure.js"> </script>
 <script src="web.js"> </script>
 <script src="configUpdate.js"> </script>
+<script src="gas.js"> </script>
 <script>
   var setting = loadLocalSetting();
   startListener();
   registerRequestListener();
 
   updater.update();
+  initGAS();
 </script>

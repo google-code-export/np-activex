@@ -78,13 +78,20 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 function countTabObject(status, info, delta) {
   if (info.actived) {
     status.actived += delta;
+    if (delta > 0) {
+      trackUse(info.rule);
+    }
+  } else if (delta > 0) {
+    trackNotUse(info.href);
   }
   status.count += delta;
-  var issue;
-  if (info.error || (issue = setting.getMatchedIssue(info))) {
-    info.error = true;
+  var issue = setting.getMatchedIssue(info);
+  if (issue) {
     status.error += delta;
     status.issueId = issue.identifier;
+    if (delta > 0) {
+      trackIssue(issue);
+    }
   }
 }
 

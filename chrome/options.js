@@ -12,8 +12,10 @@ function toggleRule(e) {
   if (item.position == 'default') {
     if (item.status == 'enabled') { 
       item.status = 'disabled';
+      trackDisable(item.identifier);
     } else if (item.status == 'disabled') {
       item.status = 'enabled';
+      trackEnable(item.identifier);
     }
   }
   line.blur();
@@ -280,4 +282,8 @@ $(document).ready(function() {
     save();
   })[0].checked = setting.misc.logEnabled;
 
+  $('#tracking').change(function(e) {
+    setting.misc.tracking = e.target.checked;
+    save();
+  })[0].checked = setting.misc.tracking;
 });

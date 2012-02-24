@@ -105,13 +105,19 @@ function process(obj) {
   connect();
   var clsid = getClsid(obj);
 
-  if (config.shouldEnable({href: location.href, clsid:clsid})) {
+  var rule = config.shouldEnable({href: location.href, clsid:clsid});
+  if (rule) {
     var new_obj = obj; 
     enableobj(obj);
     if (obj.id != "") {
       checkForm(new_obj);
     }
-    notify({href: location.href, clsid: clsid, actived: true});
+    notify({
+      href: location.href,
+      clsid: clsid, 
+      actived: true,
+      rule: rule.identifier
+    });
   } else {
     notify({href: location.href, clsid: clsid, actived: false});
   }
