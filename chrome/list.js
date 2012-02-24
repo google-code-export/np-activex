@@ -86,7 +86,6 @@ function List(config) {
 
 List.ids = {
   noline: -1,
-  newLine: -2
 };
 
 List.types = {};
@@ -119,12 +118,15 @@ List.prototype = {
       selectLine(List.ids.noline);
     }
   },
+  editNewLine: function() {
+    this.startEdit(this.lines[this.lines.length - 1]);
+  },
   updatePropDisplay : function(line, prop) {
     var name = prop.property;
     obj = $('[property=' + name + ']', line);
     var ctrl = obj[0].listdata;
-    var id = this.getLineId(line);
-    if (id < 0) {
+    var id = Number(line.attr('row'));
+    if (id == this.config.count()) {
       var value = this.config.defaultValue[name];
       if (value) {
         ctrl.value = value;
@@ -139,12 +141,15 @@ List.prototype = {
     for (var i = 0; i < this.props.length; ++i) {
       this.updatePropDisplay(line, this.props[i]);
     }
-    line.trigger('update');
+    if (Number(line.attr('row')) < this.config.count()) {
+      line.trigger('update');
+    } else {
+      line.addClass('newline');
+    }
   },
   createLine: function() {
     with (this) {
       var line = $('<div></div>').addClass('itemline');
-      bindId(line, List.ids.noline);
       var inner = $('<div>');
       line.append(inner);
       // create input boxes
@@ -191,6 +196,11 @@ List.prototype = {
       line.bind('updated', function() {
         $(list).trigger('updated');
       });
+
+      this.bindId(line, this.lines.length);
+      this.lines.push(line);
+      line.appendTo(this.contents);
+
       return line;
     }
   },
@@ -200,15 +210,17 @@ List.prototype = {
       all = true;
       lines = [];
     }
-    for (var i = this.lines.length; i < this.config.count(); ++i) {
+    for (var i = this.lines.length; i <= this.config.count(); ++i) {
       var line = this.createLine();
-      this.bindId(line, i);
-      line.insertBefore(this.newLine);
       lines.push(i);
     }
-    while (this.lines.length > this.config.count()) {
+    while (this.lines.length > this.config.count() + 1) {
       this.lines.pop().remove();
     }
+
+    $('.newline', this.contents).removeClass('newline');
+    this.lines[this.lines.length - 1].addClass('newline');
+
     if (all) {
       for (var i = 0; i < this.lines.length; ++i) {
         this.updateLine(this.lines[i]);
@@ -222,17 +234,10 @@ List.prototype = {
   load: function() {
     this.contents.empty();
     this.lines = [];
-    this.addNewLine();
     this.refresh();
   },
   bindId: function(line, id) {
-    line[0].itemid = id;
-    if (id >= 0) {
-      this.lines[id] = line;
-    }
-  },
-  getLineId: function(line) {
-    return line[0].itemid;
+    line.attr('row', id);
   },
   getLineNewValue: function(line) {
     var ret = {};
@@ -256,8 +261,8 @@ List.prototype = {
       return;
     }
     line.addClass('editing');
-    this.selectLine(line);
     this.showLine(line);
+    this.selectLine(line);
     var list = this;
     setTimeout(function() {
       if (!line[0].contains(document.activeElement)) {
@@ -275,21 +280,20 @@ List.prototype = {
         }
         var valid = isValid(line);
         if (valid) {
-          var id = getLineId(line);
+          var id = Number(line.attr('row'));
           var newval = getLineNewValue(line);
 
-          if (id >= 0) {
-            line.trigger('updating');
-            config.patch(id, newval);
-          } else {
-            $(this).trigger('updating');
-            if(!config.insert(config.count(), newval)) {
+          if (line.hasClass('newline')) {
+            $(list).trigger('updating');
+            if(!config.insert(id, newval)) {
               line.removeClass('newline');
-              bindId(line, config.count() - 1);
-              this.selectLine = config.count() - 1;
+              list.selectLine(line);
               $(list).trigger('add', id);
               addNewLine();
             }
+          } else {
+            line.trigger('updating');
+            config.patch(id, newval);
           }
 
           line.trigger('updated');
@@ -303,8 +307,8 @@ List.prototype = {
   cancelEdit: function(line) {
     line.removeClass('editing');
     line.removeClass('error');
-    var id = this.getLineId(line);
-    if (id == List.ids.newLine && this.selectedLine == id) {
+    var id = Number(line.attr('row'));
+    if (id == this.config.count() && this.selectedLine == id) {
       this.selectedLine = List.ids.noline;
     }
     this.updateLine(line);
@@ -312,16 +316,15 @@ List.prototype = {
 
   addNewLine: function() {
     with(this) {
-      var line = createLine().addClass('newline');
-      this.newLine = line;
-      bindId(line, List.ids.noline);
-      contents.append(line);
-      this.updateLine(line);
+      var line = $('.newline', contents);
+      if (!line) {
+        var line = createLine().addClass('newline');
+      }
       return line;
     }
   },
   isValid: function(line) {
-    var id = this.getLineId(line);
+    var id = Number(line.attr('row'));
     var obj = this.getLineNewValue(line);
     return valid = this.config.validate(id, obj);
   },
@@ -350,15 +353,13 @@ List.prototype = {
     }
   },
   getLine: function(id) {
-    if (id == List.ids.newLine) {
-      return this.newLine;
-    }
     if (id < 0 || id >= this.lines.length) {
       return null;
     }
     return this.lines[id];
   },
   remove: function(id) {
+    id = Number(id);
     if (id < 0 || id >= this.config.count()) {
       return;
     }
@@ -370,12 +371,13 @@ List.prototype = {
       return;
     }
     this.getLine(len - 1).remove();
+    this.lines.pop();
 
     for (var i = id; i < len - 1; ++i) {
       this.updateLine(this.getLine(i));
     }
 
-    if (id != len - 1) {
+    if (id >= len - 2) {
       this.selectLine(id);
     } else {
       this.selectLine(List.ids.noline);
@@ -387,9 +389,13 @@ List.prototype = {
     if (typeof id == "number") {
       line = this.getLine(id);
     } else {
-      id = this.getLineId(line);
+      id = Number(line.attr('row'));
     }
 
+    // Can't select the new line.
+    if (line && line.hasClass('newline')) {
+      return;
+    }
     if (this.selectedLine == id) {
       return;
     }
