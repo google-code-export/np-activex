@@ -105,8 +105,6 @@ function countTabObject(status, info, delta) {
     trackNotUse(info.href);
   }
   status.count += delta;
-  console.log(status.count);
-  console.trace();
   var issue = setting.getMatchedIssue(info);
   if (issue) {
     status.error += delta;
