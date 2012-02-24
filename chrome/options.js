@@ -7,7 +7,7 @@ var setting = background.setting;
 
 function toggleRule(e) {
   var line = e.data.line;
-  var index = e.data.list.getLineId(line);
+  var index = line.attr('row');
   var item = setting.order[index];
   if (item.position == 'default') {
     if (item.status == 'enabled') { 
@@ -88,7 +88,7 @@ function doSave() {
 
 function setReadonly(e) {
   var line = e.data.line;
-  var id = e.data.list.getLineId(line);
+  var id = line.attr('row');
   if (id < 0) {
     return;
   }
@@ -151,7 +151,7 @@ $(document).ready(function() {
 
   $(table).bind('updated', save);
   $('#addRule').bind('click', function() {
-    table.startEdit(table.newLine);
+    table.editNewLine();
   });
   $(table).bind('select', function() {
     var line = table.selectedLine;
@@ -205,7 +205,7 @@ function setStatusNew(e) {
 
 function setStatus(e) {
   with (e.data) {
-    var id = list.getLineId(line);
+    var id = line.attr('row');
     var order = setting.order[id];
     var rule = setting.getItem(order);
     var s, color;
@@ -254,7 +254,7 @@ function showTime(time) {
   }
   var disp = getDelta(delta);
   var v1 = Math.floor(disp[0]); 
-  return  v1 + ' ' + disp[1] + (v1 != 1 ? 's' : '') + " before";
+  return  v1 + ' ' + disp[1] + (v1 != 1 ? 's' : '') + " ago";
 }
 
 function showUpdatingState(e) {
