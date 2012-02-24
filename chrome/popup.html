@@ -1,17 +1,30 @@
 <html>
-  <head></head>
-  <body width="300" height="200">
-    <div id="status">
-    </div>
-    <div id="enable">
-    </div>
-    <div id="issue">
-      <div i18n="issue_desp">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"></meta>
+    <link rel="stylesheet" type="text/css" href="/popup.css" />
+    <script src="/jquery-1.7.min.js"></script>
+    <script src="/popup.js"></script>
+    <script src="/i18n.js"></script>
+    <script src="/gas.js"></script>
+  </head>
+  <body width="450" height="200">
+    <div>
+      <div id="status_ok" class="status">
+        <span i18n="status_ok"></span>
+        <button id="submitissue" i18n="submitissue"></button>
       </div>
-      <button i18n="issue_submit">
-      </button>
+      <div id="status_disabled" class="status" i18n="status_disabled"></div>
+      <div id="status_error" class="status" i18n="status_error"></div>
     </div>
-    <div id="share">
+    <div id="enable_btns">
     </div>
+    <div id="issue_view">
+      <span i18n="issue_desp">
+      </span>
+      <a id="issue_track" i18n="issue_track">
+      </a>
+    </div>
+    <iframe src='http://np-activex.googlecode.com/hg/web/share.html' allowTransparency="true" frameborder="0" scrolling="no" width="450" height="100">
+    </iframe>
   </body>
 </html>
