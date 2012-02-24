@@ -7,24 +7,29 @@
     <script src="/i18n.js"></script>
     <script src="/gas.js"></script>
   </head>
-  <body width="450" height="200">
-    <div>
-      <div id="status_ok" class="status">
-        <span i18n="status_ok"></span>
-        <button id="submitissue" i18n="submitissue"></button>
+  <body>
+    <div class="main">
+      <div>
+        <div id="status_ok" class="status">
+          <span i18n="status_ok"></span>
+          <button id="submitissue" i18n="submitissue"></button>
+        </div>
+        <div id="status_disabled" class="status" i18n="status_disabled"></div>
+        <div id="status_error" class="status" i18n="status_error"></div>
       </div>
-      <div id="status_disabled" class="status" i18n="status_disabled"></div>
-      <div id="status_error" class="status" i18n="status_error"></div>
+      <div id="enable_btns">
+      </div>
+      <div id="issue_view">
+        <div i18n="issue_desp">
+        </div>
+        <div>
+          <a id="issue_track" i18n="issue_track" href="#"></a>
+        </div>
+      </div>
+      <div id="share">
+        <iframe src='http://np-activex.googlecode.com/hg/web/share.html' allowTransparency="true" frameborder="0" scrolling="no" width="450" height="70">
+        </iframe>
+      </div>
     </div>
-    <div id="enable_btns">
-    </div>
-    <div id="issue_view">
-      <span i18n="issue_desp">
-      </span>
-      <a id="issue_track" i18n="issue_track">
-      </a>
-    </div>
-    <iframe src='http://np-activex.googlecode.com/hg/web/share.html' allowTransparency="true" frameborder="0" scrolling="no" width="450" height="100">
-    </iframe>
   </body>
 </html>

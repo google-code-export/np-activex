@@ -17,19 +17,19 @@ div[property=dodelete] {
   width: 16px
 }
 div[property=title] {
-  width: 200px
+  width: 170px
 }
 div[property=type] {
   width: 60px
 }
 div[property=value] {
-  width: 240px
+  width: 280px
 }
 div[property=enabled] {
   width: 60px
 }
 div[property=userAgent] {
-  width: 70px
+  width: 80px
 }
 
 div[property=scriptSetting] {
@@ -47,42 +47,13 @@ div [property=add] {
   width: 70px;
 }
 
-.itemline:not(.newline) [property=dodelete] button {
-  opacity: 0;
-}
-
-.itemline:not(.newline):hover [property=dodelete] button {
-  display: inline-block;
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAiElEQVR42r2RsQrDMAxEBRdl8SDcX8lQPGg1GBI6lvz/h7QyRRXV0qUULwfvwZ1tenw5PxToRPWMC52eA9+WDnlh3HFQ/xBQl86NFYJqeGflkiogrOvVlIFhqURFVho3x1moGAa3deMs+LS30CAhBN5nNxeT5hbJ1zwmji2k+aF6NENIPf/hs54f0sZFUVAMigAAAABJRU5ErkJggg==");
-  margin: 2px;
-  opacity: 1;
-  -webkit-transition: .15s opacity;
-  width: 16px;
-  height: 16px;
-  background-color: transparent;
-  border: none;
-}
-
-.itemline [property=dodelete] button:hover {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAAqklEQVR4XqWRMQ6DMAxF/1Fyilyj2SmIBUG5QcTCyJA5Z8jGhlBPgRi4TmoDraVmKFJlWYrlp/g5QfwRlwEVNWVa4WzfH9jK6kCkEkBjwxOhLghheMWMELUAqqwQ4OCbnE4LJnhr5IYdqQt4DJQjhe9u4vBBmnxHHNzRFkDGjHDo0VuTAqy2vAG4NkvXXDHxbGsIGlj3e835VFNtdugma/Jk0eXq0lP//5svi4PtO01oFfYAAAAASUVORK5CYII=") !important;
-}
-
-.itemline [property=dodelete] button:active {
-  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAARElEQVQoz2P4z4AfMlBLAYMdwxkghgEwD1XBGTC0g0sDIaYJECVwFqoChBK4WegKkJWArSJZAQErCDqSKG/iCyhaRhYA9LDIbULDzlIAAAAASUVORK5CYII=") !important;
-}
-
-#addPanel {
-  display: none;
-  position: fixed;
-  z-index: 2;
-  top: 100px;
-  width: 800px;
-  left: 50%;
-  margin-left:-400px;
-}
-
 #tbServer, #tbServerStatus {
   float: left;
+}
+
+button {
+  width: 100px;
+  margin: 10px 8px 3px 8px;
 }
 
 #tbServer {

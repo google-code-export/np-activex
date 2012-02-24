@@ -35,25 +35,25 @@ var settingProps = [ {
     createNew: setStatusNew
   }
 }, {
-  header: "Name",
+  header: $$("title"),
   property: "title",
   type: "input"
 }, {
-  header: "Mode",
+  header: $$("mode"),
   property: "type",
   type: "select",
   option: "static",
   options: [
-    {value: "wild", text: "WildChar"},
-    {value: "regex", text: "RegEx"},
-    {value: "clsid", text: "CLSID"}
+    {value: "wild", text: $$("WildChar")},
+    {value: "regex", text: $$("RegEx")},
+    {value: "clsid", text: $$("CLSID")}
   ]
 }, {
-  header: "Pattern",
+  header: $$("pattern"),
   property: "value",
   type: "input"
 }, {
-  header: "UserAgent",
+  header: $$("user_agent"),
   property: "userAgent",
   type: "select",
   option: "static",
@@ -68,7 +68,7 @@ var settingProps = [ {
     {value: "ipad5", text: "iPad"}
   ]
 }, {
-  header: "Helper Script",
+  header: $$("helper_script"),
   property: "script",
   type: "input"
 }
@@ -263,7 +263,7 @@ function showUpdatingState(e) {
   if (updater.status == 'stop') {
     $('#lastUpdate').text(showTime(setting.misc.lastUpdate));
   } else {
-    $('#lastUpdate').text("Updating " + updater.finish + '/' + updater.total);
+    $('#lastUpdate').text($$("update_progress") + updater.finish + '/' + updater.total);
   }
 }
 
