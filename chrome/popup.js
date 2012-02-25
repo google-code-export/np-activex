@@ -31,7 +31,7 @@ $(document).ready(function() {
   if (tabInfo.error != 0) {
     var errorid = tabInfo.issueId;
     var issue = setting.issues[errorid];
-    $('#issue_desp').text(issue.description);
+    $('#issue_content').text(issue.description);
     var url = issue.url;
     if (!url) {
       var issueUrl = "http://code.google.com/p/np-activex/issues/detail?id=";
