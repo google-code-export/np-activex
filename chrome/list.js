@@ -317,8 +317,8 @@ List.prototype = {
   addNewLine: function() {
     with(this) {
       var line = $('.newline', contents);
-      if (!line) {
-        var line = createLine().addClass('newline');
+      if (!line.length) {
+        line = createLine().addClass('newline');
       }
       return line;
     }
