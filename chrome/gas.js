@@ -19,6 +19,9 @@ function initGAS() {
     ga.src = 'https://ssl.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(ga, s);
+  } else if (!localStorage.debug) {
+    // dummy it. Non-debug && non-track
+    _gaq.push = function() {};
   }
 }
 
@@ -74,12 +77,20 @@ function trackDisable(identifier) {
   _gaq.push(['_trackEvent', 'option', 'disable', identifier]);
 }
 
+function trackAutoEnable(identifier) {
+  _gaq.push(['_trackEvent', 'option', 'autoenable', identifier]);
+}
+
 function trackEnable(identifier) {
   _gaq.push(['_trackEvent', 'option', 'enable', identifier]);
 }
 
-function trackAddCustomRule(rule) {
-  _gaq.push(['_trackEvent', 'option', 'add', serializeRule(rule)]);
+function trackAddCustomRule(rule, auto) {
+  var cmd = 'add';
+  if (auto) {
+    cmd = 'autoadd';
+  }
+  _gaq.push(['_trackEvent', 'option', cmd, serializeRule(rule)]);
 }
 
 function trackManualUpdate() {

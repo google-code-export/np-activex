@@ -80,7 +80,7 @@ function showEnableBtns() {
         var rule = setting.createRule();
         rule.type = 'wild';
         rule.value = sitepattern;
-        setting.addCustomRule(rule);
+        setting.addCustomRule(rule, true);
         refresh();
       });
 
@@ -90,7 +90,7 @@ function showEnableBtns() {
         var rule = setting.createRule();
         rule.type = 'clsid';
         rule.value = clsid;
-        setting.addCustomRule(rule);
+        setting.addCustomRule(rule, true);
         refresh();
       });
       list.append(btn1).append(btn2);
