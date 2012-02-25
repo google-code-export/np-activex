@@ -1,3 +1,7 @@
+// Copyright (c) 2012 eagleonhill(qiuc12@gmail.com). All rights reserved.
+// Use of this source code is governed by a Mozilla-1.1 license that can be
+// found in the LICENSE file.
+
 var USE_RECORD_GAP = 3 * 60 * 1000; // 3 minutes
 var background = chrome.extension.getBackgroundPage();
 
@@ -76,4 +80,12 @@ function trackEnable(identifier) {
 
 function trackAddCustomRule(rule) {
   _gaq.push(['_trackEvent', 'option', 'add', serializeRule(rule)]);
+}
+
+function trackManualUpdate() {
+  _gaq.push(['_trackEvent', 'update', 'manual']);
+}
+
+function trackUpdateFile(url) {
+  _gaq.push(['_trackEvent', 'update', 'file', url]);
 }
