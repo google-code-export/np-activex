@@ -275,6 +275,7 @@ $(document).ready(function() {
   showUpdatingState({});
   $('#doUpdate').click(function() {
     updater.update();
+    trackManualUpdate();
   });
 
   $('#log_enable').change(function(e) {

@@ -82,6 +82,7 @@ UpdateSession.prototype = {
       }
       a.onUpdateError(jqXHR, textStatus, errorThrown);
     }
+    trackUpdateFile(request.url);
     $.ajax(request)
   },
 
