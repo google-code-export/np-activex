@@ -309,6 +309,9 @@ ActiveXConfig.prototype = {
     }
     var items = script.split(' ');
     for (var i = 0; i < items.length; ++i) {
+      if (items[i] == '' || !this.scripts[items[i]]) {
+        continue;
+      }
       var name = items[i];
       var val = '// ';
       val += items[i] + '\n';
@@ -334,16 +337,23 @@ ActiveXConfig.prototype = {
 
   updateAllScripts: function() {
     console.log('updateAllScripts');
+    var scripts = {};
     for (var i = 0; i < this.order.length; ++i) {
+      if (this.order[i].status == 'disabled') {
+        continue;
+      }
       var rule = this.getItem(this.order[i]);
       var script = rule.script;
       if (!script) {
-        return "";
+        continue;
       }
       var items = script.split(' ');
-      for (var i = 0; i < items.length; ++i) {
-        this.updateScript(items[i], true);
+      for (var j = 0; j < items.length; ++j) {
+        scripts[items[j]] = true;
       }
+    }
+    for (var i in scripts) {
+      this.updateScript(i, true);
     }
   },
 
@@ -363,6 +373,7 @@ ActiveXConfig.prototype = {
     }
 
     remote.updating = true;
+    var setting = this;
 
     updater.updateFile({
       url: remote.url,
@@ -374,8 +385,9 @@ ActiveXConfig.prototype = {
       success: function(nv, status, xhr) {
         delete remote.updating;
         localStorage[scriptPrefix + id] = nv;
-        this.localScripts[id] = remote;
-        this.save();
+        setting.localScripts[id] = remote;
+        setting.save();
+        console.log('script updated ', id);
       },
       // Don't evaluate this.
       dataType: "text"
