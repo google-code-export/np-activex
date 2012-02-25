@@ -20,7 +20,6 @@ function connect() {
   if (port) {
     return;
   }
-  console.log('Connect');
   port = chrome.extension.connect();
   for (var i = 0; i < logs.length; ++i) {
     port.postMessage({command: 'Log', message: logs[i]});
