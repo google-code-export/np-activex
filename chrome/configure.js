@@ -183,7 +183,7 @@ ActiveXConfig.prototype = {
       scriptItems: "",
     };
   },
-  addCustomRule: function(newItem) {
+  addCustomRule: function(newItem, auto) {
     if (!this.validateRule(newItem)) {
       return;
     }
@@ -196,7 +196,7 @@ ActiveXConfig.prototype = {
       identifier: identifier
     });
     this.update()
-    trackAddCustomRule(newItem);
+    trackAddCustomRule(newItem, auto);
   },
 
   getPageConfig: function(href) {
@@ -247,6 +247,7 @@ ActiveXConfig.prototype = {
       if (this.order[i].identifier == rule.identifier) {
         if (this.order[i].status == 'disabled') {
           this.order[i].status = 'enabled';
+          trackAutoEnable(rule.identifier);
         }
         break;
       }
