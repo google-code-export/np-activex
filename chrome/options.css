@@ -47,13 +47,13 @@ div [property=add] {
   width: 70px;
 }
 
-#tbServer, #tbServerStatus {
-  float: left;
-}
-
-button {
+#ruleCmds button {
   width: 100px;
   margin: 10px 8px 3px 8px;
+}
+
+#tbServer, #tbServerStatus {
+  float: left;
 }
 
 #tbServer {
