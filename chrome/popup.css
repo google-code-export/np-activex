@@ -16,6 +16,10 @@
   margin: 15px 10px;
 }
 
+#issue_view > div {
+  margin: 7px 0px;
+}
+
 button {
   width: 350px;
   height: 30px;
