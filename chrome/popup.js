@@ -108,6 +108,6 @@ $(document).ready(function() {
 
 $(document).ready(showEnableBtns);
 
-$(document).ready(function() {
+$(window).load(function() {
   $('#share').load('share.html');
 });
