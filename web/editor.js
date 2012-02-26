@@ -353,39 +353,6 @@ function updateScriptItems() {
 }
 
 $(document).ready(function() {
-  scriptList = new List({
-    props: scriptProps,
-    main: $('#scriptTable'),
-    getItems: function() {return scripts;}
-  });
-  $(scriptList).bind('updated', function() {
-    dirty = true;
-    updateScriptItems();
-  });
-  scriptList.init();
-
-  ruleList = new List({
-    props: ruleProps,
-    main: $('#ruleTable'),
-    getItems: function() {return rules;}
-  });
-  ruleList.init();
-  $(ruleList).bind('updated', function() {
-    dirty = true;
-  });
-
-  issueList = new List({
-    props: issueProps,
-    main: $('#issueTable'),
-    getItems: function() {return issues;}
-  });
-  issueList.init();
-  $(issueList).bind('updated', function() {
-    dirty = true;
-  });
-
-  reload();
-
   window.onbeforeunload=function() {
     if (dirty) {
       return 'Page not saved. Continue?';
@@ -436,5 +403,39 @@ $(document).ready(function() {
   $.ajaxSetup({
     cache: false
   });
+
+  scriptList = new List({
+    props: scriptProps,
+    main: $('#scriptTable'),
+    getItems: function() {return scripts;}
+  });
+  $(scriptList).bind('updated', function() {
+    dirty = true;
+    updateScriptItems();
+  });
+  scriptList.init();
+
+  ruleList = new List({
+    props: ruleProps,
+    main: $('#ruleTable'),
+    getItems: function() {return rules;}
+  });
+  ruleList.init();
+  $(ruleList).bind('updated', function() {
+    dirty = true;
+  });
+
+  issueList = new List({
+    props: issueProps,
+    main: $('#issueTable'),
+    getItems: function() {return issues;}
+  });
+  issueList.init();
+  $(issueList).bind('updated', function() {
+    dirty = true;
+  });
+
+  reload();
+
 });
 
