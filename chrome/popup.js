@@ -42,7 +42,8 @@ $(document).ready(function() {
       url = issueUrl + issue.issueId;
     }
     $('#issue_track').click(function() {
-      window.open(url);
+      chrome.tabs.create({url:url});
+      window.close();
     });
     $('#issue_view').show();
   }
@@ -85,7 +86,7 @@ function showEnableBtns() {
         var rule = setting.createRule();
         rule.type = 'wild';
         rule.value = sitepattern;
-        setting.addCustomRule(rule, true);
+        setting.addCustomRule(rule, 'popup');
         refresh();
       });
 
@@ -95,7 +96,7 @@ function showEnableBtns() {
         var rule = setting.createRule();
         rule.type = 'clsid';
         rule.value = clsid;
-        setting.addCustomRule(rule, true);
+        setting.addCustomRule(rule, 'popup');
         refresh();
       });
       list.append(btn1).append(btn2);
@@ -107,6 +108,7 @@ $(document).ready(function() {
   $('#submitissue').click(function() {
     tabInfo.tracking = true;
     alert($$('issue_submitting_desp'));
+    window.close();
   });
 });
 

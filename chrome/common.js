@@ -95,12 +95,15 @@ function initPort(port) {
 }
 
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
-  var TIMEOUT = 1000 * 60 * 5;
-  // clean up after 5 mins.
-  window.setTimeout(function() {
-    delete tabStatus[tabId];
-  }, TIMEOUT);
-  tabStatus[tabId].removed = true;
+  if (tabStatus[tabId]) {
+    tabStatus[tabId].removed = true;
+
+    var TIMEOUT = 1000 * 60 * 5;
+    // clean up after 5 mins.
+    window.setTimeout(function() {
+      delete tabStatus[tabId];
+    }, TIMEOUT);
+  }
 });
 
 function countTabObject(status, info, delta) {

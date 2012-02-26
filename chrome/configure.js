@@ -139,13 +139,13 @@ ActiveXConfig.convertVersion = function(setting) {
       var url = pattern.pattern;
       
       if (url.substr(0, 2) == 'r/') {
-        rule.type == 'regex';
+        rule.type = 'regex';
         rule.value = url.substr(2);
       } else {
         rule.type == 'wild';
         rule.value = url;
       }
-      ret.addCustomRule(rule);
+      ret.addCustomRule(rule, 'convert');
     }
     var clsids = setting.trust_clsids.split('\n');
     for (var i = 0; i < clsids.length; ++i) {
@@ -154,7 +154,7 @@ ActiveXConfig.convertVersion = function(setting) {
       var pattern = parsePattern(clsids[i]);
       rule.title = pattern.title;
       rule.value = pattern.pattern;
-      ret.addCustomRule(rule);
+      ret.addCustomRule(rule, 'convert');
     }
     firstUpgrade = true;
     return ret;
