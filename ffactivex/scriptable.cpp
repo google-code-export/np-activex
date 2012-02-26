@@ -312,7 +312,6 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 			return true;
 		}
 	}
-	np_log(instance, 2, "GetProperty %s", NPNFuncs.utf8fromidentifier(name));
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET);
 	if (-1 == id) {
 		np_log(instance, 0, "Cannot find property: %s", NPNFuncs.utf8fromidentifier(name));
