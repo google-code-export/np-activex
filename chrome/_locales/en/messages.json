@@ -2,8 +2,14 @@
   "plug_desp": {
     "message": "Use ActiveX controls in your Chrome"
   },
+  "wikicode": {
+    "message": "en"
+  },
   "copyright": {
     "message": "This extension is made by eagleonhill."
+  },
+  "help": {
+    "message": "Help"
   },
   "issue_page": {
     "message": "If you find any problems, report it here!!"

@@ -289,6 +289,14 @@ $(document).ready(function() {
   })[0].checked = setting.misc.tracking;
 });
 
+$(document).ready(function() {
+  var help = 'http://code.google.com/p/np-activex/wiki/ExtensionHelp?wl=';
+  help = help + $$('wikicode');
+  $('.help').each(function() {
+    this.href = help;
+  });
+});
+
 $(window).load(function() {
   $('#share').load('share.html');
   if (background.firstUpgrade) {
