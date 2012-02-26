@@ -43,7 +43,6 @@ function checkParents(obj) {
 
 var hostElement = null;
 function enableobj(obj) {
-  log("Enabling object, id: " + obj.id + " clsid: " + getClsid(obj));
   var oldDisplay = obj.style.display;
   obj.style.display = 'none';
   // We can't use classid directly because it confuses the browser.
