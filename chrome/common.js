@@ -100,6 +100,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
   window.setTimeout(function() {
     delete tabStatus[tabId];
   }, TIMEOUT);
+  tabStatus[tabId].removed = true;
 });
 
 function countTabObject(status, info, delta) {
@@ -123,49 +124,50 @@ function countTabObject(status, info, delta) {
 }
 
 function showTabStatus(tabId) {
-  try {
-    var status = tabStatus[tabId];
-    var title = "";
-    if (status.count == 0) {
-      chrome.pageAction.hide(tabId);
-    } else {
-      chrome.pageAction.show(tabId);
-    }
-
-    chrome.pageAction.setPopup({
-      tabId: tabId,
-      popup: 'popup.html?tabid=' + tabId
-    });
-    if (status.count == 0) {
-      // Do nothing..
-    } else if (status.error != 0) {
-      chrome.pageAction.setIcon({
-        tabId: tabId,
-        path: errorIcon
-      });
-      title = $$('status_error');
-    } else if (status.count != status.actived) {
-      // Disabled..
-      chrome.pageAction.setIcon({
-        tabId: tabId,
-        path: grayIcon
-      });
-      title = $$('status_disabled');
-    } else {
-      // OK
-      chrome.pageAction.setIcon({
-        tabId: tabId,
-        path: greenIcon
-      });
-      title = $$('status_ok');
-    }
-    chrome.pageAction.setTitle({
-      tabId: tabId,
-      title: title
-    });
-  } catch (e) {
-    // Tab is closed
+  if (tabStatus[tabId].removed) {
+    return;
   }
+
+  var status = tabStatus[tabId];
+  var title = "";
+  if (status.count == 0) {
+    chrome.pageAction.hide(tabId);
+    return;
+  } else {
+    chrome.pageAction.show(tabId);
+  }
+
+  chrome.pageAction.setPopup({
+    tabId: tabId,
+    popup: 'popup.html?tabid=' + tabId
+  });
+  if (status.count == 0) {
+    // Do nothing..
+  } else if (status.error != 0) {
+    chrome.pageAction.setIcon({
+      tabId: tabId,
+      path: errorIcon
+    });
+    title = $$('status_error');
+  } else if (status.count != status.actived) {
+    // Disabled..
+    chrome.pageAction.setIcon({
+      tabId: tabId,
+      path: grayIcon
+    });
+    title = $$('status_disabled');
+  } else {
+    // OK
+    chrome.pageAction.setIcon({
+      tabId: tabId,
+      path: greenIcon
+    });
+    title = $$('status_ok');
+  }
+  chrome.pageAction.setTitle({
+    tabId: tabId,
+    title: title
+  });
 }
 
 responseCommands.DetectControl = function(request, tabId, frameId) {
