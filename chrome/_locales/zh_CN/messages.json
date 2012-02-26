@@ -17,6 +17,15 @@
   "upgrade_show": {
     "message": "感谢使用ActiveX for Chrome。我们最近更新了安全规则方案，请检查设置是否正确，并删除曾经安装的全部兼容补丁以免冲突（工商银行、农业银行、招商银行、CNTV等插件已在此扩展中集成）。"
   },
+  "Enabled": {
+    "message": "启用"
+  },
+  "Disabled": {
+    "message": "禁用"
+  },
+  "Custom": {
+    "message": "自定义"
+  },
   "add": {
     "message": "添加"
   },
@@ -39,7 +48,7 @@
     "message": "显示日志"
   },
   "tracking": {
-    "message": "允许发送统计数据"
+    "message": "允许发送统计数据以更好地改进此扩展"
   },
   "title": {
     "message": "标题"
@@ -63,7 +72,7 @@
     "message": "用户代理"
   },
   "helper_script": {
-    "message": "其它兼容脚本"
+    "message": "辅助兼容脚本"
   },
   "update_progress": {
     "message": "更新中 "
@@ -75,7 +84,7 @@
     "message": "报告问题"
   },
   "status_disabled": {
-    "message": "在当前页面发现未激活的控件，点击激活"
+    "message": "在当前页面发现未激活的控件，点击按钮启用"
   },
   "status_error": {
     "message": "有些控件可能不能正常运行"
@@ -84,13 +93,13 @@
     "message": "我们已经确认一些问题，导致当前页面的控件无法正常使用。我们将尽快修复。"
   },
   "issue_track": {
-    "message": "更多信息"
+    "message": "追踪错误"
   },
   "refresh_needed": {
     "message": "请刷新页面以应用更改"
   },
   "enable_default_rule": {
-    "message": "激活推荐规则 $rule$",
+    "message": "启用预定义规则 $rule$",
     "placeholders": {
       "rule": {
         "content": "$1"
@@ -98,7 +107,7 @@
     }
   },
   "add_rule_site": {
-    "message": "激活在 $site$ 上的所有控件",
+    "message": "启用在 $site$ 上的所有控件",
     "placeholders": {
       "site": {
         "content": "$1"
@@ -106,7 +115,7 @@
     }
   },
   "add_rule_clsid": {
-    "message": "激活全部有同类CLSID的控件"
+    "message": "启用全部相同CLSID的控件"
   },
   "issue_submitting_desp": {
     "message": "请继续正常操作当前页面。报告向导将在页面关闭或跳转时打开。"
@@ -118,7 +127,7 @@
     "message": "日志"
   },
   "issue_submit_desp": {
-    "message": "请勿必在您的错误汇报中附上以上日志内容"
+    "message": "请务必在您的错误汇报中附上以上日志内容"
   },
   "issue_submit_goto": {
     "message": "跳转到错误提交页面"
