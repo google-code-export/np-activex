@@ -156,6 +156,7 @@ ActiveXConfig.convertVersion = function(setting) {
       rule.value = pattern.pattern;
       ret.addCustomRule(rule);
     }
+    firstUpgrade = true;
     return ret;
   }
 }
@@ -549,7 +550,7 @@ ActiveXConfig.prototype = {
     }
   }
 
-}
+};
 
 function loadLocalSetting() {
   var setting = undefined;
@@ -561,6 +562,9 @@ function loadLocalSetting() {
     }
   }
 
+  if (!setting) {
+    firstRun = true;
+  }
   return new ActiveXConfig(setting);
 }
 

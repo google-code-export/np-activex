@@ -6,6 +6,8 @@ var tabStatus = {};
 var version;
 var default_id = "lgllffgicojgllpmdbemgglaponefajn";
 var debug = chrome.i18n.getMessage("@@extension_id") != default_id;
+var firstRun = false;
+var firstUpgrade = false;
 
 (function getVersion() {
   $.ajax('manifest.json', {

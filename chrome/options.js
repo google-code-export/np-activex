@@ -291,4 +291,8 @@ $(document).ready(function() {
 
 $(window).load(function() {
   $('#share').load('share.html');
+  if (background.firstUpgrade) {
+    background.firstUpgrade = false;
+    alert($$("upgrade_show"));
+  }
 });
