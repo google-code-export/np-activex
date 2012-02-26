@@ -104,5 +104,17 @@
   },
   "issue_submitting_desp": {
     "message": "请继续正常操作当前页面。报告向导将在页面关闭或跳转时打开。"
+  },
+  "view_log": {
+    "message": "查看日志"
+  },
+  "log": {
+    "message": "日志"
+  },
+  "issue_submit_desp": {
+    "message": "请勿必在您的错误汇报中附上以上日志内容"
+  },
+  "issue_submit_goto": {
+    "message": "跳转到错误提交页面"
   }
 }
