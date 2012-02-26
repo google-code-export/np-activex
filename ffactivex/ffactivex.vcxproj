@@ -53,8 +53,6 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">D:\Users\Chuan Qiu\Documents\Extensions\Library\xulrunner-sdk\include;$(IncludePath)</IncludePath>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">D:\Users\Chuan Qiu\Documents\Extensions\Library\xulrunner-sdk\include;$(IncludePath)</IncludePath>
-    <CustomBuildAfterTargets Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Link</CustomBuildAfterTargets>
-    <CustomBuildAfterTargets Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Link</CustomBuildAfterTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -78,14 +76,14 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <CustomBuildStep />
+    <CustomBuildStep />
     <CustomBuildStep>
-      <Command>copy "$(TargetPath)" "$(SolutionDir)Chrome\npactivex.dll"</Command>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>$(SolutionDir)Chrome\npactivex.dll</Outputs>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Inputs>$(TargetPath)</Inputs>
+      <Inputs>
+      </Inputs>
     </CustomBuildStep>
     <MASM>
       <UseSafeExceptionHandlers>true</UseSafeExceptionHandlers>
@@ -114,14 +112,16 @@
       <TargetMachine>MachineX86</TargetMachine>
       <ModuleDefinitionFile>$(ProjectName).def</ModuleDefinitionFile>
     </Link>
+    <CustomBuildStep />
+    <CustomBuildStep />
+    <CustomBuildStep />
     <CustomBuildStep>
-      <Command>copy "$(TargetPath)" "$(SolutionDir)Chrome\npactivex.dll"</Command>
+      <Outputs>
+      </Outputs>
     </CustomBuildStep>
     <CustomBuildStep>
-      <Outputs>$(SolutionDir)Chrome\npactivex.dll</Outputs>
-    </CustomBuildStep>
-    <CustomBuildStep>
-      <Inputs> $(TargetPath)</Inputs>
+      <Inputs>
+      </Inputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -204,4 +204,7 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\masm.targets" />
   </ImportGroup>
+  <Target Name="CopyFiles" AfterTargets="Link">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(SolutionDir)Chrome\" SkipUnchangedFiles="true"/>
+  </Target>
 </Project>
