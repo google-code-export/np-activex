@@ -9,6 +9,12 @@ var config = null;
 var port = null;
 
 var logs = [];
+
+var scriptConfig = {
+  none2block: false,
+  formid: false,
+  documentid: false
+};
 function onControlLog(event) {
   var message = event.data;
   log(message);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 var FLASH_CLSID = '{d27cdb6e-ae6d-11cf-96b8-444553540000}';
+var typeId = "application/x-itst-activex";
 
 function executeScript(script) {
   var scriptobj = document.createElement("script");
@@ -14,57 +15,51 @@ function executeScript(script) {
   element.removeChild(scriptobj);
 }
 
-// Allow form.id access
-function checkForm(new_obj) {
-  var parent = new_obj.parentNode;
+function checkParents(obj) {
+  var parent = obj;
+  var level = 0;
   while (parent && parent.nodeType == 1) {
-    if (parent.nodeName.toLowerCase() == "form") {
-      command = "document.all." + parent.name + "." + new_obj.id + " = document.all." + new_obj.id;
+    if (getComputedStyle(parent).display == 'none') {
+      var desp = obj.id + ' at level' + level;
+      if (scriptConfig.none2block) {
+        parent.style.display = 'block';
+        parent.style.height = '0px';
+        parent.style.width = '0px';
+        log('Remove display:none for ' + desp);
+      } else {
+        log('Warning: Detected display:none for ' + desp);
+      }
+    }
+    if (scriptConfig.formid && obj.id != "" &&
+        parent.nodeName.toLowerCase() == "form") {
+      var command = "document.all." + parent.name + "." + obj.id + " = document.all." + obj.id;
+      log('Set form[id]: form: ' + parent.name + ', object: ' + obj.id)
       executeScript(command);
     }
     parent = parent.parentNode;
+    ++level;
   }
 }
 
-getManager = function() {
-  var manager = document.createElement("embed");
-  manager.type = "application/activex-manager";
-  manager.style.width = "0px";
-  manager.style.height = "0px";
-  manager.id = "__activex_manager_IIID_"
-
-    return function() {
-
-      if (document.body == null)
-        document.body = document.createElement("body");
-      if (document.body.contains(manager))
-        return manager;
-      log("Manager object inserted");
-      document.body.insertBefore(manager, document.body.firstChild);
-      return manager;
-    }
-}();
-
 var hostElement = null;
 function enableobj(obj) {
-  var command = "";
+  log("Enabling object, id: " + obj.id + " clsid: " + getClsid(obj));
+  var oldDisplay = obj.style.display;
+  obj.style.display = 'none';
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
   obj.removeAttribute("classid");
-  // Append a "type" attribute seems not work.
-  // Use <object> so obj doesn't need reconstruction.
-  obj.outerHTML = '<object type="application/x-itst-activex" '
-    + obj.outerHTML.substring(8);
-    
+  obj.type = typeId;
+  obj.style.display = oldDisplay;
+
   // Allow access by document.id
-  if (obj.id) {
-    command = "delete document." + obj.id + "\n";
+  if (obj.id && scriptConfig.documentid) {
+    var command = "delete document." + obj.id + "\n";
     command += "document." + obj.id + '=' + obj.id;
     executeScript(command);
   }
 
-  log("Enable object, id: " + obj.id + " clsid: " + getClsid(obj));
-  // executeScript(command);
+  log("Enabled object, id: " + obj.id + " clsid: " + getClsid(obj));
 }
 
 function getClsid(obj) {
@@ -87,12 +82,23 @@ function notify(data) {
 function process(obj) {
   if (obj.activex_process)
     return;
+
+  if (obj.type == typeId) {
+    notify({
+      href: location.href,
+      clsid: clsid, 
+      actived: true,
+      rule: 'Direct'
+    });
+    obj.activex_process = true;
+    return;
+  }
+
   if (obj.type != "" || !obj.hasAttribute("classid"))
     return;
   if (getClsid(obj).toLowerCase() == FLASH_CLSID) {
     return;
   }
-
   obj.activex_process = true;
 
   if (config == null) {
@@ -107,11 +113,8 @@ function process(obj) {
 
   var rule = config.shouldEnable({href: location.href, clsid:clsid});
   if (rule) {
-    var new_obj = obj; 
     enableobj(obj);
-    if (obj.id != "") {
-      checkForm(new_obj);
-    }
+    checkParents(obj);
     notify({
       href: location.href,
       clsid: clsid, 
