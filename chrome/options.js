@@ -288,3 +288,7 @@ $(document).ready(function() {
     save();
   })[0].checked = setting.misc.tracking;
 });
+
+$(document).ready(function() {
+  $('#share').load('share.html');
+});
