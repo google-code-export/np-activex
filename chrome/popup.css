@@ -4,7 +4,7 @@ body {
 
 .main {
   width: 500px;
-  height: 360px;
+  height: 300px;
   padding: 10px;
 }
 
@@ -23,7 +23,7 @@ body {
 
 #share {
   position: absolute;
-  top: 300px;
+  top: 250px;
   left: 30px;
   height: 70px;
 }
