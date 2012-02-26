@@ -88,7 +88,7 @@ function trackEnable(identifier) {
 function trackAddCustomRule(rule, auto) {
   var cmd = 'add';
   if (auto) {
-    cmd = 'autoadd';
+    cmd = 'add-' + auto;
   }
   _gaq.push(['_trackEvent', 'option', cmd, serializeRule(rule)]);
 }
