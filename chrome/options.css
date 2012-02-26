@@ -1,52 +1,37 @@
 body {
   background-color: #ffd;
 }
+
 body > div {
   margin: 10px;
 }
-#overlay {
-  position: fixed;
-  top: 0%;
-  left: 0%;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-  display: none;
-  background-color: darkgray;
-  opacity: 0.8;
+
+#tbSetting {
+  width: 1000px;
+  height: 500px;
 }
 
 .itemline.newline:not(.editing) {
   display:none;
 }
-div[property=dodelete] {
-  width: 16px
+div[property=status] {
+  width: 75px
 }
 div[property=title] {
-  width: 170px
+  width: 200px
 }
 div[property=type] {
   width: 60px
 }
 div[property=value] {
-  width: 280px
-}
-div[property=enabled] {
-  width: 60px
+  width: 320px
 }
 div[property=userAgent] {
   width: 80px
 }
 
-div[property=scriptSetting] {
-  width: 200px
-}
 div[property=script] {
-  width: 200px
-}
-
-div [property=add] {
-  width: 80px;
+  width: 350px
 }
 
 [property=status] button {
@@ -55,7 +40,7 @@ div [property=add] {
 
 #ruleCmds button {
   width: 100px;
-  margin: 10px 8px 3px 8px;
+  margin: 4px 8px 3px 8px;
 }
 
 #tbServer, #tbServerStatus {
@@ -67,5 +52,7 @@ div [property=add] {
 }
 
 #share {
+  float:left;
+  padding: 5px 0 0 40px;
   height: 70px;
 }

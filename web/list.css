@@ -1,5 +1,6 @@
 .list {
   width: 800px;
+  height: 400px;
   font-family: Arial, sans-serif;
   overflow-x: hidden;
   border: 3px solid #0D5995;
@@ -15,7 +16,6 @@
 .listscroll {
   overflow-x: scroll;
   overflow-y: scroll;
-  height: 350px;
   background-color: white;
 }
 

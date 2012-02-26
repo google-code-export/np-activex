@@ -4,10 +4,7 @@
 
 .list {
   width: 100%;
-}
-
-.listscroll {
-  height: 500px;
+  height: 520px;
 }
 
 div[property=title] {

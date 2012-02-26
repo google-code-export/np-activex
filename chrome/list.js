@@ -114,6 +114,8 @@ List.prototype = {
         }
       });
       $(main).append(headergroup).append(scrolls);
+      var height = this.main.height() - this.headergroup.outerHeight();
+      this.scrolls.height(height);
       load();
       selectLine(List.ids.noline);
     }
