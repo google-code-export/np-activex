@@ -4,6 +4,7 @@ body {
 
 body > div {
   margin: 10px;
+  max-width: 1000px;
 }
 
 #tbSetting {
