@@ -9,6 +9,8 @@ var debug = chrome.i18n.getMessage("@@extension_id") != default_id;
 var firstRun = false;
 var firstUpgrade = false;
 
+var MAX_LOG = 400;
+
 (function getVersion() {
   $.ajax('manifest.json', {
     success: function (v){
@@ -175,7 +177,12 @@ responseCommands.DetectControl = function(request, tabId, frameId) {
 }
 
 responseCommands.Log = function(request, tabId, frameId) {
-  tabStatus[tabId].logs[frameId].push(request.message);
+  var logs = tabStatus[tabId].logs[frameId];
+  if (logs.length < MAX_LOG) {
+    logs.push(request.message);
+  } else if (logs.length == MAX_LOG) {
+    logs.push('More logs clipped');
+  }
 }
 
 function generateLogFile(tabId) {
