@@ -17,6 +17,15 @@
   "upgrade_show": {
     "message": "Thanks for using ActiveX for Chrome. We have upgraded our setting system. Please check if our conversion is correct and remove all the related user-scripts(if any)"
   },
+  "Enabled": {
+    "message": "Enabled"
+  },
+  "Disabled": {
+    "message": "Disabled"
+  },
+  "Custom": {
+    "message": "Custom"
+  },
   "add": {
     "message": "Add"
   },

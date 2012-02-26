@@ -212,13 +212,13 @@ function setStatus(e) {
     var rule = setting.getItem(order);
     var s, color;
     if (order.status == 'enabled') {
-      s = 'Enabled';
+      s = $$('Enabled');
       color = '#0A0';
     } else if (order.status == 'disabled') {
-      s = 'Disabled';
+      s = $$('Disabled');
       color = 'indianred';
     } else {
-      s = 'Custom';
+      s = $$('Custom');
       color = '#33f';
     }
     $('button', line).text(s).css('background-color', color);
