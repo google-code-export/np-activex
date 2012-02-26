@@ -2,6 +2,12 @@
   "plug_desp": {
     "message": "在Chrome中使用ActiveX控件"
   },
+  "wikicode": {
+    "message": "zh-Hans"
+  },
+  "help": {
+    "message": "查看帮助"
+  },
   "copyright": {
     "message": "本扩展由eagleonhill制作"
   },
@@ -15,7 +21,7 @@
     "message": "请根据需要激活下面的规则或添加自定义规则。你也可以在需要使用控件的网页地址栏右边点击插件图标进行自动激活。"
   },
   "upgrade_show": {
-    "message": "感谢使用ActiveX for Chrome。我们最近更新了安全规则方案，请检查设置是否正确，并删除曾经安装的全部兼容补丁以免冲突（工商银行、农业银行、招商银行、CNTV等插件已在此扩展中集成）。"
+    "message": "感谢使用ActiveX for Chrome。我们最近更新了安全规则方案，请检查设置是否正确，并删除曾经安装的全部兼容补丁以免冲突（工商银行、农业银行、招商银行、CNTV等需要的兼容插件已在此扩展中集成）。"
   },
   "Enabled": {
     "message": "启用"
