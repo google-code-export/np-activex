@@ -12,4 +12,8 @@
 
   updater.update();
   initGAS();
+  if (firstRun || firstUpgrade) {
+    firstRun = false;
+    open('options.html');
+  }
 </script>

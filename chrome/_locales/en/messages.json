@@ -6,10 +6,16 @@
     "message": "This extension is made by eagleonhill."
   },
   "issue_page": {
-    "message": "If you find some problems, report it here!!"
+    "message": "If you find any problems, report it here!!"
   },
   "option_title": {
     "message": "ActiveX for Chrome Settings"
+  },
+  "option_help": {
+    "message": "Please enable the following rules or add custom ones as you need. You can also enable them later by clicking the icon at the right of the address bar if the page contains ActiveX controls."
+  },
+  "upgrade_show": {
+    "message": "Thanks for using ActiveX for Chrome. We have upgraded our setting system. Please check if our conversion is correct and remove all the related user-scripts(if any)"
   },
   "add": {
     "message": "Add"
