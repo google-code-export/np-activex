@@ -8,18 +8,18 @@ var background = chrome.extension.getBackgroundPage();
 var _gaq = background._gaq || _gaq || [];
 
 if (window == background) {
-  _gaq.push(['_setAccount', 'UA-28870762-2']);
+  _gaq.push(['_setAccount', 'UA-28870762-4']);
 }
 _gaq.push(['_trackPageview', location.href]);
 
 function initGAS() {
   var setting = setting || background.setting || {};
-  if (setting.misc.tracking) {
+  if (!debug && setting.misc.tracking) {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
     ga.src = 'https://ssl.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(ga, s);
-  } else if (!localStorage.debug) {
+  } else if (!debug) {
     // dummy it. Non-debug && non-track
     _gaq.push = function() {};
   }
