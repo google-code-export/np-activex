@@ -5,6 +5,6 @@ if (isNaN(tabId)) {
 
 var backgroundPage = chrome.extension.getBackgroundPage();
 $(document).ready(function() {
-var s = backgroundPage.generateLogFile(tabId);
-$("#text").val(s);
+  var s = backgroundPage.generateLogFile(tabId);
+  $("#text").val(s);
 });

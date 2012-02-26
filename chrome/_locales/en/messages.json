@@ -104,5 +104,17 @@
   },
   "issue_submitting_desp": {
     "message": "Please continue operating normally on this page. Report guide will pop after the current page is closed"
+  },
+  "view_log": {
+    "message": "View logs"
+  },
+  "log": {
+    "message": "Log"
+  },
+  "issue_submit_desp": {
+    "message": "Please remember to copy the logs above in your report!"
+  },
+  "issue_submit_goto": {
+    "message": "Start to report problem"
   }
 }
