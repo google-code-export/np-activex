@@ -72,7 +72,7 @@
     "message": "用户代理"
   },
   "helper_script": {
-    "message": "辅助兼容脚本"
+    "message": "辅助脚本"
   },
   "update_progress": {
     "message": "更新中 "
