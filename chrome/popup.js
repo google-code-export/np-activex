@@ -46,6 +46,7 @@ $(document).ready(function() {
 
 function refresh() {
   alert($$('refresh_needed'));
+  window.close();
 }
 
 function showEnableBtns() {
@@ -106,3 +107,7 @@ $(document).ready(function() {
 });
 
 $(document).ready(showEnableBtns);
+
+$(document).ready(function() {
+  $('#share').load('share.html');
+});
