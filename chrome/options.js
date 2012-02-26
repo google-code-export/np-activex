@@ -289,6 +289,6 @@ $(document).ready(function() {
   })[0].checked = setting.misc.tracking;
 });
 
-$(document).ready(function() {
+$(window).load(function() {
   $('#share').load('share.html');
 });
