@@ -282,6 +282,11 @@ END_OLECOMMAND_TABLE()
     {
         return m_bInPlaceActive;
     }
+    // Returns the m_bVisibleAtRuntime
+    virtual BOOL IsVisibleAtRuntime() const
+    {
+		return m_bVisibleAtRuntime;
+    }
 
 // IDispatch
     virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount(/* [out] */ UINT __RPC_FAR *pctinfo);
