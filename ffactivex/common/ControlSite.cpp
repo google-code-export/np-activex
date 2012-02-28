@@ -618,6 +618,11 @@ HRESULT CControlSite::Detach()
     {
         m_spIOleInPlaceObjectWindowless.Release();
     }
+	
+	CComQIPtr<IObjectWithSite> site = m_spObject;
+	if (site) {
+		site->SetSite(NULL);
+	}
 
     if (m_spIOleInPlaceObject)
     {

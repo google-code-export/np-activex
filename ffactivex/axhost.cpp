@@ -162,7 +162,8 @@ CAxHost::CAxHost(NPP inst):
 	OldProc(NULL),
 	Props_(new PropertyList),
 	isKnown(false),
-	CodeBaseUrl(NULL)
+	CodeBaseUrl(NULL),
+	noWindow(false)
 {
 }
 CAxHost::~CAxHost()
