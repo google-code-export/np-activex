@@ -120,7 +120,6 @@ function process(obj) {
   if (getClsid(obj).toLowerCase() == FLASH_CLSID) {
     return;
   }
-  obj.activex_process = true;
 
   if (config == null) {
     // Delay the process of this object.
@@ -129,6 +128,9 @@ function process(obj) {
     pendingObjects.push(obj);
     return;
   }
+
+  obj.activex_process = true;
+
   connect();
   var clsid = getClsid(obj);
 
