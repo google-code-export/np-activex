@@ -345,6 +345,7 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 bool Scriptable::SetProperty(NPIdentifier name, const NPVariant *value) {
 	static NPIdentifier classid = NPNFuncs.getstringidentifier("classid");
 	if (name == classid) {
+		np_log(instance, 1, "Set classid property: %s", value->value.stringValue);
 		CAxHost* axhost = (CAxHost*)host;
 		CLSID newCLSID = CAxHost::ParseCLSIDFromSetting(value->value.stringValue.UTF8Characters, value->value.stringValue.UTF8Length);
 		if (newCLSID != GUID_NULL && (!axhost->hasValidClsID() || newCLSID != axhost->getClsID())) {
@@ -388,11 +389,13 @@ bool Scriptable::SetProperty(NPIdentifier name, const NPVariant *value) {
 	if (val.vt == VT_DISPATCH) {
 		wFlags |= DISPATCH_PROPERTYPUTREF;
 	}
+	const char* pname = NPNFuncs.utf8fromidentifier(name);
 	if (FAILED(disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, wFlags, &params, &vResult, NULL, NULL))) {
-
+		np_log(instance, 0, "SetProperty failed %s", pname);
 		return false;
 	}
 
+	np_log(instance, 0, "SetProperty %s", pname);
 	return true;
 }
 
