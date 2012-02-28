@@ -20,7 +20,7 @@ function checkParents(obj) {
   var level = 0;
   while (parent && parent.nodeType == 1) {
     if (getComputedStyle(parent).display == 'none') {
-      var desp = obj.id + ' at level' + level;
+      var desp = obj.id + ' at level ' + level;
       if (scriptConfig.none2block) {
         parent.style.display = 'block';
         parent.style.height = '0px';
@@ -30,12 +30,6 @@ function checkParents(obj) {
         log('Warning: Detected display:none for ' + desp);
       }
     }
-    if (scriptConfig.formid && obj.id != "" &&
-        parent.nodeName.toLowerCase() == "form") {
-      var command = "document.all." + parent.name + "." + obj.id + " = document.all." + obj.id;
-      log('Set form[id]: form: ' + parent.name + ', object: ' + obj.id)
-      executeScript(command);
-    }
     parent = parent.parentNode;
     ++level;
   }
@@ -43,22 +37,43 @@ function checkParents(obj) {
 
 var hostElement = null;
 function enableobj(obj) {
-  var oldDisplay = obj.style.display;
-  obj.style.display = 'none';
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
   obj.removeAttribute("classid");
-  obj.type = typeId;
-  obj.style.display = oldDisplay;
 
-  // Allow access by document.id
-  if (obj.id && scriptConfig.documentid) {
-    var command = "delete document." + obj.id + "\n";
-    command += "document." + obj.id + '=' + obj.id;
-    executeScript(command);
+  var id = obj.id;
+  checkParents(obj);
+
+  //obj.type = typeId;
+  obj.outerHTML = '<object type="' + typeId + '" ' + obj.outerHTML.substr(7);
+
+  if (id) {
+    var oldobj = obj;
+    // Setting outerHTML will replace the object.
+    obj = document.getElementById(id);
+    obj.activex_process = true;
+    obj.old = oldobj;
+
+    var command = '';
+    if (obj.form && scriptConfig.formid) {
+      var form = obj.form.name;
+      command += "document.all." + form + "." + id;
+      command + " = document.all." + id + ';\n';
+      log('Set form[id]: form: ' + form + ', object: ' + id)
+    }
+
+    // Allow access by document.id
+    if (obj.id && scriptConfig.documentid) {
+      command += "delete document." + id + ";\n";
+      command += "document." + id + '=' + id + ';\n';
+    }
+    if (command) {
+      executeScript(command);
+    }
   }
 
   log("Enabled object, id: " + obj.id + " clsid: " + getClsid(obj));
+  return obj;
 }
 
 function getClsid(obj) {
@@ -79,6 +94,17 @@ function notify(data) {
 }
 
 function process(obj) {
+  if (obj.old) {
+    var html = obj.old.innerHTML;
+    var html2 = obj.innerHTML;
+    if (html != html2) {
+      obj.innerHTML = html;
+      console.log(obj.old.innerHTML);
+      console.log(obj.innerHTML);
+      log('Copy original innerHTML');
+    }
+    delete obj.old;
+  }
   if (obj.activex_process)
     return;
 
@@ -112,8 +138,7 @@ function process(obj) {
 
   var rule = config.shouldEnable({href: location.href, clsid:clsid});
   if (rule) {
-    enableobj(obj);
-    checkParents(obj);
+    obj = enableobj(obj);
     notify({
       href: location.href,
       clsid: clsid, 
