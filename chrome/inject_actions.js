@@ -100,11 +100,16 @@ function process(obj) {
     return;
 
   if (obj.type == typeId) {
+    if (!config || !config.pageRule) {
+      // hack??? Deactive this object.
+      log("Deactive unexpected object " + obj.outerHTML);
+      return true;
+    }
     notify({
       href: location.href,
       clsid: clsid, 
       actived: true,
-      rule: 'Direct'
+      rule: config.pageRule.identifier
     });
     obj.activex_process = true;
     return;
@@ -153,7 +158,9 @@ function onBeforeLoading(event) {
   var obj = event.target;
   if (obj.nodeName == "OBJECT") {
     log("BeforeLoading " + obj.id);
-    process(obj);
+    if (process(obj)) {
+      event.preventDefault();
+    }
   }
 }
 
