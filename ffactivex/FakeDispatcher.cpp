@@ -116,6 +116,12 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 		LPSTR str = OLE2A(pBstrName);
 		SysFreeString(pBstrName);
 		DispatchLog(2, "Invoke 0x%08x %d %s", dispIdMember, wFlags, str);
+		
+		if (dispIdMember == 0x401 && strcmp(str, "url") == 0) {
+			str = "baseURI";
+		} else if (dispIdMember == 0x40A && strcmp(str, "parentWindow") == 0) {
+			str = "defaultView";
+		}
 
 		identifier = NPNFuncs.getstringidentifier(str);
 
