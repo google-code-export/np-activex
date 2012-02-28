@@ -142,7 +142,7 @@ function process(obj) {
 }
 
 function replaceDocument() {
-  var s = document.getElementsByTagName("object");
+  var s = document.querySelectorAll('object[classid]');
   log("found " + s.length + " object(s) on page");
   for (var i = 0; i < s.length; ++i) {
     process(s[i]);
