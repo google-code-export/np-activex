@@ -565,6 +565,25 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
         }
     }
 
+	SIZEL szInitialHiMetric, szCustomHiMetric;
+	SIZEL szInitialPixel, szCustomPixel;
+	if (m_spIOleObject && SUCCEEDED(m_spIOleObject->GetExtent(DVASPECT_CONTENT, &szInitialHiMetric))) {
+		szCustomPixel.cx = m_rcObjectPos.right - m_rcObjectPos.left;
+		szCustomPixel.cy = m_rcObjectPos.bottom - m_rcObjectPos.top;
+
+		if (szCustomPixel.cx != 300 || szCustomPixel.cy != 150) {
+			// Set initial size to custom size;
+			// Use rect passed in.
+			AtlPixelToHiMetric(&szCustomPixel, &szCustomHiMetric);
+			szInitialHiMetric = szCustomHiMetric;
+		} else {
+			// Use default rect.
+			AtlHiMetricToPixel(&szInitialHiMetric, &szInitialPixel);
+			m_rcObjectPos.right = m_rcObjectPos.left + szInitialPixel.cx;
+			m_rcObjectPos.bottom = m_rcObjectPos.top + szInitialPixel.cy;
+		}
+	}
+
     m_spIOleInPlaceObject = m_spObject;
     m_spIOleInPlaceObjectWindowless = m_spObject;
 
@@ -709,6 +728,15 @@ HRESULT CControlSite::SetPosition(const RECT &rcPos)
 	HWND hwnd;
     TRACE_METHOD(CControlSite::SetPosition);
     m_rcObjectPos = rcPos;
+	
+	if (m_spIOleObject) {
+		SIZEL szPixel, szHiMetric;
+		szPixel.cx = rcPos.right - rcPos.left;
+		szPixel.cy = rcPos.bottom - rcPos.top;
+		AtlPixelToHiMetric(&szPixel, &szHiMetric);
+		m_spIOleObject->SetExtent(DVASPECT_CONTENT, &szHiMetric);
+	}
+
     if (m_spIOleInPlaceObject && SUCCEEDED(m_spIOleInPlaceObject->GetWindow(&hwnd)))
     {
 		m_spIOleInPlaceObject->SetObjectRects(&m_rcObjectPos, &m_rcObjectPos);
@@ -716,6 +744,16 @@ HRESULT CControlSite::SetPosition(const RECT &rcPos)
     return S_OK;
 }
 
+
+HRESULT CControlSite::GetControlSize(LPSIZEL size){
+	if (m_spIOleObject) {
+		SIZEL szHiMetric;
+		m_spIOleObject->GetExtent(DVASPECT_CONTENT, &szHiMetric);
+		AtlHiMetricToPixel(&szHiMetric, size);
+		return S_OK;
+	}
+	return E_FAIL;
+}
 
 void CControlSite::FireAmbientPropertyChange(DISPID id)
 {
