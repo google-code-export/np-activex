@@ -44,15 +44,17 @@ function enableobj(obj) {
   var id = obj.id;
   checkParents(obj);
 
-  //obj.type = typeId;
-  obj.outerHTML = '<object type="' + typeId + '" ' + obj.outerHTML.substr(7);
+  if (onBeforeLoading.caller) {
+    log("Nested onBeforeLoading " + obj.id);
+    obj.type = typeId;
+  } else {
+    obj.outerHTML = '<object type="' + typeId + '" ' + obj.outerHTML.substr(7);
+  }
 
   if (id) {
-    var oldobj = obj;
     // Setting outerHTML will replace the object.
     obj = document.getElementById(id);
     obj.activex_process = true;
-    obj.old = oldobj;
 
     var command = '';
     if (obj.form && scriptConfig.formid) {
@@ -94,17 +96,6 @@ function notify(data) {
 }
 
 function process(obj) {
-  if (obj.old) {
-    var html = obj.old.innerHTML;
-    var html2 = obj.innerHTML;
-    if (html != html2) {
-      obj.innerHTML = html;
-      console.log(obj.old.innerHTML);
-      console.log(obj.innerHTML);
-      log('Copy original innerHTML');
-    }
-    delete obj.old;
-  }
   if (obj.activex_process)
     return;
 
