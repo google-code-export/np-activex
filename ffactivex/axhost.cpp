@@ -262,7 +262,7 @@ CAxHost::UpdateRect(RECT rcPos)
 	HRESULT hr = -1;
 	lastRect = rcPos;
 
-	if (Site && Window) {
+	if (Site && Window && !noWindow) {
 
 		if (Site->GetParentWindow() == NULL) {
 
@@ -281,6 +281,10 @@ CAxHost::UpdateRect(RECT rcPos)
         // Ensure clipping on parent to keep child controls happy
         ::SetWindowLong(Window, GWL_STYLE, ::GetWindowLong(Window, GWL_STYLE) | WS_CLIPCHILDREN);
 	}
+}
+
+void CAxHost::setNoWindow(bool noWindow) {
+	this->noWindow = noWindow;
 }
 
 void CAxHost::UpdateRectSize(LPRECT origRect) {

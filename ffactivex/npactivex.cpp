@@ -68,6 +68,7 @@ static const char PARAM_NAME[] = "name";
 static const char PARAM_CLSID[] = "clsid";
 static const char PARAM_CLASSID[] = "classid";
 static const char PARAM_PROGID[] = "progid";
+static const char PARAM_DYNAMIC[] = "dynamic";
 static const char PARAM_DEBUG[] = "debugLevel";
 static const char PARAM_CODEBASEURL [] = "codeBase";
 static const char PARAM_ONEVENT[] = "Event_";
@@ -424,6 +425,9 @@ NPError CreateControl(NPP instance, int16 argc, char *argn[], char *argv[], CAxH
 			else {
 				np_log(instance, 0, "AxHost.NPP_New: codeBaseUrl contains an untrusted location");
 			}
+		}
+		else if (0 == strnicmp(argn[i], PARAM_DYNAMIC, sizeof(PARAM_DYNAMIC))) {
+			host->setNoWindow(true);
 		}
 	}
 
