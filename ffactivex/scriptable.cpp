@@ -286,8 +286,7 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 	if (invalid)
 		return false;
 	
-	np_log(instance, 2, "GetProperty %s", NPNFuncs.utf8fromidentifier(name));
-
+	
 	static NPIdentifier classid = NPNFuncs.getstringidentifier("classid");
 	if (name == classid) {
 		CAxHost *host = (CAxHost*)this->host;
@@ -328,18 +327,15 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 	CComVariant vResult;
 	if (IsProperty(id)) {
 		HRESULT hr = disp->Invoke(id, GUID_NULL, LOCALE_SYSTEM_DEFAULT, DISPATCH_PROPERTYGET, &params, &vResult, NULL, NULL);
-		if (FAILED(hr)) {
-			np_log(instance, 0, "GetProperty failed: %s", NPNFuncs.utf8fromidentifier(name));
-			return false;
-		} else {
+		if (SUCCEEDED(hr)) {
 			Variant2NPVar(&vResult, result, instance);
+			np_log(instance, 2, "GetProperty %s", NPNFuncs.utf8fromidentifier(name));
 			return true;
 		}
-	} else {
-		OBJECT_TO_NPVARIANT(ScriptFunc::GetFunctionObject(instance, this, id), *result);
-		return true;
 	}
-	return false;
+	np_log(instance, 2, "GetMethodObject %s", NPNFuncs.utf8fromidentifier(name));
+	OBJECT_TO_NPVARIANT(ScriptFunc::GetFunctionObject(instance, this, id), *result);
+	return true;
 }
 
 bool Scriptable::SetProperty(NPIdentifier name, const NPVariant *value) {
