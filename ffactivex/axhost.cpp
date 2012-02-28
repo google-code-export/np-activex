@@ -271,32 +271,52 @@ CAxHost::UpdateRect(RECT rcPos)
 
 				np_log(instance, 0, "AxHost.UpdateRect: failed to attach control");
 			}
-			if (!Site->IsVisibleAtRuntime() && (rcPos.bottom != rcPos.top || rcPos.left != rcPos.right)) {
-				np_log(instance, 1, "Set object to invisible");
-				NPObjectProxy object;
-				NPNFuncs.getvalue(instance, NPNVPluginElementNPObject, &object);
-				static NPIdentifier style = NPNFuncs.getstringidentifier("style");
-				static NPIdentifier height = NPNFuncs.getstringidentifier("height");
-				static NPIdentifier width = NPNFuncs.getstringidentifier("width");
-				NPVariant len;
-				STRINGZ_TO_NPVARIANT("0px", len);
-
-				NPVariantProxy styleValue;
-
-				NPNFuncs.getproperty(instance, object, style, &styleValue);
-				NPObject *styleObject = NPVARIANT_TO_OBJECT(styleValue);
-				
-				NPNFuncs.setproperty(instance, styleObject, height, &len);
-				NPNFuncs.setproperty(instance, styleObject, width, &len);
-			}
         }
         else {
 
 			Site->SetPosition(rcPos);
         }
+		UpdateRectSize(&rcPos);
 
         // Ensure clipping on parent to keep child controls happy
         ::SetWindowLong(Window, GWL_STYLE, ::GetWindowLong(Window, GWL_STYLE) | WS_CLIPCHILDREN);
+	}
+}
+
+void CAxHost::UpdateRectSize(LPRECT origRect) {
+	SIZEL szControl;
+	if (!Site->IsVisibleAtRuntime()) {
+		szControl.cx = 0;
+		szControl.cy = 0;
+	} else {
+		Site->GetControlSize(&szControl);
+	}
+	SIZEL szIn;
+	szIn.cx = origRect->right - origRect->left;
+	szIn.cy = origRect->bottom - origRect->top;
+
+	if (szControl.cx != szIn.cx || szControl.cy != szIn.cy) {
+		np_log(instance, 1, "Set object size: x = %d, y = %d", szControl.cx, szControl.cy);
+		NPObjectProxy object;
+		NPNFuncs.getvalue(instance, NPNVPluginElementNPObject, &object);
+		static NPIdentifier style = NPNFuncs.getstringidentifier("style");
+		static NPIdentifier height = NPNFuncs.getstringidentifier("height");
+		static NPIdentifier width = NPNFuncs.getstringidentifier("width");
+		NPVariant sHeight, sWidth;
+
+		CStringA strHeight, strWidth;
+		strHeight.Format("%dpx", szControl.cy);
+		strWidth.Format("%dpx", szControl.cx);
+		STRINGZ_TO_NPVARIANT(strHeight, sHeight);
+		STRINGZ_TO_NPVARIANT(strWidth, sWidth);
+
+		NPVariantProxy styleValue;
+
+		NPNFuncs.getproperty(instance, object, style, &styleValue);
+		NPObject *styleObject = NPVARIANT_TO_OBJECT(styleValue);
+				
+		NPNFuncs.setproperty(instance, styleObject, height, &sHeight);
+		NPNFuncs.setproperty(instance, styleObject, width, &sWidth);
 	}
 }
 

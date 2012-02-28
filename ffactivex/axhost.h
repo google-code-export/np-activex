@@ -91,7 +91,7 @@ public:
 	void setCodeBaseUrl(LPCWSTR clsid);
 	bool hasValidClsID();
 	bool CreateControl(bool subscribeToEvents);
-
+	void UpdateRectSize(LPRECT origRect);
 	bool AddEventHandler(wchar_t *name, wchar_t *handler);
 	
 	HRESULT GetControlUnknown(IUnknown **pObj);

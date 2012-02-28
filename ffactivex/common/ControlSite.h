@@ -242,6 +242,8 @@ END_OLECOMMAND_TABLE()
     virtual HRESULT Advise(IUnknown *pIUnkSink, const IID &iid, DWORD *pdwCookie);
     // Removes an advise sink
     virtual HRESULT Unadvise(const IID &iid, DWORD dwCookie);
+	// Get the control size, in pixels.
+	virtual HRESULT GetControlSize(LPSIZEL size);
 
 	void SetInnerWindow(IUnknown *unk, void (*Deleter)(IUnknown *unk)) {
 		m_spInner = unk;
