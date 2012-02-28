@@ -48,6 +48,7 @@ private:
 
 	bool isValidClsID;
 	bool isKnown;
+	bool noWindow;
 protected:
 	// The window handle to our plugin area in the browser
 	HWND Window;
@@ -86,6 +87,8 @@ public:
 	CLSID getClsID() {
 		return this->ClsID;
 	}
+
+	void setNoWindow(bool value);
 
 	bool setClsIDFromProgID(const char *progid);
 	void setCodeBaseUrl(LPCWSTR clsid);
