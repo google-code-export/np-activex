@@ -269,7 +269,7 @@ CAxHost::UpdateRect(RECT rcPos)
 
 			hr = Site->Attach(Window, rcPos, NULL);
 			if (FAILED(hr)) {
-
+				noWindow = true;
 				np_log(instance, 0, "AxHost.UpdateRect: failed to attach control");
 			}
         }
@@ -289,12 +289,17 @@ void CAxHost::setNoWindow(bool noWindow) {
 }
 
 void CAxHost::UpdateRectSize(LPRECT origRect) {
+	if (noWindow) {
+		return;
+	}
 	SIZEL szControl;
 	if (!Site->IsVisibleAtRuntime()) {
 		szControl.cx = 0;
 		szControl.cy = 0;
 	} else {
-		Site->GetControlSize(&szControl);
+		if (FAILED(Site->GetControlSize(&szControl))) {
+			return;
+		}
 	}
 	SIZEL szIn;
 	szIn.cx = origRect->right - origRect->left;

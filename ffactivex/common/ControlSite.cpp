@@ -753,9 +753,9 @@ HRESULT CControlSite::SetPosition(const RECT &rcPos)
 HRESULT CControlSite::GetControlSize(LPSIZEL size){
 	if (m_spIOleObject) {
 		SIZEL szHiMetric;
-		m_spIOleObject->GetExtent(DVASPECT_CONTENT, &szHiMetric);
+		HRESULT hr = m_spIOleObject->GetExtent(DVASPECT_CONTENT, &szHiMetric);
 		AtlHiMetricToPixel(&szHiMetric, size);
-		return S_OK;
+		return hr;
 	}
 	return E_FAIL;
 }
