@@ -24,10 +24,10 @@
     "message": "感谢使用ActiveX for Chrome。\n我们最近更新了安全规则方案，请检查转换的设置是否正确，并删除曾经安装的全部兼容补丁以免冲突（工商银行、农业银行、招商银行、CNTV等需要的兼容补丁已在此版本中集成）。原来无效的设置项已经删除。"
   },
   "Enabled": {
-    "message": "启用"
+    "message": "已启用"
   },
   "Disabled": {
-    "message": "禁用"
+    "message": "已禁用"
   },
   "Custom": {
     "message": "自定义"
