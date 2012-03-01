@@ -4,6 +4,7 @@
 
 var background = chrome.extension.getBackgroundPage();
 var setting = background.setting;
+var updateSession = background.updateSession;
 
 function toggleRule(e) {
   var line = e.data.line;
@@ -104,8 +105,10 @@ function setReadonly(e) {
 }
 
 $(window).blur(doSave);
-$(window).unload(doSave);
 
+function refresh() {
+  table.refresh();
+}
 // Main setting
 $(document).ready(function() {
   table = new List({
@@ -192,10 +195,18 @@ $(document).ready(function() {
     table.remove(line);
   });
   table.init();
-  updater.bind('setting', function() {
-    table.refresh();
-  });
+  updateSession.bind('update', refresh);
+  updateSession.bind('updating', showUpdatingState);
+  updateSession.bind('progress', showUpdatingState);
+  updateSession.bind('complete', showUpdatingState);
 });
+
+window.onbeforeunload = function() {
+  updateSession.unbind('update', refresh);
+  updateSession.unbind('updating', showUpdatingState);
+  updateSession.unbind('progress', showUpdatingState);
+  updateSession.unbind('complete', showUpdatingState);
+}
 
 function setStatusNew(e) {
   with (e.data) {
@@ -224,10 +235,6 @@ function setStatus(e) {
     $('button', line).text(s).css('background-color', color);
   }
 }
-
-var updater = background.updater;
-
-var serverTable;
 
 function showTime(time) {
   var never = 'Never'
@@ -260,21 +267,17 @@ function showTime(time) {
 }
 
 function showUpdatingState(e) {
-  if (updater.status == 'stop') {
+  if (updateSession.status == 'stop') {
     $('#lastUpdate').text(showTime(setting.misc.lastUpdate));
   } else {
-    $('#lastUpdate').text($$("update_progress") + updater.finish + '/' + updater.total);
+    $('#lastUpdate').text($$("update_progress") + updateSession.finish + '/' + updateSession.total);
   }
 }
-
-updater.bind('updating', showUpdatingState);
-updater.bind('error', showUpdatingState);
-updater.bind('complete', showUpdatingState);
 
 $(document).ready(function() {
   showUpdatingState({});
   $('#doUpdate').click(function() {
-    updater.update();
+    setting.updateConfig(updateSession);
     trackManualUpdate();
   });
 
@@ -304,3 +307,4 @@ $(window).load(function() {
     alert($$("upgrade_show"));
   }
 });
+

@@ -17,165 +17,118 @@
 var defaultServer = "http://settings.np-activex.googlecode.com/hg/";
 var server=localStorage.updateServer || defaultServer;
 
-// Update per 5 hours.
-var interval = 1000 * 3600 * 5;
+$.ajaxSetup({
+  ifModified: true
+});
+
+function ObjectWithEvent() {
+  this._events = {};
+};
+
+ObjectWithEvent.prototype = {
+  bind: function(name, func) {
+    if (!Array.isArray(this._events[name])) {
+      this._events[name] = [];
+    }
+    this._events[name].push(func);
+  },
+  unbind: function(name, func) {
+    if (!Array.isArray(this._events[name])) {
+      return;
+    }
+    for (var i = 0; i < this._events[name].length; ++i) {
+      if (this._events[name][i] == func) {
+        this._events[name].splice(i, 1);
+        break;
+      }
+    }
+  },
+  trigger: function(name, argument) {
+    if (this._events[name]) {
+      var handlers = this._events[name];
+      for (var i = 0; i < handlers.length; ++i) {
+        handlers[i].apply(this, argument);
+      }
+    }
+  }
+};
 
 function UpdateSession() {
-  var val = $({});
-  val.__proto__ = UpdateSession.prototype;
-  val.updateToken = undefined;
-  val.reset();
-  return val;
+  ObjectWithEvent.call(this);
+  this.jqXHRs = [];
+  this.reset();
 }
 
 UpdateSession.prototype = {
-  __proto__: $({}).__proto__,
-
-  start: function() {
-    this.update();
-  },
-
-  onUpdateError: function(xhr, msg, thrown) {
-    ++this.error;
-    updater.trigger('error', [xhr, msg, thrown]);
-    this.updateProgress();
-  },
-
-  progress: function() {
-    ++this.finished;
-    this.updateProgress();
-  },
+  __proto__: ObjectWithEvent.prototype,
 
   updateProgress: function() {
     with(this) {
-      if (error + finished == total) {
-        updater.trigger('complete', [finished, total]);
+      if (finished == total) {
+        if (error == 0) {
+          this.trigger('success');
+        }
+        this.trigger('complete');
       } else {
-        updater.trigger('progress', [finished, total, error]);
+        this.trigger('progress');
       }
     }
   },
 
   updateFile: function(request) {
     ++this.total;
-    var a = this;
-
-    if (request.url.match(/^.*:\/\//) == null) {
-      request.url = server + request.url;
-    }
-    if (!request.ifModified) {
-      request.ifModified = true;
-    }
-
-    var old_success = request.success;
-    request.success = function(nv, status, xhr) {
-      if (old_success && status == 'success') {
-        old_success.call(this, nv, status, xhr);
-      }
-      a.progress();
-    }
-
-    var old_error = request.error;
-    request.error = function(jqXHR, textStatus, errorThrown) {
-      if (old_error && status == 'success') {
-        old_error.call(this, jqXHR, textStatus, errorThrown);
-      }
-      a.onUpdateError(jqXHR, textStatus, errorThrown);
-    }
-    trackUpdateFile(request.url);
-    $.ajax(request)
+    var session = this;
+    var jqXHR = UpdateSession.updateFile(request)
+    .fail(function(xhr, msg, thrown) {
+      ++session.error;
+      session.trigger('error', [xhr, msg, thrown]);
+      session.updateProgress();
+    }).always(function() {
+      ++session.finished;
+      session.updateProgress();
+    });
+    this.jqXHRs.push(jqXHR);
   },
 
   reset: function() {
     this.finished = this.total = this.error = 0;
-    this.items = {};
+    if (this.updateToken) {
+      clearTimeout(this.updateToken);
+      this.updateToken = undefined;
+    }
+    for (var i = 0; i < this.jqXHRs.length; ++i) {
+      //this.jqXHRs[i].abort();
+    }
+    this.jqXHRs = [];
   },
 
-  update: function() {
-    with(this) {
-      if (updateToken) {
-        clearTimeout(updateToken);
-        updateToken = undefined;
-      }
-      doUpdate();
-      updateToken = setTimeout(update, interval);
-    }
-  },
-
-  doUpdate: function() {
-    with(this) {
-      reset();
-      trigger('updating');
-
-      updateFile({
-        url: 'setting.json',
-        success: function(nv, status, xhr) {
-          trigger('itemupdated', ['setting', nv]);
-        }
-      });
-
-      updateFile({
-        url: 'scripts.json',
-        success: function(nv, status, xhr) {
-          trigger('itemupdated', ['scripts', nv]);
-        }
-      });
-
-      updateFile({
-        url: 'issues.json',
-        success: function(nv, status, xhr) {
-          trigger('itemupdated', ['issues', nv]);
-        }
-      });
-
-    }
+  startUpdate: function() {
+    this.reset();
+    this.trigger('updating');
   }
-}
+};
 
 UpdateSession.prototype.__defineGetter__('status', function() {
-  if (this.finished + this.error == this.total) {
+  if (this.finished == this.total) {
     return "stop";
   } else {
     return "updating";
   }
 });
 
-updater = new UpdateSession();
+UpdateSession.setUpdateInterval= function(callback, session, interval) {
+  session.bind('complete', function() {
+    session.updateToken = setTimeout(callback, interval);
+  });
+  callback();
+};
 
-updater.bind('success', function() {
-    setting.misc.lastUpdate = Date.now();
-});
-
-updater.bind('complete', function(e, finished, total) {
-  if (finished == total) {
-    updater.trigger('success');
+UpdateSession.updateFile = function(request) {
+  if (request.url.match(/^.*:\/\//) == null) {
+    request.url = server + request.url;
   }
-});
 
-updater.bind('updating', function() {
-  console.log('updating');
-});
+  trackUpdateFile(request.url);
 
-updater.bind('itemupdated', function(e, item, nv) {
-  console.log('itemUpdated ' + item);
-  updater.items[item] = true;
-  if (item == 'issues') {
-    var old = setting.issues;
-    setting.issues = nv;
-    setting.update('issues', old);
-  } else {
-    if (item == 'setting') {
-      var old = setting.defaultRules;
-      setting.defaultRules = nv;
-      setting.update('defaultRules', old);
-    } else if (item == 'scripts') {
-      var old = setting.scripts;
-      setting.scripts = nv;
-      setting.update('scripts', old);
-    }
-    if (updater.items['setting'] && updater.items['scripts']) {
-      setting.updateAllScripts();
-    }
-  }
-});
-
+  return $.ajax(request);
+};

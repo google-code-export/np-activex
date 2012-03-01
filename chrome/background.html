@@ -7,10 +7,26 @@
 <script src="gas.js"> </script>
 <script>
   var setting = loadLocalSetting();
+  var updateSession = new UpdateSession();
+
+  setting.cache.listener = updateSession;
+
+  updateSession.bind('success', function() {
+    setting.misc.lastUpdate = Date.now();
+  });
+
+  updateSession.bind('complete', function() {
+    setting.update();
+    console.log('Update completed');
+  });
+
+  UpdateSession.setUpdateInterval(function() {
+    setting.updateConfig(updateSession);
+  }, updateSession, DEFAULT_INTERVAL);
+
   startListener();
   registerRequestListener();
 
-  updater.update();
   initGAS();
   if (firstRun || firstUpgrade) {
     firstRun = false;

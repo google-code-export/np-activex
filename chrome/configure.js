@@ -57,6 +57,9 @@ ActiveXConfig: {
 }                 
  */
 
+// Update per 5 hours.
+var DEFAULT_INTERVAL = 1000 * 3600 * 5;
+
 function ActiveXConfig(input)
 {
   var settings;
@@ -200,6 +203,90 @@ ActiveXConfig.prototype = {
     trackAddCustomRule(newItem, auto);
   },
 
+  updateDefaultRules: function(newRules) {
+    var deleteAll = false, ruleToDelete = {};
+    if (typeof this.defaultRules != 'object') {
+      // There might be some errors!
+      // Clear all defaultRules
+      console.log('Corrupted default rules, reload all');
+      deleteAll = true;
+      this.defaultRules = {};
+    } else {
+      for (var i in this.defaultRules) {
+        if (!(i in newRules)) {
+          console.log('Remove rule ' + i);
+          ruleToDelete[i] = true;
+          delete this.defaultRules[i];
+        }
+      }
+    }
+
+    var newOrder = [];
+    for (var i = 0; i < this.order.length; ++i) {
+      if (this.order[i].position == 'custom' || 
+          (!deleteAll && !ruleToDelete[this.order[i].identifier])) {
+        newOrder.push(this.order[i]);
+      }
+    }
+    this.order = newOrder;
+
+    for (var i in newRules) {
+      if (!(i in this.defaultRules)) {
+        this.addDefaultRule(newRules[i]);
+      }
+      this.defaultRules[i] = newRules[i];
+    }
+  },
+  updateConfig: function(session) {
+    session.startUpdate();
+    console.log('Start updating');
+
+    var updated = {
+      issues: false,
+      setting: false,
+      scripts: false
+    };
+
+    var setting = this;
+    session.updateFile({
+      url: 'setting.json',
+      dataType: "json",
+      success: function(nv, status, xhr) {
+        console.log('Update default rules');
+        updated.setting = true;
+        setting.updateDefaultRules(nv);
+        if (updated.setting && updated.scripts) {
+          setting.updateAllScripts(session);
+        }
+        setting.update();
+      }
+    });
+
+    session.updateFile({
+      url: 'scripts.json',
+      dataType: "json",
+      success: function(nv, status, xhr) {
+        updated.scripts = true;
+        console.log('Update scripts');
+        setting.scripts = nv;
+        if (updated.setting && updated.scripts) {
+          setting.updateAllScripts(session);
+        }
+        setting.update();
+      }
+    });
+
+    session.updateFile({
+      url: 'issues.json',
+      dataType: "json",
+      success: function(nv, status, xhr) {
+        console.log('Update issues');
+        setting.issues = nv;
+        setting.update();
+      }
+    });
+  },
+
   getPageConfig: function(href) {
     var ret = {};
     ret.pageSide = true;
@@ -337,7 +424,7 @@ ActiveXConfig.prototype = {
     return localStorage[id];
   },
 
-  updateAllScripts: function() {
+  updateAllScripts: function(session) {
     console.log('updateAllScripts');
     var scripts = {};
     for (var i = 0; i < this.order.length; ++i) {
@@ -355,11 +442,11 @@ ActiveXConfig.prototype = {
       }
     }
     for (var i in scripts) {
-      this.updateScript(i, true);
+      this.updateScript(i, true, session);
     }
   },
 
-  updateScript: function(id, async) {
+  updateScript: function(id, async, session) {
     var remote = this.scripts[id];
     var local = this.localScripts[id];
     if (!remote || remote.updating) {
@@ -369,15 +456,10 @@ ActiveXConfig.prototype = {
       return;
     }
 
-    if (!updater) {
-      // Should run update from background
-      throw "No updater";
-    }
-
     remote.updating = true;
     var setting = this;
 
-    updater.updateFile({
+    var config = {
       url: remote.url,
       async: async,
       complete: function() {
@@ -393,8 +475,17 @@ ActiveXConfig.prototype = {
       },
       // Don't evaluate this.
       dataType: "text"
-    });
+    };
 
+    if (!UpdateSession && !session) {
+      // Should run update from background
+      throw "Not valid session";
+    }
+    if (session) {
+      session.updateFile(config);
+    } else {
+      UpdateSession.updateFile(config);
+    }
   },
 
   convertUrlWildCharToRegex: function(wild) {
@@ -428,25 +519,19 @@ ActiveXConfig.prototype = {
     }
   },
 
-  update: function(item, original) {
+  update: function() {
     if (this.pageSide) {
       return;
     }
-    if (item == 'defaultRules') {
-      for (var i in this.defaultRules) {
-        if (!(i in original)) {
-          this.addDefaultRule(i);
-        }
-      }
-    }
-    this.updateCache(item);
-    if (updater) {
-      updater.trigger('setting');
+    this.updateCache();
+    if (this.cache.listener) {
+      this.cache.listener.trigger('update');
     }
     this.save();
   },
-  addDefaultRule: function(id) {
-    var rule = this.defaultRules[id];
+
+  // Please remember to call update() after all works are done.
+  addDefaultRule: function(rule) {
     console.log("Add new default rule: ", rule);
     var custom = null;
     if (rule.type == 'clsid') {
@@ -478,16 +563,18 @@ ActiveXConfig.prototype = {
       for (var i = 0; i < this.order.length; ++i) {
         if (this.order[i].identifier == custom.identifier) {
           this.order.splice(i, 1);
+          break;
         }
       }
     }
     this.order.push({
       position: 'default',
       status: newStatus,
-      identifier: id
+      identifier: rule.identifier
     });
+    this.defaultRules[rule.identifier] = rule;
   },
-  updateCache: function(item) {
+  updateCache: function() {
     if (this.pageSide) {
       return;
     }
@@ -495,7 +582,8 @@ ActiveXConfig.prototype = {
       validRules: [],
       regex: [],
       clsidRules: [],
-      userAgentRules: []
+      userAgentRules: [],
+      listener: (this.cache || {}).listener
     }
     for (var i = 0; i < this.order.length; ++i) {
       if (this.order[i].status == 'custom' || this.order[i].status == 'enabled') {
