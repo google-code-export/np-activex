@@ -17,10 +17,6 @@
 var defaultServer = "http://settings.np-activex.googlecode.com/hg/";
 var server=localStorage.updateServer || defaultServer;
 
-$.ajaxSetup({
-  ifModified: true
-});
-
 function ObjectWithEvent() {
   this._events = {};
 };
