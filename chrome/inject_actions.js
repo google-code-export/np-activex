@@ -40,34 +40,38 @@ function enableobj(obj) {
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
   obj.removeAttribute("classid");
-
-  var id = obj.id;
   checkParents(obj);
 
   if (onBeforeLoading.caller) {
     log("Nested onBeforeLoading " + obj.id);
     obj.type = typeId;
   } else {
-    obj.outerHTML = '<object type="' + typeId + '" ' + obj.outerHTML.substr(7);
+    var newObj = obj.cloneNode(true);
+    newObj.type = typeId;
+    // Remove all script nodes. They're executed.
+    var scripts = newObj.getElementsByTagName('script');
+    for (var i = 0; i < scripts.length; ++i) {
+      scripts[i].parentNode.removeChild(scripts[i]);
+    }
+    newObj.activex_process = true;
+    obj.parentNode.insertBefore(newObj, obj);
+    obj.parentNode.removeChild(obj);
+    obj = newObj;
   }
 
-  if (id) {
-    // Setting outerHTML will replace the object.
-    obj = document.getElementById(id);
-    obj.activex_process = true;
-
+  if (obj.id) {
     var command = '';
     if (obj.form && scriptConfig.formid) {
       var form = obj.form.name;
-      command += "document.all." + form + "." + id;
-      command + " = document.all." + id + ';\n';
-      log('Set form[id]: form: ' + form + ', object: ' + id)
+      command += "document.all." + form + "." + obj.id;
+      command + " = document.all." + obj.id + ';\n';
+      log('Set form[obj.id]: form: ' + form + ', object: ' + obj.id)
     }
 
-    // Allow access by document.id
+    // Allow access by document.obj.id
     if (obj.id && scriptConfig.documentid) {
-      command += "delete document." + id + ";\n";
-      command += "document." + id + '=' + id + ';\n';
+      command += "delete document." + obj.id + ";\n";
+      command += "document." + obj.id + '=' + obj.id + ';\n';
     }
     if (command) {
       executeScript(command);
