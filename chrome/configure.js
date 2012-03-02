@@ -230,9 +230,10 @@ ActiveXConfig.prototype = {
     }
     this.order = newOrder;
 
+    var position = 0;
     for (var i in newRules) {
       if (!(i in this.defaultRules)) {
-        this.addDefaultRule(newRules[i]);
+        this.addDefaultRule(newRules[i], position++);
       }
       this.defaultRules[i] = newRules[i];
     }
@@ -531,7 +532,7 @@ ActiveXConfig.prototype = {
   },
 
   // Please remember to call update() after all works are done.
-  addDefaultRule: function(rule) {
+  addDefaultRule: function(rule, position) {
     console.log("Add new default rule: ", rule);
     var custom = null;
     if (rule.type == 'clsid') {
@@ -567,7 +568,7 @@ ActiveXConfig.prototype = {
         }
       }
     }
-    this.order.push({
+    this.order.splice(position, 0, {
       position: 'default',
       status: newStatus,
       identifier: rule.identifier
