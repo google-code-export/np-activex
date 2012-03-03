@@ -42,22 +42,17 @@ function enableobj(obj) {
   obj.removeAttribute("classid");
   checkParents(obj);
 
-  if (onBeforeLoading.caller) {
-    log("Nested onBeforeLoading " + obj.id);
-    obj.type = typeId;
-  } else {
-    var newObj = obj.cloneNode(true);
-    newObj.type = typeId;
-    // Remove all script nodes. They're executed.
-    var scripts = newObj.getElementsByTagName('script');
-    for (var i = 0; i < scripts.length; ++i) {
-      scripts[i].parentNode.removeChild(scripts[i]);
-    }
-    newObj.activex_process = true;
-    obj.parentNode.insertBefore(newObj, obj);
-    obj.parentNode.removeChild(obj);
-    obj = newObj;
+  var newObj = obj.cloneNode(true);
+  newObj.type = typeId;
+  // Remove all script nodes. They're executed.
+  var scripts = newObj.getElementsByTagName('script');
+  for (var i = 0; i < scripts.length; ++i) {
+    scripts[i].parentNode.removeChild(scripts[i]);
   }
+  newObj.activex_process = true;
+  obj.parentNode.insertBefore(newObj, obj);
+  obj.parentNode.removeChild(obj);
+  obj = newObj;
 
   if (obj.id) {
     var command = '';
@@ -102,6 +97,11 @@ function notify(data) {
 function process(obj) {
   if (obj.activex_process)
     return;
+
+  if (onBeforeLoading.caller) {
+    log("Nested onBeforeLoading " + obj.id);
+    return;
+  }
 
   if (obj.type == typeId) {
     if (!config || !config.pageRule) {
