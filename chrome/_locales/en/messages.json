@@ -105,7 +105,7 @@
     "message": "Refresh page to apply"
   },
   "enable_default_rule": {
-    "message": "Active predefined rule $rule$",
+    "message": "Enable predefined rule $rule$",
     "placeholders": {
       "rule": {
         "content": "$1"
@@ -113,7 +113,7 @@
     }
   },
   "add_rule_site": {
-    "message": "Active all controls on site $site$",
+    "message": "Enable all controls on site $site$",
     "placeholders": {
       "site": {
         "content": "$1"
@@ -121,7 +121,7 @@
     }
   },
   "add_rule_clsid": {
-    "message": "Active controls with same CLSID"
+    "message": "Enable controls with same CLSID"
   },
   "issue_submitting_desp": {
     "message": "Please continue operating normally on this page. Report guide will pop after the current page is closed"
