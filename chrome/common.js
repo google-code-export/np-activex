@@ -9,6 +9,11 @@ var debug = chrome.i18n.getMessage("@@extension_id") != default_id;
 var firstRun = false;
 var firstUpgrade = false;
 
+var blackList = [
+  /^https?:\/\/[^\/]\.taobao\.com\/.*/i,
+  /^https?:\/\/[^\/]\.alipay\.com\/.*/i
+];
+
 var MAX_LOG = 400;
 
 (function getVersion() {
@@ -122,6 +127,11 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 });
 
 function countTabObject(status, info, delta) {
+  for (var i = 0; i < blackList.length; ++i) {
+    if (info.href.match(blackList[i])) {
+      return;
+    }
+  }
   if (info.actived) {
     status.actived += delta;
     if (delta > 0) {
