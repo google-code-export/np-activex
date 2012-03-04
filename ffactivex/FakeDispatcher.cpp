@@ -328,7 +328,8 @@ HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 	if (FAILED(typeInfo->GetFuncDesc(index, &func)))
 		__asm int 3;
 	DISPPARAMS varlist;
-	CComVariant *list = new CComVariant[func->cParams];
+	// We don't need to clear them.
+	VARIANT *list = new VARIANT[func->cParams];
 	varlist.cArgs = func->cParams;
 	varlist.cNamedArgs = 0;
 	varlist.rgdispidNamedArgs = NULL;
