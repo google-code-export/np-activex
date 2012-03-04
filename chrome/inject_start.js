@@ -106,6 +106,6 @@ function loadSessionConfig() {
 loadSessionConfig();
 
 chrome.extension.sendRequest(
-  {command:"Configuration", href:location.href}, loadConfig);
+  {command:"Configuration", href:location.href, top: self == top}, loadConfig);
 
 window.addEventListener("beforeload", onBeforeLoading, true);
