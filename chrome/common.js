@@ -34,7 +34,18 @@ function startListener() {
       if (!sender.tab) {
         console.error('Request from non-tab');
       } else if (request.command == 'Configuration') {
-        sendResponse(setting.getPageConfig(request.href));
+        var config = setting.getPageConfig(request.href);
+        sendResponse(config);
+        if (request.top) {
+          resetTabStatus(sender.tab.id);
+          var dummy = {href: request.href, clsid: 'NULL'};
+          if (!config.pageRule &&
+              setting.getFirstMatchedRule(
+                dummy, setting.defaultRules)) {
+            detectControl(dummy, sender.tab.id, 0);
+          }
+        }
+        //notifyUser(request, sender, config);
       } else {
         sendResponse({});
       }
@@ -47,19 +58,23 @@ var grayIcon = chrome.extension.getURL('icon16-gray.png');
 var errorIcon = chrome.extension.getURL('icon16-error.png');
 var responseCommands = {};
 
+function resetTabStatus(tabId) {
+  tabStatus[tabId] = {
+    count: 0,
+    actived: 0,
+    error: 0,
+    issueId: null,
+    logs: {"0":[]},
+    objs: {"0":[]},
+    frames: 1,
+    tracking: false
+  };
+}
+
 function initPort(port) {
   var tabId = port.sender.tab.id;
   if (!(tabId in tabStatus)) {
-    tabStatus[tabId] = {
-      count: 0,
-      actived: 0,
-      error: 0,
-      issueId: null,
-      logs: {},
-      objs: {},
-      frames: 0,
-      tracking: false
-    };
+    resetTabStatus(tabId);
   }
   var status = tabStatus[tabId];
   var frameId = tabStatus[tabId].frames++;
@@ -173,13 +188,20 @@ function showTabStatus(tabId) {
   });
 }
 
-responseCommands.DetectControl = function(request, tabId, frameId) {
+function detectControl(request, tabId, frameId) {
   var status = tabStatus[tabId];
+  if (frameId != 0 && status.objs[0].length) {
+    // Remove the item to identify the page.
+    countTabObject(status, status.objs[0][0], -1);
+    status.objs[0] = [];
+  }
   status.objs[frameId].push(request);
 
   countTabObject(status, request, 1);
   showTabStatus(tabId);
 }
+
+responseCommands.DetectControl = detectControl;
 
 responseCommands.Log = function(request, tabId, frameId) {
   var logs = tabStatus[tabId].logs[frameId];
