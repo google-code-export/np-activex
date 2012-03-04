@@ -381,7 +381,7 @@ ActiveXConfig.prototype = {
       if (object.clsid) {
         var v1 = clsidPattern.exec(rule.value.toUpperCase());
         var v2 = clsidPattern.exec(object.clsid.toUpperCase());
-        if (v1 && v1[0] == v2[0]) {
+        if (v1 && v2 && v1[0] == v2[0]) {
           return true;
         }
       }
