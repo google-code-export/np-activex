@@ -98,7 +98,9 @@ function process(obj) {
   if (obj.activex_process)
     return;
 
-  if (onBeforeLoading.caller) {
+  if (onBeforeLoading.caller == enableobj ||
+      onBeforeLoading.caller == process ||
+      onBeforeLoading.caller == checkParents) {
     log("Nested onBeforeLoading " + obj.id);
     return;
   }
@@ -109,6 +111,7 @@ function process(obj) {
       log("Deactive unexpected object " + obj.outerHTML);
       return true;
     }
+    log("Found objects created by client scripts");
     notify({
       href: location.href,
       clsid: clsid, 
