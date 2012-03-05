@@ -42,24 +42,6 @@
 
 #include "PropertyList.h"
 
-// If you created a class derived from CControlSite, use the following macro
-// in the interface map of the derived class to include all the necessary
-// interfaces.
-#define CCONTROLSITE_INTERFACES() \
-    COM_INTERFACE_ENTRY(IOleWindow) \
-    COM_INTERFACE_ENTRY(IOleClientSite) \
-    COM_INTERFACE_ENTRY(IOleInPlaceSite) \
-    COM_INTERFACE_ENTRY_IID(IID_IOleInPlaceSite, IOleInPlaceSiteWindowless) \
-    COM_INTERFACE_ENTRY_IID(IID_IOleInPlaceSiteEx, IOleInPlaceSiteWindowless) \
-    COM_INTERFACE_ENTRY(IOleControlSite) \
-    COM_INTERFACE_ENTRY(IDispatch) \
-    COM_INTERFACE_ENTRY_IID(IID_IAdviseSink, IAdviseSinkEx) \
-    COM_INTERFACE_ENTRY_IID(IID_IAdviseSink2, IAdviseSinkEx) \
-    COM_INTERFACE_ENTRY_IID(IID_IAdviseSinkEx, IAdviseSinkEx) \
-    COM_INTERFACE_ENTRY(IOleCommandTarget) \
-    COM_INTERFACE_ENTRY(IBindStatusCallback) \
-    COM_INTERFACE_ENTRY(IWindowForBindingUI)
-
 // Temoporarily removed by bug 200680. Stops controls misbehaving and calling
 // windowless methods when they shouldn't.
 //     COM_INTERFACE_ENTRY_IID(IID_IOleInPlaceSiteWindowless, IOleInPlaceSiteWindowless) \
@@ -152,6 +134,7 @@ protected:
     // Pointer to object's IOleInPlaceObjectWindowless interface
     CComQIPtr<IOleInPlaceObjectWindowless, &IID_IOleInPlaceObjectWindowless> m_spIOleInPlaceObjectWindowless;
     // CLSID of the control
+	CComQIPtr<IOleControl> m_spIOleControl;
     CLSID m_CLSID;
     // Parameter list
     PropertyList m_ParameterList;
@@ -180,6 +163,8 @@ protected:
     HRGN m_hRgnBuffer;
     // Flags indicating how the buffer was painted
     DWORD m_dwBufferFlags;
+	// The last control size passed by GetExtent
+	SIZEL m_currentSize;
 
 // Ambient properties
     // Locale ID
@@ -196,6 +181,8 @@ protected:
     bool m_bAmbientUserMode:1;
     // Flag indicating if control has a 3d border or not
     bool m_bAmbientAppearance:1;
+	// Flag indicating if the size passed in is different from the control.
+	bool m_needUpdateContainerSize:1;
 
 protected:
     // Notifies the attached control of a change to an ambient property
@@ -209,7 +196,20 @@ public:
     virtual ~CControlSite();
 
 BEGIN_COM_MAP(CControlSite)
-    CCONTROLSITE_INTERFACES()
+    COM_INTERFACE_ENTRY(IOleWindow)
+    COM_INTERFACE_ENTRY(IOleClientSite)
+    COM_INTERFACE_ENTRY(IOleInPlaceSite)
+	COM_INTERFACE_ENTRY(IOleInPlaceSiteWindowless)
+	COM_INTERFACE_ENTRY_IID(IID_IOleInPlaceSite, IOleInPlaceSiteWindowless)
+    COM_INTERFACE_ENTRY_IID(IID_IOleInPlaceSiteEx, IOleInPlaceSiteWindowless)
+    COM_INTERFACE_ENTRY(IOleControlSite)
+    COM_INTERFACE_ENTRY(IDispatch)
+    COM_INTERFACE_ENTRY_IID(IID_IAdviseSink, IAdviseSinkEx)
+    COM_INTERFACE_ENTRY_IID(IID_IAdviseSink2, IAdviseSinkEx)
+    COM_INTERFACE_ENTRY_IID(IID_IAdviseSinkEx, IAdviseSinkEx)
+    COM_INTERFACE_ENTRY(IOleCommandTarget)
+    COM_INTERFACE_ENTRY(IBindStatusCallback)
+    COM_INTERFACE_ENTRY(IWindowForBindingUI)
 	COM_INTERFACE_ENTRY_AGGREGATE_BLIND(m_spInner)
 END_COM_MAP()
 
@@ -244,6 +244,8 @@ END_OLECOMMAND_TABLE()
     virtual HRESULT Unadvise(const IID &iid, DWORD dwCookie);
 	// Get the control size, in pixels.
 	virtual HRESULT GetControlSize(LPSIZEL size);
+	// Set the control size, in pixels.
+	virtual HRESULT SetControlSize(const LPSIZEL size, LPSIZEL out);
 
 	void SetInnerWindow(IUnknown *unk, void (*Deleter)(IUnknown *unk)) {
 		m_spInner = unk;
@@ -289,6 +291,12 @@ END_OLECOMMAND_TABLE()
     {
 		return m_bVisibleAtRuntime;
     }
+	// Return and reset m_needUpdateContainerSize
+	virtual BOOL CheckAndResetNeedUpdateContainerSize() {
+		BOOL ret = m_needUpdateContainerSize;
+		m_needUpdateContainerSize = false;
+		return ret;
+	}
 
 // IDispatch
     virtual HRESULT STDMETHODCALLTYPE GetTypeInfoCount(/* [out] */ UINT __RPC_FAR *pctinfo);

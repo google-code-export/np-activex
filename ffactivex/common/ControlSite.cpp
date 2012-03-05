@@ -208,6 +208,9 @@ CControlSite::CControlSite()
     m_hBMBuffer = NULL;
 
 	m_spInner = NULL;
+
+	m_needUpdateContainerSize = false;
+	m_currentSize.cx = m_currentSize.cy = -1;
 }
 
 
@@ -496,6 +499,7 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
         return E_UNEXPECTED;
     }
 
+	m_spIOleControl = m_spObject;
     m_spIViewObject = m_spObject;
     m_spIOleObject = m_spObject;
     
@@ -503,6 +507,9 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
     {
         return E_FAIL;
     }
+	if (m_spIOleControl) {
+		m_spIOleControl->FreezeEvents(true);
+	}
     
     DWORD dwMiscStatus;
     m_spIOleObject->GetMiscStatus(DVASPECT_CONTENT, &dwMiscStatus);
@@ -565,31 +572,18 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
         }
     }
 
-	SIZEL szInitialHiMetric, szCustomHiMetric;
-	SIZEL szInitialPixel, szCustomPixel;
-	if (m_spIOleObject && SUCCEEDED(m_spIOleObject->GetExtent(DVASPECT_CONTENT, &szInitialHiMetric))) {
-		szCustomPixel.cx = m_rcObjectPos.right - m_rcObjectPos.left;
-		szCustomPixel.cy = m_rcObjectPos.bottom - m_rcObjectPos.top;
+	SIZEL size, sizein;
+	sizein.cx = m_rcObjectPos.right - m_rcObjectPos.left;
+	sizein.cy = m_rcObjectPos.bottom - m_rcObjectPos.top;
 
-		if (szCustomPixel.cx != 300 || szCustomPixel.cy != 150) {
-			// Set initial size to custom size;
-			// Use rect passed in.
-			AtlPixelToHiMetric(&szCustomPixel, &szCustomHiMetric);
-			szInitialHiMetric = szCustomHiMetric;
-		} else {
-			// Use default rect.
-			AtlHiMetricToPixel(&szInitialHiMetric, &szInitialPixel);
-			m_rcObjectPos.right = m_rcObjectPos.left + szInitialPixel.cx;
-			m_rcObjectPos.bottom = m_rcObjectPos.top + szInitialPixel.cy;
-		}
-	}
+	SetControlSize(&sizein, &size);
+	m_rcObjectPos.right = m_rcObjectPos.left + size.cx;
+	m_rcObjectPos.bottom = m_rcObjectPos.top + size.cy;
 
     m_spIOleInPlaceObject = m_spObject;
-    m_spIOleInPlaceObjectWindowless = m_spObject;
-
-	if (m_spIOleInPlaceObject)
-	{
-		SetPosition(m_rcObjectPos);
+    
+	if (m_spIOleControl) {
+		m_spIOleControl->FreezeEvents(true);
 	}
 
     // In-place activate the object
@@ -597,6 +591,8 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
     {
         DoVerb(OLEIVERB_INPLACEACTIVATE);
     }
+
+	m_spIOleInPlaceObjectWindowless = m_spObject;
 
     // For those objects which haven't had their client site set yet,
     // it's done here.
@@ -608,6 +604,46 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
     return S_OK;
 }
 
+
+// Set the control size, in pixels.
+HRESULT CControlSite::SetControlSize(const LPSIZEL size, LPSIZEL out)
+{
+	if (!size || !out) {
+		return E_POINTER;
+	}
+	if (!m_spIOleObject) {
+		return E_FAIL;
+	}
+
+	SIZEL szInitialHiMetric, szCustomHiMetric, szFinalHiMetric;
+	SIZEL szCustomPixel, szFinalPixel;
+	szFinalPixel = *size;
+	szCustomPixel = *size;
+	
+	if (m_currentSize.cx == size->cx && m_currentSize.cy == size->cy) {
+		// Don't need to change.
+		return S_OK;
+	}
+	if (SUCCEEDED(m_spIOleObject->GetExtent(DVASPECT_CONTENT, &szInitialHiMetric))) {
+		if (m_currentSize.cx == -1 && szCustomPixel.cx == 300 && szCustomPixel.cy == 150) {
+			szFinalHiMetric = szInitialHiMetric;
+		} else {
+			AtlPixelToHiMetric(&szCustomPixel, &szCustomHiMetric);
+			szFinalHiMetric = szCustomHiMetric;
+		}
+	}
+	if (SUCCEEDED(m_spIOleObject->SetExtent(DVASPECT_CONTENT, &szFinalHiMetric))) {
+		if (SUCCEEDED(m_spIOleObject->GetExtent(DVASPECT_CONTENT, &szFinalHiMetric))) {
+			AtlHiMetricToPixel(&szFinalHiMetric, &szFinalPixel);
+		}
+	}
+	m_currentSize = szFinalPixel;
+	if (szCustomPixel.cx != szFinalPixel.cx && szCustomPixel.cy != szFinalPixel.cy) {
+		m_needUpdateContainerSize = true;
+	}
+	*out = szFinalPixel;
+	return S_OK;
+}
 
 // Unhook the control from the window and throw it all away
 HRESULT CControlSite::Detach()
@@ -733,14 +769,6 @@ HRESULT CControlSite::SetPosition(const RECT &rcPos)
 	HWND hwnd;
     TRACE_METHOD(CControlSite::SetPosition);
     m_rcObjectPos = rcPos;
-	
-	if (m_spIOleObject) {
-		SIZEL szPixel, szHiMetric;
-		szPixel.cx = rcPos.right - rcPos.left;
-		szPixel.cy = rcPos.bottom - rcPos.top;
-		AtlPixelToHiMetric(&szPixel, &szHiMetric);
-		m_spIOleObject->SetExtent(DVASPECT_CONTENT, &szHiMetric);
-	}
 
     if (m_spIOleInPlaceObject && SUCCEEDED(m_spIOleInPlaceObject->GetWindow(&hwnd)))
     {

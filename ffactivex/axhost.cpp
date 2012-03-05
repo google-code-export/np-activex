@@ -269,15 +269,14 @@ CAxHost::UpdateRect(RECT rcPos)
 
 			hr = Site->Attach(Window, rcPos, NULL);
 			if (FAILED(hr)) {
-				noWindow = true;
 				np_log(instance, 0, "AxHost.UpdateRect: failed to attach control");
 			}
-        }
-        else {
-
+		}
+		if (Site->CheckAndResetNeedUpdateContainerSize()) {
+			UpdateRectSize(&rcPos);
+		} else {
 			Site->SetPosition(rcPos);
-        }
-		UpdateRectSize(&rcPos);
+		}
 
         // Ensure clipping on parent to keep child controls happy
         ::SetWindowLong(Window, GWL_STYLE, ::GetWindowLong(Window, GWL_STYLE) | WS_CLIPCHILDREN);
