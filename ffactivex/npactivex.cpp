@@ -38,7 +38,6 @@
 //
 
 #include "npactivex.h"
-#include "atlthunk.h"
 #include "axhost.h"
 #include "atlutil.h"
 #include "objectProxy.h"

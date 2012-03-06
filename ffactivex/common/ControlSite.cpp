@@ -41,7 +41,6 @@
 
 #include <Objsafe.h>
 
-#include "../atlthunk.h"
 #include "ControlSite.h"
 #include "PropertyBag.h"
 #include "ControlSiteIPFrame.h"
