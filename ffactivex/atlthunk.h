@@ -56,3 +56,4 @@ typedef struct tagATL_THUNK_PATTERN
 
 void InstallAtlThunkEnumeration();
 
+void UninstallAtlThunkEnumeration();

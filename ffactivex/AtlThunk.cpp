@@ -279,11 +279,10 @@ struct _CONTEXT *ContextRecord) {
 	return 0;
 }
 
+bool atlThunkInstalled = false;
 void InstallAtlThunkEnumeration() {
-	static bool installed = false;
-	if (installed)
+	if (atlThunkInstalled)
 		return;
-	installed = true;
 	if (CheckDEPEnabled()) {
 #ifndef ATL_THUNK_APIHOOK
 		// Chrome is protected by DEP.
@@ -303,6 +302,17 @@ void InstallAtlThunkEnumeration() {
 		HEInitHook(&hook_handler, GetProcAddress(GetModuleHandle(TEXT("ntdll")), "KiUserExceptionDispatcher") , _KiUserExceptionDispatcher_hook);
 		HEStartHook(&hook_handler);
 		_KiUserExceptionDispatcher_origin = (DWORD)hook_handler.Stub;
+		atlThunkInstalled = true;
 #endif
 	}
+}
+
+void UninstallAtlThunkEnumeration() {
+#ifdef ATL_THUNK_APIHOOK
+	if (!atlThunkInstalled)
+		return;
+
+	HEStopHook(&hook_handler);
+	atlThunkInstalled = false;
+#endif
 }
