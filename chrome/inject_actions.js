@@ -35,6 +35,24 @@ function checkParents(obj) {
   }
 }
 
+function getLinkDest(url) {
+  if (typeof url != 'string') {
+    return url;
+  }
+  url = url.trim();
+  if (/^https?:\/\/.*/.exec(url)) {
+    return url;
+  }
+  if (url[0] == '/') {
+    if (url[1] == '/') {
+      return location.protocol + url;
+    } else {
+      return location.origin + url;
+    }
+  }
+  return location.href.replace(/\/[^\/]*$/, '/' + url);
+}
+
 var hostElement = null;
 function enableobj(obj) {
   // We can't use classid directly because it confuses the browser.
@@ -49,6 +67,12 @@ function enableobj(obj) {
   for (var i = 0; i < scripts.length; ++i) {
     scripts[i].parentNode.removeChild(scripts[i]);
   }
+  // Set codebase to full path.
+  var codebase = newObj.getAttribute('codebase');
+  if (codebase && codebase != '') {
+    newObj.setAttribute('codebase', getLinkDest(codebase));
+  }
+
   newObj.activex_process = true;
   obj.parentNode.insertBefore(newObj, obj);
   obj.parentNode.removeChild(obj);
