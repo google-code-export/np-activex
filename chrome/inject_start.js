@@ -109,3 +109,4 @@ chrome.extension.sendRequest(
   {command:"Configuration", href:location.href, top: self == top}, loadConfig);
 
 window.addEventListener("beforeload", onBeforeLoading, true);
+window.addEventListener('error', onError, true);
