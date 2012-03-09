@@ -10,8 +10,8 @@ var firstRun = false;
 var firstUpgrade = false;
 
 var blackList = [
-  /^https?:\/\/[^\/]\.taobao\.com\/.*/i,
-  /^https?:\/\/[^\/]\.alipay\.com\/.*/i
+  /^https?:\/\/[^\/]*\.taobao\.com\/.*/i,
+  /^https?:\/\/[^\/]*\.alipay\.com\/.*/i
 ];
 
 var MAX_LOG = 400;
