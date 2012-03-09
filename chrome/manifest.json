@@ -24,14 +24,17 @@
       "run_at":"document_end"
     }
   ],
-  "icons": { "16": "icon16.png",
-             "48": "icon48.png",
-             "128": "icon128.png" 
-           },
-  "page_action": {},
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png" 
+  },
+  "page_action": {
+    "default_icon": "icon16.png"
+  },
   "options_page": "options.html",
   "plugins": [{
-     "path": "npactivex.dll",
-     "public": true
+    "path": "npactivex.dll",
+    "public": true
   }]
 }
