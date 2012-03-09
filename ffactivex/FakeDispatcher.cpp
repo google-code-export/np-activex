@@ -317,11 +317,15 @@ HRESULT FakeDispatcher::GetIDsOfNames(
 HRESULT FakeDispatcher::ProcessCommand(int vfid, int *parlength, va_list &args)
 {
 	// This exception is critical if we can't find the size of parameters.
-	if (!HasValidTypeInfo())
+	if (!HasValidTypeInfo()) {
+		DispatchLog(0, "VT interface %d called without type info", vfid);
 		__asm int 3;
+	}
 	UINT index = FindFuncByVirtualId(vfid);
-	if (index == (UINT)-1)
+	if (index == (UINT)-1) {
+		DispatchLog(0, "Unknown VT interface id");
 		__asm int 3;
+	}
 	FUNCDESC *func;
 	// We should count pointer of "this" first.
 	*parlength = sizeof(LPVOID);

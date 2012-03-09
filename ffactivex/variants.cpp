@@ -185,6 +185,10 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 		INT32_TO_NPVARIANT((INT32)GETVALUE(var, ulVal), (*npvar));
 		break;
 
+	case VT_INT:
+		INT32_TO_NPVARIANT((INT32)GETVALUE(var, lVal), (*npvar));
+		break;
+
 	case VT_BOOL:
 		BOOLEAN_TO_NPVARIANT((GETVALUE(var, boolVal) == VARIANT_TRUE) ? true : false, (*npvar));
 		break;
@@ -208,7 +212,8 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 		break;
 	default:
 		// Some unsupported type
-		__asm int 3;
+		np_log(instance, 0, "Unsupported variant type %d", var->vt);
+		VOID_TO_NPVARIANT(*npvar);
 		break;
 	}
 }
