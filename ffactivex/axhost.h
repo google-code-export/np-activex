@@ -95,6 +95,7 @@ public:
 	bool hasValidClsID();
 	bool CreateControl(bool subscribeToEvents);
 	void UpdateRectSize(LPRECT origRect);
+	void SetRectSize(LPSIZEL size);
 	bool AddEventHandler(wchar_t *name, wchar_t *handler);
 	
 	HRESULT GetControlUnknown(IUnknown **pObj);

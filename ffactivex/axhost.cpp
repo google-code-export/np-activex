@@ -270,6 +270,8 @@ CAxHost::UpdateRect(RECT rcPos)
 			hr = Site->Attach(Window, rcPos, NULL);
 			if (FAILED(hr)) {
 				np_log(instance, 0, "AxHost.UpdateRect: failed to attach control");
+				SIZEL zero = {0, 0};
+				SetRectSize(&zero);
 			}
 		}
 		if (Site->CheckAndResetNeedUpdateContainerSize()) {
@@ -305,28 +307,33 @@ void CAxHost::UpdateRectSize(LPRECT origRect) {
 	szIn.cy = origRect->bottom - origRect->top;
 
 	if (szControl.cx != szIn.cx || szControl.cy != szIn.cy) {
-		np_log(instance, 1, "Set object size: x = %d, y = %d", szControl.cx, szControl.cy);
-		NPObjectProxy object;
-		NPNFuncs.getvalue(instance, NPNVPluginElementNPObject, &object);
-		static NPIdentifier style = NPNFuncs.getstringidentifier("style");
-		static NPIdentifier height = NPNFuncs.getstringidentifier("height");
-		static NPIdentifier width = NPNFuncs.getstringidentifier("width");
-		NPVariant sHeight, sWidth;
-
-		CStringA strHeight, strWidth;
-		strHeight.Format("%dpx", szControl.cy);
-		strWidth.Format("%dpx", szControl.cx);
-		STRINGZ_TO_NPVARIANT(strHeight, sHeight);
-		STRINGZ_TO_NPVARIANT(strWidth, sWidth);
-
-		NPVariantProxy styleValue;
-
-		NPNFuncs.getproperty(instance, object, style, &styleValue);
-		NPObject *styleObject = NPVARIANT_TO_OBJECT(styleValue);
-				
-		NPNFuncs.setproperty(instance, styleObject, height, &sHeight);
-		NPNFuncs.setproperty(instance, styleObject, width, &sWidth);
+		SetRectSize(&szControl);
 	}
+}
+
+
+void CAxHost::SetRectSize(LPSIZEL size) {
+	np_log(instance, 1, "Set object size: x = %d, y = %d", size->cx, size->cy);
+	NPObjectProxy object;
+	NPNFuncs.getvalue(instance, NPNVPluginElementNPObject, &object);
+	static NPIdentifier style = NPNFuncs.getstringidentifier("style");
+	static NPIdentifier height = NPNFuncs.getstringidentifier("height");
+	static NPIdentifier width = NPNFuncs.getstringidentifier("width");
+	NPVariant sHeight, sWidth;
+
+	CStringA strHeight, strWidth;
+	strHeight.Format("%dpx", size->cy);
+	strWidth.Format("%dpx", size->cx);
+	STRINGZ_TO_NPVARIANT(strHeight, sHeight);
+	STRINGZ_TO_NPVARIANT(strWidth, sWidth);
+
+	NPVariantProxy styleValue;
+
+	NPNFuncs.getproperty(instance, object, style, &styleValue);
+	NPObject *styleObject = NPVARIANT_TO_OBJECT(styleValue);
+				
+	NPNFuncs.setproperty(instance, styleObject, height, &sHeight);
+	NPNFuncs.setproperty(instance, styleObject, width, &sWidth);
 }
 
 void CAxHost::SetNPWindow(NPWindow *window) {
