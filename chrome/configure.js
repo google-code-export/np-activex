@@ -107,6 +107,17 @@ var agents = {
   ipad5: "Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
 };
 
+function stringHash(str) {
+  var hash = 0;
+  if (str.length == 0) return hash;
+    for (var i = 0; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + ch;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
+
 function getUserAgent(key) {
   // This script is always run under sandbox, so useragent should be always
   // correct.
@@ -467,7 +478,7 @@ ActiveXConfig.prototype = {
     if (!remote || remote.updating) {
       return;
     }
-    if (local && local.version >= remote.version) {
+    if (local && local.checksum == remote.checksum) {
       return;
     }
 
@@ -475,18 +486,30 @@ ActiveXConfig.prototype = {
     var setting = this;
 
     var config = {
-      url: remote.url,
+      url: remote.url + "?hash=" + remote.checksum,
       async: async,
       complete: function() {
         delete remote.updating;
       },
+      error: function() {
+        console.log('Update script ' + remote.identifier + ' failed');
+      },
       context: this,
       success: function(nv, status, xhr) {
         delete remote.updating;
-        localStorage[scriptPrefix + id] = nv;
-        setting.localScripts[id] = remote;
-        setting.save();
-        console.log('script updated ', id);
+        var hash = stringHash(nv);
+        if (hash == remote.checksum) {
+          localStorage[scriptPrefix + id] = nv;
+          setting.localScripts[id] = remote;
+          setting.save();
+          console.log('script updated ', id);
+        } else {
+          var message = 'Hashcode mismatch!!';
+          message += ' script: ' + remote.identifier;
+          messsge += ' actual: ' + hash;
+          message += ' expected: ' + remote.checksum;
+          console.log(message);
+        }
       },
       // Don't evaluate this.
       dataType: "text"

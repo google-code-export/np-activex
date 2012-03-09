@@ -34,8 +34,11 @@ div[property=description] {
 div[property=url] {
   width: 300px
 }
-div [property=add] {
-  width: 80px;
+div[property=compute], div[property=compute] button{
+  width: 80px
+}
+div[property=checksum] {
+  width: 80px
 }
 
 [property=status] button {

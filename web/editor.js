@@ -9,6 +9,17 @@ var issues = [];
 
 var dirty = false;
 
+function stringHash(str) {
+  var hash = 0;
+  if (str.length == 0) return hash;
+    for (var i = 0; i < str.length; i++) {
+      ch = str.charCodeAt(i);
+      hash = ((hash << 5) - hash) + ch;
+      hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
+
 function setScriptAutoComplete(e) {
   var last = /[^\s]*$/;
 
@@ -95,7 +106,7 @@ var currentScript = -1;
 function showScript(id) {
   var url = baseDir + scripts[id].url;
   currentScript = id;
-  $(scriptEditor).val('Loading.....');
+  $(scriptEditor).val('');
   $.ajax(url, {
     success: function(value) {
       origScript = value;
@@ -111,6 +122,24 @@ function saveToFile(file, value) {
     data: {
       file: file,
       data: value
+    }
+  });
+}
+
+var checksumComputing = 0;
+function computeScriptChecksum(id) {
+  scripts[id].checksum = "computing";
+  ++checksumComputing;
+  scriptList.updateLine(scriptList.lines[id]);
+
+  $.ajax(baseDir + scripts[id].url, {
+    complete: function() {
+      --checksumComputing;
+    },
+    dataType: "text",
+    success: function(value, status, xhr) {
+      scripts[id].checksum = stringHash(value);
+      scriptList.updateLine(scriptList.lines[id]);
     }
   });
 }
@@ -159,6 +188,27 @@ var scriptProps = [{
     },
     command: function(e) {
       showScript(Number(e.data.line.attr('row')), true);
+    }
+  }
+}, {
+  property: "checksum",
+  header: "checksum",
+  type: "input",
+  events: {
+    "create": function(e) {
+      $(this).addClass('readonly');
+    }
+  }
+}, {
+  property: "compute",
+  header: "Checksum",
+  type: "button",
+  events: {
+    create: function(e) {
+      $('button', this).text('Recompute');
+    },
+    command: function(e) {
+      computeScriptChecksum(Number(e.data.line.attr('row')));
     }
   }
 }];
@@ -371,6 +421,12 @@ $(document).ready(function() {
   }).button();
   $('#deleteScript').click(function() {
     scriptList.remove(scriptList.selectedLine);
+  }).button();
+
+  $('#compute_checkSum').click(function() {
+    for (var i = 0; i < scripts.length; ++i) {
+      computeScriptChecksum(i);
+    }
   }).button();
 
   $('#addIssue').click(function() {
