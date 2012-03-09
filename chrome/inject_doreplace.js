@@ -3,3 +3,5 @@
 // found in the LICENSE file.
 
 replaceDocument();
+
+window.addEventListener('load', replaceDocument, false);
