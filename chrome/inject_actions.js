@@ -178,7 +178,7 @@ function setUserAgent() {
     return;
   }
 
-  var agent = agents[config.pageRule.userAgent];
+  var agent = getUserAgent(config.pageRule.userAgent);
   if (agent && agent != '') {
     log("Set userAgent: " + config.pageRule.userAgent);
 

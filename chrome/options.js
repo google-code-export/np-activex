@@ -63,8 +63,7 @@ var settingProps = [ {
     {value: "ie9", text: "MSIE9"},
     {value: "ie8", text: "MSIE8"},
     {value: "ie7", text: "MSIE7"},
-    {value: "ff7win", text: "Firefox 7 Windows"},
-    {value: "ff7mac", text: "Firefox 7 Mac"},
+    {value: "ff7win", text: "Firefox 7"},
     {value: "ip5", text: "iPhone"},
     {value: "ipad5", text: "iPad"}
   ]
