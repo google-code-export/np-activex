@@ -197,6 +197,16 @@ function onBeforeLoading(event) {
   }
 }
 
+function onError(event) {
+  var message = 'Error: ';
+  message += event.message;
+  message += ' at ';
+  message += event.filename;
+  message += ':';
+  message += event.lineno;
+  log(message);
+}
+
 function setUserAgent() {
   if (!config.pageRule) {
     return;
