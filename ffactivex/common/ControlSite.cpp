@@ -582,7 +582,7 @@ HRESULT CControlSite::Attach(HWND hwndParent, const RECT &rcPos, IUnknown *pInit
     m_spIOleInPlaceObject = m_spObject;
     
 	if (m_spIOleControl) {
-		m_spIOleControl->FreezeEvents(true);
+		m_spIOleControl->FreezeEvents(false);
 	}
 
     // In-place activate the object
