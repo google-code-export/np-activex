@@ -219,7 +219,9 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
 NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
 {
 #ifdef DEBUG
-	_asm {int 3};
+	CString text;
+	text.Format(_T("NPActiveX Pid %d"), GetCurrentProcessId());
+	MessageBox(NULL, text, _T(""), MB_OK);
 #endif
 	
 	CoInitialize(NULL);

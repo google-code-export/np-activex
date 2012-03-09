@@ -478,8 +478,6 @@ NPP_New(NPMIMEType pluginType,
 	NPObject *browser = NULL;
 	int16 i = 0;
 	
-  //_asm {int 3};
-
 	if (!instance || (0 == NPNFuncs.size)) {
 
 		return NPERR_INVALID_PARAM;
