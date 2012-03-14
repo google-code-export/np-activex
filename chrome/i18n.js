@@ -4,7 +4,6 @@
 
 var $$ = chrome.i18n.getMessage;
 function loadI18n() {
-  document.title = chrome.i18n.getMessage("option_title")
   var spans = document.querySelectorAll('[i18n]');
   for (var i = 0; i < spans.length; ++i) {
     var obj = spans[i];
@@ -17,5 +16,6 @@ function loadI18n() {
       obj.innerText = v;
     }
   }
+  document.removeEventListener("DOMContentLoaded", loadI18n, false);
 }
-window.addEventListener("load", loadI18n, false);
+document.addEventListener("DOMContentLoaded", loadI18n, false);
