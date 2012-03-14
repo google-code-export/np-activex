@@ -140,5 +140,14 @@
   },
   "issue_submit_goto": {
     "message": "Start to report problem"
+  },
+  "bar_enable": {
+    "message": "Use them now!"
+  },
+  "bar_close": {
+    "message": "Close"
+  },
+  "bar_block": {
+    "message": "Don't notify for $1"
   }
 }

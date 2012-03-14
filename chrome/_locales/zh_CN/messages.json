@@ -140,5 +140,14 @@
   },
   "issue_submit_goto": {
     "message": "跳转到错误提交页面"
+  },
+  "bar_enable": {
+    "message": "立即启用"
+  }
+  "bar_close": {
+    "message": "关闭"
+  }
+  "bar_block": {
+    "message": "不再在$1通知我"
   }
 }
