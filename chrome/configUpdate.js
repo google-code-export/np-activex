@@ -65,6 +65,8 @@ UpdateSession.prototype = {
           this.trigger('success');
         }
         this.trigger('complete');
+        // Clear the requests.
+        this.jqXHRs = [];
       } else {
         this.trigger('progress');
       }
@@ -93,7 +95,7 @@ UpdateSession.prototype = {
       this.updateToken = undefined;
     }
     for (var i = 0; i < this.jqXHRs.length; ++i) {
-      //this.jqXHRs[i].abort();
+      this.jqXHRs[i].abort();
     }
     this.jqXHRs = [];
   },
