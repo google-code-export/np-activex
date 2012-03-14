@@ -89,11 +89,14 @@
   "submitissue": {
     "message": "报告问题"
   },
+  "status_urldetect": {
+    "message": "你可能希望在该网站上使用ActiveX控件。"
+  },
   "status_disabled": {
-    "message": "在当前页面发现未激活的控件，点击按钮启用"
+    "message": "在当前页面发现未激活的控件，点击按钮启用。"
   },
   "status_error": {
-    "message": "有些控件可能不能正常运行"
+    "message": "有些控件可能不能正常运行。"
   },
   "issue_desp": {
     "message": "我们已经确认一些问题，导致当前页面的控件无法正常使用。我们将尽快修复。"
