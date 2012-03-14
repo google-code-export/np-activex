@@ -18,7 +18,9 @@ if (!tabInfo) {
 $(document).ready(function() {
   $('.status').hide();
   $('#submitissue').hide();
-  if (tabInfo.count == 0) {
+  if (tabInfo.urldetect) {
+    $('#status_urldetect').show();
+  } else if (tabInfo.count == 0) {
     // Shouldn't have this popup
   } else if (tabInfo.error != 0) {
     $('#status_error').show();
@@ -57,7 +59,7 @@ function refresh() {
 function showEnableBtns() {
   var list = $('#enable_btns');
   list.hide();
-  if (tabInfo.count > tabInfo.actived) {
+  if (tabInfo.urldetect || tabInfo.count > tabInfo.actived) {
     list.show();
     var info = {actived: true};
     for (var i = 0; i < tabInfo.frames && info.actived; ++i) {

@@ -89,6 +89,9 @@
   "submitissue": {
     "message": "Report problems"
   },
+  "status_urldetect": {
+    "message": "ActiveX controls can be used on this site."
+  },
   "status_disabled": {
     "message": "Some ActiveX controls are detected, but not actived."
   },

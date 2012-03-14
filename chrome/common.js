@@ -43,14 +43,13 @@ function startListener() {
         sendResponse(config);
         if (request.top) {
           resetTabStatus(sender.tab.id);
-          var dummy = {href: request.href, clsid: 'NULL'};
+          var dummy = {href: request.href, clsid: 'NULL', urldetect: true};
           if (!config.pageRule &&
               setting.getFirstMatchedRule(
                 dummy, setting.defaultRules)) {
             detectControl(dummy, sender.tab.id, 0);
           }
         }
-        //notifyUser(request, sender, config);
       } else {
         sendResponse({});
       }
@@ -68,6 +67,7 @@ function resetTabStatus(tabId) {
     count: 0,
     actived: 0,
     error: 0,
+    urldetect: 0,
     issueId: null,
     logs: {"0":[]},
     objs: {"0":[]},
@@ -132,6 +132,11 @@ function countTabObject(status, info, delta) {
       return;
     }
   }
+  if (info.urldetect) {
+    status.urldetect += delta;
+    // That's not a object.
+    return;
+  }
   if (info.actived) {
     status.actived += delta;
     if (delta > 0) {
@@ -158,43 +163,44 @@ function showTabStatus(tabId) {
 
   var status = tabStatus[tabId];
   var title = "";
-  if (status.count == 0) {
+  var iconPath = greenIcon;
+  if (!status.count && !status.urldetect) {
     chrome.pageAction.hide(tabId);
     return;
   } else {
     chrome.pageAction.show(tabId);
   }
 
-  chrome.pageAction.setPopup({
-    tabId: tabId,
-    popup: 'popup.html?tabid=' + tabId
-  });
-  if (status.count == 0) {
+  if (status.urldetect) {
+    // Matched some rule.
+    iconPath = grayIcon;
+    title = $$('status_urldetect');
+  } else if (status.count == 0) {
     // Do nothing..
   } else if (status.error != 0) {
-    chrome.pageAction.setIcon({
-      tabId: tabId,
-      path: errorIcon
-    });
+    // Error
+    iconPath = errorIcon;
     title = $$('status_error');
   } else if (status.count != status.actived) {
     // Disabled..
-    chrome.pageAction.setIcon({
-      tabId: tabId,
-      path: grayIcon
-    });
+    iconPath = grayIcon;
     title = $$('status_disabled');
   } else {
     // OK
-    chrome.pageAction.setIcon({
-      tabId: tabId,
-      path: greenIcon
-    });
+    iconPath = greenIcon;
     title = $$('status_ok');
   }
+  chrome.pageAction.setIcon({
+    tabId: tabId,
+    path: iconPath
+  });
   chrome.pageAction.setTitle({
     tabId: tabId,
     title: title
+  });
+  chrome.pageAction.setPopup({
+    tabId: tabId,
+    popup: 'popup.html?tabid=' + tabId
   });
 }
 
