@@ -50,11 +50,29 @@ function startListener() {
             detectControl(dummy, sender.tab.id, 0);
           }
         }
+      } else if (request.command == 'GetNotification') {
+        getNotification(request, sender, sendResponse);
+      } else if (request.command == 'DismissNotification') {
+        chrome.tabs.sendRequest(
+          sender.tab.id, {command:'DismissNotification'});
+        sendResponse({});
+      } else if (request.command = "BlockSite") {
+        setting.blocked.push({type:"wild", value:request.site});
+        setting.update();
       } else {
         sendResponse({});
       }
     }
   );
+}
+
+var blocked = {};
+function notifyUser(request, tabId) {
+  var s = tabStatus[tabId];
+  if (s.notify && (s.urldetect || s.count > s.actived)) {
+    console.log("Notify the user on tab ", tabId);
+    chrome.tabs.sendRequest(tabId, {command: "NotifyUser", tabid: tabId}, null);
+  }
 }
 
 var greenIcon = chrome.extension.getURL('icon16.png');
@@ -68,6 +86,7 @@ function resetTabStatus(tabId) {
     actived: 0,
     error: 0,
     urldetect: 0,
+    notify: true,
     issueId: null,
     logs: {"0":[]},
     objs: {"0":[]},
@@ -131,6 +150,9 @@ function countTabObject(status, info, delta) {
     if (info.href.match(blackList[i])) {
       return;
     }
+  }
+  if (setting.getFirstMatchedRule(info, setting.blocked)) {
+    status.notify = false;
   }
   if (info.urldetect) {
     status.urldetect += delta;
@@ -215,6 +237,7 @@ function detectControl(request, tabId, frameId) {
 
   countTabObject(status, request, 1);
   showTabStatus(tabId);
+  notifyUser(request, tabId);
 }
 
 responseCommands.DetectControl = detectControl;
@@ -253,4 +276,23 @@ function generateLogFile(tabId) {
     }
   }
   return ret;
+}
+
+function getNotification(request, sender, sendResponse) {
+  var tabid = sender.tab.id;
+  chrome.tabs.get(tabid, function(tab) {
+    var config = {};
+    config.tabId = tab.id;
+    config.site = tab.url.replace(/[^:]*:\/\/([^\/]*).*/, '$1');
+    config.sitePattern = tab.url.replace(/([^:]*:\/\/[^\/]*).*/, '$1/*');
+    if (tabStatus[tabid].urldetect) {
+      config.message = $$('status_urldetect');
+    } else {
+      config.message = $$('status_disabled');
+    }
+    config.closeMsg = $$('bar_close');
+    config.enableMsg = $$('bar_enable');
+    config.blockMsg = $$('bar_block', config.site);
+    sendResponse(config);
+  });
 }

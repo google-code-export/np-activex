@@ -73,6 +73,7 @@ function ActiveXConfig(input)
       order: [],
       notify: [],
       issues: [],
+      blocked: [],
       misc: {
         lastUpdate: 0,
         logEnabled: false,
@@ -83,12 +84,7 @@ function ActiveXConfig(input)
     input = defaultSetting;
   } 
 
-  if (input.version == '3') {
-    settings = input;
-    settings.__proto__ = ActiveXConfig.prototype;
-  } else {
-    settings = ActiveXConfig.convertVersion(input);
-  }
+  settings = ActiveXConfig.convertVersion(input);
   settings.updateCache();
   return settings;
 }
@@ -136,6 +132,10 @@ function getUserAgent(key) {
 
 ActiveXConfig.convertVersion = function(setting) {
   if (setting.version == 3) {
+    if (!setting.blocked) {
+      setting.blocked = [];
+    }
+    setting.__proto__ = ActiveXConfig.prototype;
     return setting;
   } else if (setting.version == 2) {
     function parsePattern(pattern) {

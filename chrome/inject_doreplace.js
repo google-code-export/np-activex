@@ -3,5 +3,9 @@
 // found in the LICENSE file.
 
 replaceDocument();
+pageDOMLoaded = true;
+if (needNotifyBar) {
+  showNotifyBar();
+}
 
 window.addEventListener('load', replaceDocument, false);

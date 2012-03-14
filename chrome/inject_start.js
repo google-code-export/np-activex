@@ -105,6 +105,67 @@ function loadSessionConfig() {
 
 loadSessionConfig();
 
+var notifyBar = null;
+var pageDOMLoaded = false;
+var needNotifyBar = false;
+
+function showNotifyBar(request) {
+  if (notifyBar) {
+    return;
+  }
+  if (!pageDOMLoaded) {
+    needNotifyBar = true;
+    return;
+  }
+  notifyBar = {};
+  log('Create notification bar');
+  var barurl = chrome.extension.getURL('notifybar.html');
+  if (document.body.tagName == 'BODY') {
+    var iframe = document.createElement('iframe');
+    iframe.frameBorder=0;
+    iframe.src = barurl;
+    iframe.height = "35px";
+    iframe.width = "100%";
+    iframe.style.top = "0px";
+    iframe.style.left = "0px";
+    iframe.style.zIndex = '2000';
+    iframe.style.position = 'fixed';
+    notifyBar.iframe = iframe;
+    document.body.insertBefore(iframe, document.body.firstChild);
+
+    var placeHolder = document.createElement('div');
+    placeHolder.style.height = iframe.height;
+    placeHolder.style.zIndex = '1999';
+    placeHolder.style.borderWidth = '0px';
+    placeHolder.style.borderStyle = 'solid';
+    placeHolder.style.borderBottomWidth = '1px';
+    document.body.insertBefore(placeHolder, document.body.firstChild);
+    notifyBar.placeHolder = placeHolder;
+  } else if (document.body.tagName == 'FRAMESET') {
+    // We can't do this..
+    return;
+  }
+}
+
+function dismissNotifyBar() {
+  if (!notifyBar || !notifyBar.iframe) {
+    return;
+  }
+  notifyBar.iframe.parentNode.removeChild(notifyBar.iframe);
+  notifyBar.placeHolder.parentNode.removeChild(notifyBar.placeHolder);
+}
+
+chrome.extension.onRequest.addListener(
+  function(request, sender, sendResponse) {
+  if (self == top && request.command == 'NotifyUser') {
+    showNotifyBar(request);
+  } else if (self == top && request.command == 'DismissNotification') {
+    dismissNotifyBar();
+  }
+  // Snub it!
+  sendResponse({});
+});
+
 chrome.extension.sendRequest(
   {command:"Configuration", href:location.href, top: self == top}, loadConfig);
 

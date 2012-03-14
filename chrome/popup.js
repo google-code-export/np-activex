@@ -20,9 +20,9 @@ $(document).ready(function() {
   $('#submitissue').hide();
   if (tabInfo.urldetect) {
     $('#status_urldetect').show();
-  } else if (tabInfo.count == 0) {
+  } else if (!tabInfo.count) {
     // Shouldn't have this popup
-  } else if (tabInfo.error != 0) {
+  } else if (tabInfo.error) {
     $('#status_error').show();
   } else if (tabInfo.count != tabInfo.actived) {
     $('#status_disabled').show();
