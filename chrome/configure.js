@@ -109,19 +109,20 @@ var agents = {
 
 function stringHash(str) {
   var hash = 0;
-  if (str.length == 0) return hash;
-    for (var i = 0; i < str.length; i++) {
-      ch = str.charCodeAt(i);
-      hash = ((hash << 5) - hash) + ch;
-      hash = hash & hash; // Convert to 32bit integer
-    }
+  if (!str)
     return hash;
+  for (var i = 0; i < str.length; i++) {
+    ch = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + ch;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return hash;
 }
 
 function getUserAgent(key) {
   // This script is always run under sandbox, so useragent should be always
   // correct.
-  if (key == '' || !(key in agents)) {
+  if (!key || !(key in agents)) {
     return "";
   }
   var current = navigator.userAgent;
@@ -140,16 +141,16 @@ ActiveXConfig.convertVersion = function(setting) {
     function parsePattern(pattern) {
       pattern = pattern.trim();
       var title = pattern.match(/###(.*)/);
-      if (title != null) {
+      if (title) {
         return {
           pattern: pattern.match(/(.*)###/)[1].trim(),
           title: title[1].trim()
-        }
+        };
       } else {
         return {
           pattern: pattern,
           title: "Rule"
-        }
+        };
       }
     }
 
@@ -187,7 +188,7 @@ ActiveXConfig.convertVersion = function(setting) {
     firstUpgrade = true;
     return ret;
   }
-}
+};
 
 ActiveXConfig.prototype = {
   // Only used for user-scripts
@@ -210,7 +211,7 @@ ActiveXConfig.prototype = {
       value: "",
       userAgent: "",
       scriptItems: "",
-    };
+    }
   },
   addCustomRule: function(newItem, auto) {
     if (!this.validateRule(newItem)) {
@@ -224,7 +225,7 @@ ActiveXConfig.prototype = {
       position: 'custom',
       identifier: identifier
     });
-    this.update()
+    this.update();
     trackAddCustomRule(newItem, auto);
   },
 
@@ -258,7 +259,8 @@ ActiveXConfig.prototype = {
     var position = 0;
     for (var i in newRules) {
       if (!(i in this.defaultRules)) {
-        this.addDefaultRule(newRules[i], position++);
+        this.addDefaultRule(newRules[i], position);
+        position++;
       }
       this.defaultRules[i] = newRules[i];
     }
@@ -424,7 +426,7 @@ ActiveXConfig.prototype = {
     }
     var items = script.split(' ');
     for (var i = 0; i < items.length; ++i) {
-      if (items[i] == '' || !this.scripts[items[i]]) {
+      if (!items[i] || !this.scripts[items[i]]) {
         continue;
       }
       var name = items[i];
@@ -622,7 +624,7 @@ ActiveXConfig.prototype = {
       clsidRules: [],
       userAgentRules: [],
       listener: (this.cache || {}).listener
-    }
+    };
     for (var i = 0; i < this.order.length; ++i) {
       if (this.order[i].status == 'custom' || this.order[i].status == 'enabled') {
         var rule = this.getItem(this.order[i]);
