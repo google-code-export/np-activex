@@ -47,7 +47,7 @@ ActiveXConfig: {
 
 PageSide: 
 ActiveXConfig: {
-  pageSide:       Flag of pageside.
+  pageSide:       Flag of pageSide.
   pageScript:     Helper script to execute on context of page
   extScript:      Helper script to execute on context of extension
   pageRule:       If page is matched.
@@ -85,7 +85,8 @@ function ActiveXConfig(input)
   } 
 
   settings = ActiveXConfig.convertVersion(input);
-  settings.updateCache();
+  settings.removeInvalidItems();
+  settings.update();
   return settings;
 }
 
@@ -213,6 +214,46 @@ ActiveXConfig.prototype = {
       scriptItems: "",
     }
   },
+
+  removeInvalidItems : function() {
+    if (this.pageSide) {
+      return;
+    }
+    function checkIdentifierMatches(item, prop) {
+      if (typeof item[prop] != "object") {
+        console.log('reset ', prop);
+        item[prop] = {};
+      }
+      for (var i in item[prop]) {
+        var ok = true;
+        if (typeof item[prop][i] != "object") {
+          ok = false;
+        }
+        if (ok && item[prop][i].identifier != i) {
+          ok = false;
+        }
+        if (!ok) {
+          console.log('remove corrupted item ', i, ' in ', prop);
+          delete item[prop][i];
+        }
+      }
+    }
+    checkIdentifierMatches(this, "rules");
+    checkIdentifierMatches(this, "defaultRules");
+    checkIdentifierMatches(this, "localScripts");
+    checkIdentifierMatches(this, "scripts");
+    checkIdentifierMatches(this, "issues");
+    var newOrder = [];
+    for (var i = 0; i < this.order.length; ++i) {
+      if (this.getItem(this.order[i])) {
+        newOrder.push(this.order[i]);
+      } else {
+        console.log('remove order item ', this.order[i]);
+      }
+    }
+    this.order = newOrder;
+  },
+
   addCustomRule: function(newItem, auto) {
     if (!this.validateRule(newItem)) {
       return;
