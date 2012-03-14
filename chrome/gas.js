@@ -10,7 +10,7 @@ var _gaq = background._gaq || _gaq || [];
 if (window == background) {
   _gaq.push(['_setAccount', 'UA-28870762-4']);
 }
-_gaq.push(['_trackPageview', location.href]);
+_gaq.push(['_trackPageview', location.href.replace(/\?.*$/, "")]);
 
 function initGAS() {
   var setting = setting || background.setting || {};
