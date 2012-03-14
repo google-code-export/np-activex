@@ -1,6 +1,6 @@
 ﻿{
   "name": "ActiveX for Chrome",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "__MSG_plug_desp__",
   "permissions": [
     "<all_urls>",
