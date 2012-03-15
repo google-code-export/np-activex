@@ -1,27 +1,56 @@
 <html>
   <head>
     <title i18n="view_log"></title>
-    <script src="/jquery.js"></script>
-    <script src="/gas.js"></script>
-    <script src="/i18n.js"></script>
-    <script src="/log.js"></script>
+    <script src="jquery.js"></script>
+    <script src="gas.js"></script>
+    <script src="i18n.js"></script>
+    <script src="log.js"></script>
     <style>
       #text {
         width: 800px;
-        height: 400px;
+        height: 500px;
       }
       div {
         font-size: large;
         margin: 10px 0px;
       }
+      body > div {
+        float:left;
+      }
+      #logs_items {
+        margin-top: 40px;
+        margin-right: 20px;
+        overflow-x: hidden;
+        overflow-y: scroll;
+        width: 300px;
+        height: 500px;
+        white-space: nowrap;
+        border-width: 1px;
+        border-style: solid;
+      }
+      ul.selected {
+        background-color: aqua;
+      }
     </style>
   </head>
   <body>
-    <div i18n="log">
+    <div id="left">
+      <div id="logs_items">
+      </div>
     </div>
-    <textarea id="text" wrap="off">
-    </textarea>
-    <div i18n="issue_submit_desp"></div>
-    <div><a i18n="issue_submit_goto" href="http://code.google.com/p/np-activex/issues/entry?template=Defect%20report%20from%20log" target="_blank"></a></div>
+    <div id="logs_show">
+      <div i18n="log">
+      </div>
+      <textarea id="text" wrap="off">
+      </textarea>
+      <div i18n="issue_submit_desp"></div>
+      <input id="tracking" type="checkbox">
+      <span i18n="log_tracking">
+      </span>
+      </input>
+      <span>
+        <a i18n="issue_submit_goto" href="http://code.google.com/p/np-activex/issues/entry?template=Defect%20report%20from%20log" target="_blank"></a>
+      </span>
+    </div>
   </body>
 </html>

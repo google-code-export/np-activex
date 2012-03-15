@@ -149,5 +149,8 @@
   },
   "bar_block": {
     "message": "Don't notify for $1"
+  },
+  "log_tracking": {
+    "message": "Tracking this page for submitting issues"
   }
 }
