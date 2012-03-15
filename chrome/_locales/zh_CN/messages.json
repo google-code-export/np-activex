@@ -149,5 +149,8 @@
   },
   "bar_block": {
     "message": "不再在$1通知我"
+  },
+  "log_tracking": {
+    "message": "追踪此页面"
   }
 }
