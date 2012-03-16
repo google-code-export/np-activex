@@ -159,11 +159,11 @@ chrome.extension.onRequest.addListener(
   function(request, sender, sendResponse) {
   if (self == top && request.command == 'NotifyUser') {
     showNotifyBar(request);
-  } else if (self == top && request.command == 'DismissNotification') {
+    sendResponse({});
+  } else if (self == top && request.command == 'DismissNotificationPage') {
     dismissNotifyBar();
+    sendResponse({});
   }
-  // Snub it!
-  sendResponse({});
 });
 
 chrome.extension.sendRequest(
