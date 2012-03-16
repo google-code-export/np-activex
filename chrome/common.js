@@ -54,12 +54,11 @@ function startListener() {
         getNotification(request, sender, sendResponse);
       } else if (request.command == 'DismissNotification') {
         chrome.tabs.sendRequest(
-          sender.tab.id, {command:'DismissNotification'});
+          sender.tab.id, {command:'DismissNotificationPage'});
         sendResponse({});
       } else if (request.command = "BlockSite") {
         setting.blocked.push({type:"wild", value:request.site});
         setting.update();
-      } else {
         sendResponse({});
       }
     }
