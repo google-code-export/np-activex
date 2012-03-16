@@ -125,9 +125,11 @@ function initPort(port) {
         status.tracking = false;
       }
     } else {
-      // Clean up.
-      status.logs[frameId] = [];
-      status.objs[frameId] = [];
+      // Clean up after 1 min.
+      window.setTimeout(function() {
+        status.logs[frameId] = [];
+        status.objs[frameId] = [];
+      }, 60 * 1000);
     }
   });
 }
