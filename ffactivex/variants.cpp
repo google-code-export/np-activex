@@ -201,6 +201,10 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 		DOUBLE_TO_NPVARIANT(GETVALUE(var, dblVal), (*npvar));
 		break;
 
+	case VT_DATE:
+		DOUBLE_TO_NPVARIANT(GETVALUE(var, date), (*npvar));
+		break;
+
 	case VT_DISPATCH:
 	case VT_USERDEFINED:
 	case VT_UNKNOWN:
