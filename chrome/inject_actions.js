@@ -205,6 +205,7 @@ function onError(event) {
   message += ':';
   message += event.lineno;
   log(message);
+  return false;
 }
 
 function setUserAgent() {

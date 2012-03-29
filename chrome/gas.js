@@ -23,7 +23,7 @@ function initGAS() {
   }
 }
 
-window.addEventListener('load', initGas, false);
+window.addEventListener('load', initGAS, false);
 
 var useHistory = {};
 var issueHistory = {};
@@ -57,7 +57,6 @@ function trackUse(identifier) {
     return;
   }
   if (identifier.substr(0, 7) == 'custom_') {
-    var setting = setting || background.setting || {};
     var rule = setting.getItem(identifier);
     _gaq.push(['_trackEvent', 'usage', 'use-custom', serializeRule(rule)]);
   } else {
