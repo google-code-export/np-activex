@@ -8,7 +8,6 @@
 <script>
   var setting = loadLocalSetting();
   var updateSession = new UpdateSession();
-
   setting.cache.listener = updateSession;
 
   updateSession.bind('success', function() {
@@ -20,16 +19,18 @@
     console.log('Update completed');
   });
 
-  UpdateSession.setUpdateInterval(function() {
-    setting.updateConfig(updateSession);
-  }, updateSession, DEFAULT_INTERVAL);
-
   startListener();
   registerRequestListener();
 
-  initGAS();
-  if (firstRun || firstUpgrade) {
-    firstRun = false;
-    open('options.html');
-  }
+  windows.setTimeout(function() {
+    UpdateSession.setUpdateInterval(function() {
+      setting.updateConfig(updateSession);
+    }, updateSession, DEFAULT_INTERVAL);
+    initGAS();
+
+    if (firstRun || firstUpgrade) {
+      firstRun = false;
+      open('options.html');
+    }
+  }, 3000);
 </script>
