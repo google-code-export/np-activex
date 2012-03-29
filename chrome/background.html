@@ -26,7 +26,6 @@
     UpdateSession.setUpdateInterval(function() {
       setting.updateConfig(updateSession);
     }, updateSession, DEFAULT_INTERVAL);
-    initGAS();
 
     if (firstRun || firstUpgrade) {
       open('donate.html');
