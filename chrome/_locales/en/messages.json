@@ -152,5 +152,17 @@
   },
   "log_tracking": {
     "message": "Tracking this page for submitting issues"
+  },
+  "donate_label": {
+    "message": "ActiveX for Chrome is abosolutely free to use. However, it did take us a lot of time and energy. We would apprieciete it if you could offer us some financial fund."
+  },
+  "donate_record": {
+    "message": "We will keep records of your donations here."
+  },
+  "donate": {
+    "message": "Donate us"
+  },
+  "donate_gotooptions": {
+    "message": "No matter whether you decide to donate or not, you have to configure this extension in order to use. Click here to set up now!"
   }
 }
