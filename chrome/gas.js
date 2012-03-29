@@ -3,16 +3,14 @@
 // found in the LICENSE file.
 
 var USE_RECORD_GAP = 3 * 60 * 1000; // 3 minutes
-var background = chrome.extension.getBackgroundPage();
 
-var _gaq = background._gaq || _gaq || [];
+var _gaq = window._gaq || [];
 
-if (window == background) {
-  _gaq.push(['_setAccount', 'UA-28870762-4']);
-}
+_gaq.push(['_setAccount', 'UA-28870762-4']);
 _gaq.push(['_trackPageview', location.href.replace(/\?.*$/, "")]);
 
 function initGAS() {
+  var background = chrome.extension.getBackgroundPage();
   var setting = setting || background.setting || {};
   if (!debug && setting.misc.tracking) {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
@@ -24,6 +22,8 @@ function initGAS() {
     _gaq.push = function() {};
   }
 }
+
+window.addEventListener('load', initGas, false);
 
 var useHistory = {};
 var issueHistory = {};
