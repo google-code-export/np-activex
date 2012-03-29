@@ -1,0 +1,58 @@
+<html>
+  <head>
+    <style>
+      body {
+        background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CCF), color-stop(0.4, white), to(white)) no-repeat
+      }
+      #paymentoptions > * {
+        float: left;
+      }
+      #main {
+        margin: auto;
+        margin-top: 100px;
+        width: 600px;
+      }
+      #main > * {
+        margin: 30px;
+      }
+      #hint {
+        clear: both;
+        margin-top: 150px;
+        font-size: 20px;
+        border-color: red;
+        border-width: 2px;
+        border-style: dashed;
+        padding: 10px;
+      }
+    </style>
+    <script src="i18n.js"></script>
+  </head>
+  <body>
+    <div id="main">
+      <div i18n="donate_label"></div>
+      <div><a target="_blank" href="http://code.google.com/p/np-activex/wiki/Donations" i18n="donate_record"></a></div>
+      <div id="paymentoptions">
+        <form name="_xclick" target="_blank" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+          <input type="hidden" name="cmd" value="_xclick">
+          <input type="hidden" name="business" value="qiuc12@gmail.com">
+          <input type="hidden" name="item_name" value="ActiveX for Chrome">
+          <input type="hidden" name="currency_code" value="USD">
+          <input type="hidden" name="amount" value="">
+          <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+        </form>
+        <a target="_blank" href="https://me.alipay.com/eagleonhill">
+          <img src="http://alipay-donate.appspot.com/images/donate.jpg" border="0" alt="alipay支付宝"></img>
+        </a>
+      </div>
+      <div id="hint" style="display:none">
+        <a id="hintonfirst" href="options.html" i18n="donate_gotooptions"></a>
+      </div>
+      <script>
+        if (chrome.extension.getBackgroundPage().firstRun) {
+          document.getElementById('hint').style.display = '';
+          chrome.extension.getBackgroundPage().firstRun = false;
+        }
+      </script>
+    </div>
+  </body>
+</html>

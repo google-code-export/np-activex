@@ -22,15 +22,14 @@
   startListener();
   registerRequestListener();
 
-  windows.setTimeout(function() {
+  window.setTimeout(function() {
     UpdateSession.setUpdateInterval(function() {
       setting.updateConfig(updateSession);
     }, updateSession, DEFAULT_INTERVAL);
     initGAS();
 
     if (firstRun || firstUpgrade) {
-      firstRun = false;
-      open('options.html');
+      open('donate.html');
     }
-  }, 3000);
+  }, 1000);
 </script>
