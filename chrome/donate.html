@@ -9,10 +9,10 @@
       }
       #main {
         margin: auto;
-        margin-top: 100px;
         width: 600px;
       }
       #main > * {
+        clear: both;
         margin: 30px;
       }
       #header {
@@ -20,8 +20,6 @@
         font-size: 30px;
       }
       #hint {
-        clear: both;
-        margin-top: 150px;
         font-size: 20px;
         border-color: red;
         border-width: 2px;
@@ -29,6 +27,7 @@
         padding: 10px;
       }
     </style>
+    <script src="jquery.js"></script>
     <script src="i18n.js"></script>
     <script src="gas.js"></script>
     <title i18n="donate"></title>
@@ -51,6 +50,11 @@
           <img src="http://alipay-donate.appspot.com/images/donate.jpg" border="0" alt="alipay支付宝"></img>
         </a>
       </div>
+      <div></div>
+      <div i18n="donate_share">
+      </div>
+      <div id="share"></div>
+      <div></div>
       <div id="hint" style="display:none">
         <a id="hintonfirst" href="options.html" i18n="donate_gotooptions"></a>
       </div>
@@ -59,6 +63,9 @@
           document.getElementById('hint').style.display = '';
           chrome.extension.getBackgroundPage().firstRun = false;
         }
+        $(document).ready(function() {
+          $('#share').load('share.html');
+        });
       </script>
     </div>
   </body>

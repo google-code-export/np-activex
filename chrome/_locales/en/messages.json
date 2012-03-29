@@ -163,6 +163,9 @@
     "message": "Donate us"
   },
   "donate_gotooptions": {
-    "message": "No matter whether you decide to donate or not, you have to configure this extension in order to use. Click here to set up now!"
+    "message": "No matter whether you decide to donate or not, you have to configure this extension in order to use. Click here to set up now! You can return to this page from the foot of the options page once you feel good about this extension."
+  },
+  "donate_share": {
+    "message": "There's more you can do besides donation. Just click a button below to share this to your friends!"
   }
 }

@@ -22,6 +22,15 @@
   startListener();
   registerRequestListener();
 
+  // If you want to build your own copy with a different id, please keep the
+  // tracking enabled.
+  var default_id = "lgllffgicojgllpmdbemgglaponefajn";
+  var debug = chrome.i18n.getMessage("@@extension_id") != default_id;
+  if (debug && firstRun) {
+    if (confirm("Debugging mode. Disable tracking?")) {
+      setting.misc.tracking = false;
+    }
+  }
   window.setTimeout(function() {
     UpdateSession.setUpdateInterval(function() {
       setting.updateConfig(updateSession);

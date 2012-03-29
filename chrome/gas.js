@@ -10,14 +10,13 @@ _gaq.push(['_setAccount', 'UA-28870762-4']);
 _gaq.push(['_trackPageview', location.href.replace(/\?.*$/, "")]);
 
 function initGAS() {
-  var background = chrome.extension.getBackgroundPage();
-  var setting = setting || background.setting || {};
-  if (!debug && setting.misc.tracking) {
+  var setting = chrome.extension.getBackgroundPage().setting;
+  if (setting.misc.tracking) {
     var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
     ga.src = 'https://ssl.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(ga, s);
-  } else if (!debug) {
+  } else {
     // dummy it. Non-debug && non-track
     _gaq.push = function() {};
   }
