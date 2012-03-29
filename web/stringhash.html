@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <script>
+      function stringHash(str) {
+        var hash = 0;
+        if (str.length == 0) return hash;
+        for (var i = 0; i < str.length; i++) {
+          ch = str.charCodeAt(i);
+          hash = ((hash << 5) - hash) + ch;
+          hash = hash & hash; // Convert to 32bit integer
+        }
+        return hash;
+      }
+
+      function compute() {
+        result.innerText = stringHash(text.value);
+      }
+    </script>
+  </head>
+  <body>
+    <textarea id="text" style="width: 700px; height:500px; margin:auto"></textarea>
+    <div id="result"></div>
+    <button onclick="compute()">Compute</button>
+  </body>
+</html>
