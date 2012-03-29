@@ -15,6 +15,10 @@
       #main > * {
         margin: 30px;
       }
+      #header {
+        text-align: center;
+        font-size: 30px;
+      }
       #hint {
         clear: both;
         margin-top: 150px;
@@ -27,9 +31,11 @@
     </style>
     <script src="i18n.js"></script>
     <script src="gas.js"></script>
+    <title i18n="donate"></title>
   </head>
   <body>
     <div id="main">
+      <div id="header">ActiveX for Chrome -- <span i18n="donate"></span></div>
       <div i18n="donate_label"></div>
       <div><a target="_blank" href="http://code.google.com/p/np-activex/wiki/Donations" i18n="donate_record"></a></div>
       <div id="paymentoptions">
