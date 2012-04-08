@@ -12,7 +12,7 @@
       }
     </style>
     <script>
-      var link = "https://chrome.google.com/webstore/detail/lgllffgicojgllpmdbemgglaponefajn/?hl=zh_CN"
+      var link = "https://chrome.google.com/webstore/detail/lgllffgicojgllpmdbemgglaponefajn"
       var text2 = '给使用Chrome的亲们：只要安装了这个扩展，就可以直接在Chrome里使用各种网银、播放器等ActiveX控件了。而且不用切换内核，非常方便。';
       var text = text2 + "下载地址：";
       var pic = 'http://ww3.sinaimg.cn/bmiddle/8c75b426jw1dqz2l1qfubj.jpg';
@@ -52,12 +52,12 @@
     </div>
 <script type="text/javascript" charset="utf-8">
 (function(){
-  var _w = 106 , _h = 24;
+  var _w = 75 , _h = 24;
   var param = {
     url:link,
-    type:'5',
-    count:'', /**是否显示分享数，1显示(可选)*/
-    appkey:'', /**您申请的应用appkey,显示分享来源(可选)*/
+    type:'2',
+    count:'1', /**是否显示分享数，1显示(可选)*/
+    appkey:'798098327', /**您申请的应用appkey,显示分享来源(可选)*/
     title:text,
     pic:pic, /**分享图片的路径(可选)*/
     ralateUid:'2356524070', /**关联用户的UID，分享微博会@该用户(可选)*/
@@ -74,7 +74,7 @@
 </div>
 <div class="item">
 <script async="true" type="text/javascript" src="http://widget.renren.com/js/rrshare.js"></script>
-<a name="xn_share" onclick="shareClick()" type="button_large" href="javascript:;"></a>
+<a name="xn_share" onclick="shareClick()" type="icon_medium" href="javascript:;"></a>
 <script type="text/javascript">
 	function shareClick() {
 		var rrShareParam = {
@@ -88,11 +88,11 @@
 </script>
 </div>
 <div class="item">
-<a href="javascript:void(0)" onclick="postToWb();return false;" class="tmblog"><img src="http://v.t.qq.com/share/images/s/b24.png" border="0" alt="转播到腾讯微博" ></a><script type="text/javascript">
+<a href="javascript:void(0)" onclick="postToWb();return false;" class="tmblog"><img src="http://mat1.gtimg.com/app/opent/images/websites/share/weiboicon24.png" border="0" alt="转播到腾讯微博" ></a><script type="text/javascript">
 	function postToWb(){
 		var _url = encodeURIComponent(link);
 		var _assname = encodeURI("");//你注册的帐号，不是昵称
-		var _appkey = encodeURI("");//你从腾讯获得的appkey
+		var _appkey = encodeURI("801125118");//你从腾讯获得的appkey
 		var _pic = encodeURI(pic);//（例如：var _pic='图片url1|图片url2|图片url3....）
 		var _t = '';//标题和描述信息
 		var metainfo = document.getElementsByTagName("meta");
@@ -111,6 +111,12 @@
 		window.open( _u,'', 'width=700, height=680, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, location=yes, resizable=no, status=no' );
 	}
 </script>
+</div>
+<div class="item">
+<iframe allowTransparency='true'  id='like_view' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' hspace='0' vspace='0' style='height:24px;width:65px;' src='http://www.kaixin001.com/like/like.php?url=https%3A%2F%2Fchrome.google.com%2Fwebstore%2Fdetail%2Flgllffgicojgllpmdbemgglaponefajn&show_faces=false'></iframe>
+</div>
+<div class="item">
+<a href="javascript:void(function(){var d=document,e=encodeURIComponent,s1=window.getSelection,s2=d.getSelection,s3=d.selection,s=s1?s1():s2?s2():s3?s3.createRange().text:'',r='http://www.douban.com/recommend/?url='+e(link)+'&title='+e('ActiveX for Chrome')+'&sel='+e(s)+'&v=1',x=function(){if(!window.open(r,'douban','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r+'&r=1'};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})()"><img style="margin:auto" src="http://img2.douban.com/pics/fw2douban_s.png" alt="推荐到豆瓣" /></a>
 </div>
 </div>
 </body>
