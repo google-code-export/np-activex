@@ -136,10 +136,10 @@
     "message": "Log"
   },
   "issue_submit_desp": {
-    "message": "Please remember to copy the logs above in your report!"
+    "message": "I'll copy the logs above in the issue report"
   },
   "issue_submit_goto": {
-    "message": "Start to report problem"
+    "message": "Report problem"
   },
   "bar_enable": {
     "message": "Use them now!"
@@ -151,7 +151,7 @@
     "message": "Don't notify for $1"
   },
   "log_tracking": {
-    "message": "Tracking this page for submitting issues"
+    "message": "Open log after closing this page to submitt issues"
   },
   "donate_label": {
     "message": "ActiveX for Chrome is abosolutely free to use. However, it did take us a lot of time and energy. We would apprieciete it if you could offer us some financial fund.\n Now we support PayPal and AliPay."
