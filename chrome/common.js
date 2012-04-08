@@ -253,19 +253,21 @@ responseCommands.Log = function(request, tabId, frameId) {
 function generateLogFile(tabId) {
   var status = tabStatus[tabId];
   if (!status) {
-    return 'No logs for tab ' + tabId;
+    return 'No log for tab ' + tabId;
   }
   var ret = '---------- Start of log --------------\n';
   ret += 'UserAgent: ' + navigator.userAgent + '\n';
   ret += 'Extension version: ' + version + '\n';
   ret += '\n';
+  var frameCount = 0;
   for (var i = 0; i < status.frames; ++i) {
     if (status.objs[i].length == 0 && status.logs[i].length == 0) {
       continue;
     }
-    if (i) {
+    if (frameCount) {
       ret += '\n\n';
     }
+    ++frameCount;
     ret += '------------ Frame ' + (i + 1) + ' ------------------\n';
     ret += 'Objects:\n';
     for (var j = 0; j < status.objs[i].length; ++j) {
@@ -279,6 +281,9 @@ function generateLogFile(tabId) {
   }
   ret += '\n---------------- End of log ---------------\n';
   ret += stringHash(ret);
+  if (frameCount == 0) {
+    return "No log for tab " + tabId;
+  }
   return ret;
 }
 

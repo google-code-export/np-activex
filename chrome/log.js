@@ -55,8 +55,22 @@ $(document).ready(function() {
   });
 });
 
+$(document).ready(function() {
+  $("#beforeSubmit").click(function() {
+    var link = $("#submitLink");
+    if (beforeSubmit.checked) {
+      link.show();
+    } else {
+      link.hide();
+    }
+  });
+});
+
 var currentTab = -1;
 function loadTabInfo(tabId) {
+  if (isNaN(tabId)) {
+    return;
+  }
   if (tabId != currentTab) {
     if (currentTab != -1) {
       uls[currentTab].removeClass('selected');
