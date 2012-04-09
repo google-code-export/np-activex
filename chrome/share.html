@@ -73,18 +73,21 @@
 </script>
 </div>
 <div class="item">
-<script async="true" type="text/javascript" src="http://widget.renren.com/js/rrshare.js"></script>
-<a name="xn_share" onclick="shareClick()" type="icon_medium" href="javascript:;"></a>
-<script type="text/javascript">
-	function shareClick() {
-		var rrShareParam = {
-			resourceUrl : link,	//分享的资源Url
-			pic : pic,		//分享的主题图片Url
-			title : 'ActiveX for Chrome',		//分享的标题
-			description : text2	//分享的详细描述
-		};
-		rrShareOnclick(rrShareParam);
-	}
+  <div id="renrenshare"></div>
+<script type="text/javascript" charset="utf-8">
+(function(){
+var p = [], w=100, h=24,
+lk = {
+url:link||location.href, /*喜欢的URL(不含如分页等无关参数)*/
+title:'ActiveXforChrome'||document.title, /*喜欢标题(可选)*/
+description:text2, /*喜欢简介(可选)*/
+image:pic /*喜欢相关图片的路径(可选)*/
+};
+for(var i in lk){
+p.push(i + '=' + encodeURIComponent(lk[i]||''));
+}
+renrenshare.innerHTML = ('<iframe scrolling="no" frameborder="0" allowtransparency="true" src="http://www.connect.renren.com/like/v2?'+p.join('&')+'" style="width:'+w+'px;height:'+h+'px;"></iframe>');
+})();
 </script>
 </div>
 <div class="item">
