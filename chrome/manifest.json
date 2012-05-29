@@ -1,6 +1,6 @@
 ﻿{
   "name": "ActiveX for Chrome",
-  "version": "1.4.8.3",
+  "version": "1.4.8.4",
   "description": "__MSG_plug_desp__",
   "permissions": [
     "<all_urls>",
@@ -29,6 +29,7 @@
     "48": "icon48.png",
     "128": "icon128.png" 
   },
+  "minimum_chrome_version": "17.0.963.46",
   "page_action": {
     "default_icon": "icon16.png"
   },
