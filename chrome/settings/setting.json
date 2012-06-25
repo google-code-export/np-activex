@@ -149,16 +149,6 @@
     "userAgent": "ie9",
     "script": ""
   },
-  "s_xunlei": {
-    "identifier": "s_xunlei",
-    "title": "迅雷看看",
-    "type": "wild",
-    "value": "http://*.xunlei.com/*",
-    "keyword": "xunlei",
-    "testUrl": "http://kankan.xunlei.com/vod/mp4/64/64358/218878.shtml?quality=2",
-    "userAgent": "ie9",
-    "script": "ieevent dynamic"
-  },
   "s_cmbc": {
     "identifier": "s_cmbc",
     "title": "民生银行",
