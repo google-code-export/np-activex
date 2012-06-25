@@ -1,0 +1,222 @@
+{
+  "s_ICBC": {
+    "identifier": "s_ICBC",
+    "title": "ICBC工商银行",
+    "type": "wild",
+    "value": "https://*.icbc.com.cn/*",
+    "keyword": "icbc",
+    "testUrl": "https://mybank.icbc.com.cn/icbc/perbank/index.jsp",
+    "userAgent": "ie9",
+    "script": "createElement none2block formid"
+  },
+  "s_BOC": {
+    "identifier": "s_BOC",
+    "title": "BOC中国银行",
+    "type": "wild",
+    "value": "https://ebs.boc.cn/*",
+    "keyword": "boc",
+    "testUrl": "https://ebs.boc.cn/BocnetClient/LoginFrame1.do?_locale=zh_CN",
+    "userAgent": "ie9",
+    "script": "dynamic ieevent clsid _boc_md5 _boc_resources_zh_CN_CurCode _boc_common _boc_PageLimit _boc_FormCheck.js _boc_createElement _boc_FormatMoneyShow _boc_FormatMoneyBase"
+  },
+  "s_95599_1": {
+    "identifier": "s_95599_1",
+    "title": "ABC中国农业银行",
+    "type": "wild",
+    "value": "https://*.95599.cn/*",
+    "keyword": "95599",
+    "testUrl": "https://easyabc.95599.cn/commbank/netBank/zh_CN/CommLogin.aspx",
+    "userAgent": "ie9",
+    "script": "map_id_name"
+  },
+  "s_cmbchina": {
+    "identifier": "s_cmbchina",
+    "title": "中国招商银行",
+    "type": "wild",
+    "value": "https://*.cmbchina.com/*",
+    "keyword": "cmbchina",
+    "testUrl": "https://pbnj.ebank.cmbchina.com/CmbBank_GenShell/UI/GenShellPC/Login/Login.aspx",
+    "userAgent": "ie9",
+    "script": "_cmb_pay ieevent popup documentid dynamic"
+  },
+  "s_psbc": {
+    "identifier": "s_psbc",
+    "title": "中国邮政储蓄",
+    "type": "wild",
+    "value": "https://*.psbc.com/*",
+    "keyword": "psbc",
+    "testUrl": "https://pbank.psbc.com/pweb/prelogin.do?_locale=zh_CN&BankId=9999",
+    "userAgent": "ie9",
+    "script": ""
+  },
+  "s_qvod": {
+    "identifier": "s_qvod",
+    "title": "Qvod快播",
+    "type": "clsid",
+    "value": "{F3D0D36F-23F8-4682-A195-74C92B03D4AF} ",
+    "keyword": "",
+    "testUrl": "",
+    "userAgent": "",
+    "script": ""
+  },
+  "s_wmp": {
+    "identifier": "s_wmp",
+    "title": "Windows Media Player",
+    "type": "clsid",
+    "value": "{22d6f312-b0f6-11d0-94ab-0080c74c7e95}",
+    "keyword": "",
+    "testUrl": "",
+    "userAgent": "",
+    "script": ""
+  },
+  "s_bankbj": {
+    "identifier": "s_bankbj",
+    "title": "北京银行",
+    "type": "wild",
+    "value": "https://*.bankofbeijing.com.cn/*",
+    "keyword": "bankofbeijing",
+    "testUrl": "https://ebank.bankofbeijing.com.cn/bccbpb/accountLogon.jsp?language=zh_CN",
+    "userAgent": "",
+    "script": ""
+  },
+  "s_cebbank": {
+    "identifier": "s_cebbank",
+    "title": "光大银行",
+    "type": "wild",
+    "value": "https://www.cebbank.com/*",
+    "keyword": "cebbank",
+    "testUrl": "https://www.cebbank.com/per/perlogin1.do",
+    "userAgent": "",
+    "script": "ieevent ieidname cebpay"
+  },
+  "s_cgbchina": {
+    "identifier": "s_cgbchina",
+    "title": "广发银行",
+    "type": "wild",
+    "value": "https://*.cgbchina.com.cn/*",
+    "keyword": "cgbchina",
+    "testUrl": "https://ebanks.cgbchina.com.cn/perbank/",
+    "userAgent": "",
+    "script": "cpuClass"
+  },
+  "s_hxb": {
+    "identifier": "s_hxb",
+    "title": "华夏银行",
+    "type": "wild",
+    "value": "https://*.hxb.com.cn/*",
+    "keyword": "hxb",
+    "testUrl": "https://sbank.hxb.com.cn/easybanking/login.do?",
+    "userAgent": "",
+    "script": "ieidname"
+  },
+  "s_95559": {
+    "identifier": "s_95559",
+    "title": "交通银行",
+    "type": "wild",
+    "value": "https://*.95559.com.cn/*",
+    "keyword": "95559",
+    "testUrl": "https://pbank.95559.com.cn/personbank/common_logon.jsp",
+    "userAgent": "",
+    "script": "none2block 95559_submit"
+  },
+  "s_pptv": {
+    "identifier": "s_pptv",
+    "title": "PPTV网络电视",
+    "type": "wild",
+    "value": "http://*.pptv.com/*",
+    "keyword": "pptv",
+    "testUrl": "http://tvnet.pptv.com/",
+    "userAgent": "ie9",
+    "script": ""
+  },
+  "s_bugu": {
+    "identifier": "s_bugu",
+    "title": "布谷CNTV",
+    "type": "wild",
+    "value": "http://bugu.cntv.cn/*",
+    "keyword": "bugu",
+    "testUrl": "http://bugu.cntv.cn/live_cctv3/index.shtml",
+    "userAgent": "ie9",
+    "script": "_bugu_patch"
+  },
+  "s_sdb": {
+    "identifier": "s_sdb",
+    "title": "深圳发展银行",
+    "type": "wild",
+    "value": "https://ebank.sdb.com.cn/*",
+    "keyword": "sdb",
+    "testUrl": "https://ebank.sdb.com.cn/perbank/logon_pro.jsp",
+    "userAgent": "ie9",
+    "script": ""
+  },
+  "s_xunlei": {
+    "identifier": "s_xunlei",
+    "title": "迅雷看看",
+    "type": "wild",
+    "value": "http://*.xunlei.com/*",
+    "keyword": "xunlei",
+    "testUrl": "http://kankan.xunlei.com/vod/mp4/64/64358/218878.shtml?quality=2",
+    "userAgent": "ie9",
+    "script": "ieevent dynamic"
+  },
+  "s_cmbc": {
+    "identifier": "s_cmbc",
+    "title": "民生银行",
+    "type": "wild",
+    "value": "https://*.cmbc.com.cn/*",
+    "keyword": "cmbc",
+    "testUrl": "https://business.cmbc.com.cn/index_Private_pri.html",
+    "userAgent": "",
+    "script": "none2block"
+  },
+  "e_ecitic": {
+    "identifier": "e_ecitic",
+    "title": "中信银行",
+    "type": "wild",
+    "value": "https://e.bank.ecitic.com/*",
+    "keyword": "ecitic",
+    "testUrl": "https://e.bank.ecitic.com/perbank5/signIn.do",
+    "userAgent": "",
+    "script": "ieevent dynamic none2block"
+  },
+  "s_poco": {
+    "identifier": "s_poco",
+    "title": "Poco图片上传",
+    "type": "wild",
+    "value": "http://*.poco.cn/*",
+    "keyword": "poco",
+    "testUrl": "http://my.poco.cn/album/album_bath_upload.iframe.php?set_hash=&test=v2",
+    "userAgent": "ie9",
+    "script": "ieevent _poco_upload"
+  },
+  "s_msxml": {
+    "identifier": "s_msxml",
+    "title": "MSXML data source loader",
+    "type": "clsid",
+    "value": "{550dda30-0541-11d2-9ca9-0060b0ec3d39}",
+    "keyword": "",
+    "testUrl": "",
+    "userAgent": "",
+    "script": ""
+  },
+  "s_logmein": {
+    "identifier": "s_logmein",
+    "title": "LogMeIn Remote control",
+    "type": "wild",
+    "value": "https://*.logmein.com/*",
+    "keyword": "logmein",
+    "testUrl": "https://test-pc-yldoltovxd.app03-22.logmein.com/default.html?go=r&rawtnl=31645176_0&gwsid=_Im9fKLtuXU9tdD3gOj10r6OPDETjzwewTm",
+    "userAgent": "ie9",
+    "script": ""
+  },
+  "s_tipzap": {
+    "identifier": "s_tipzap",
+    "title": "TipZap media player",
+    "type": "wild",
+    "value": "http://*.tiztap.com/*",
+    "keyword": "tipzap",
+    "testUrl": "http://play.tiztap.com/play_user_music.asp?id=48851&id=48850&id=48849&id=48848&id=48847&id=48843&id=48842&id=48841&id=48840&id=48839&id=48838&id=48837&id=48836&id=48835&id=48834&id=48829&id=48827&id=48826&id=48825&id=48823&id=48820&id=48819&id=48817&id=48815&id=48813&id=48811&id=48810&id=48800&id=48799&id=48798&id=",
+    "userAgent": "",
+    "script": "_tipzap_player"
+  }
+}

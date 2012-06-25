@@ -32,10 +32,7 @@
     }
   }
   window.setTimeout(function() {
-    UpdateSession.setUpdateInterval(function() {
-      setting.updateConfig(updateSession);
-    }, updateSession, DEFAULT_INTERVAL);
-
+    setting.updateConfig(updateSession);
     if (firstRun || firstUpgrade) {
       open('donate.html');
     }

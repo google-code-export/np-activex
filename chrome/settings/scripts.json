@@ -1,0 +1,184 @@
+{
+  "ieevent": {
+    "identifier": "ieevent",
+    "url": "IEEvent.js",
+    "version": "1",
+    "context": "page",
+    "checksum": -636698770
+  },
+  "popup": {
+    "identifier": "popup",
+    "url": "popup.js",
+    "version": "1",
+    "context": "page",
+    "checksum": -1892117872
+  },
+  "clsid": {
+    "identifier": "clsid",
+    "url": "clsid.js",
+    "version": "1",
+    "context": "page",
+    "checksum": -738631242
+  },
+  "dynamic": {
+    "identifier": "dynamic",
+    "url": "dynamic.js",
+    "version": "2",
+    "context": "page",
+    "checksum": -430617623
+  },
+  "createElement": {
+    "identifier": "createElement",
+    "url": "createElement.js",
+    "version": 1,
+    "context": "page",
+    "checksum": -1990424128
+  },
+  "none2block": {
+    "identifier": "none2block",
+    "url": "none2block.js",
+    "version": 2,
+    "context": "extension",
+    "checksum": -963682757
+  },
+  "_cmb_pay": {
+    "identifier": "_cmb_pay",
+    "url": "cmb_pay.js",
+    "version": "3",
+    "context": "page",
+    "checksum": "896252811"
+  },
+  "_bugu_patch": {
+    "identifier": "_bugu_patch",
+    "url": "bugu_patch.js",
+    "version": "1",
+    "context": "page",
+    "checksum": -1310869188
+  },
+  "map_id_name": {
+    "identifier": "map_id_name",
+    "url": "map_id_name.js",
+    "version": 1,
+    "context": "extension",
+    "checksum": 200719977
+  },
+  "_boc_md5": {
+    "identifier": "_boc_md5",
+    "url": "_boc_md5.js",
+    "version": 1,
+    "context": "page",
+    "checksum": 1392391820
+  },
+  "_boc_resources_zh_CN_CurCode": {
+    "identifier": "_boc_resources_zh_CN_CurCode",
+    "url": "_boc_resources_zh_CN_CurCode.js",
+    "version": 1,
+    "context": "page",
+    "checksum": -1487049373
+  },
+  "_boc_common": {
+    "identifier": "_boc_common",
+    "url": "_boc_common.js",
+    "version": 1,
+    "context": "page",
+    "checksum": 952305011
+  },
+  "_boc_PageLimit": {
+    "identifier": "_boc_PageLimit",
+    "url": "_boc_PageLimit.js",
+    "version": "1",
+    "context": "page",
+    "checksum": 437064185
+  },
+  "_boc_FormCheck.js": {
+    "identifier": "_boc_FormCheck.js",
+    "url": "_boc_FormCheck.js",
+    "version": 1,
+    "context": "page",
+    "checksum": 1670011648
+  },
+  "_boc_createElement": {
+    "identifier": "_boc_createElement",
+    "url": "_boc_createElement.js",
+    "version": "1",
+    "context": "page",
+    "checksum": -2103333429
+  },
+  "_boc_calendar": {
+    "identifier": "_boc_calendar",
+    "url": "_boc_calendar.js",
+    "version": 1,
+    "context": "page",
+    "checksum": 1038873555
+  },
+  "_boc_FormatMoneyShow": {
+    "identifier": "_boc_FormatMoneyShow",
+    "url": "_boc_FormatMoneyShow.js",
+    "version": 1,
+    "context": "page",
+    "checksum": 961102731
+  },
+  "_boc_FormatMoneyBase": {
+    "identifier": "_boc_FormatMoneyBase",
+    "url": "_boc_FormatMoneyBase.js",
+    "version": 1,
+    "context": "page",
+    "checksum": -1843772920
+  },
+  "ieidname": {
+    "identifier": "ieidname",
+    "url": "ieidname.js",
+    "version": "1",
+    "context": "page",
+    "checksum": -1183688428
+  },
+  "formid": {
+    "identifier": "formid",
+    "url": "formid.js",
+    "version": 1,
+    "context": "extension",
+    "checksum": 1177622471
+  },
+  "documentid": {
+    "identifier": "documentid",
+    "url": "documentid.js",
+    "version": 1,
+    "context": "extension",
+    "checksum": -453363426
+  },
+  "cpuClass": {
+    "identifier": "cpuClass",
+    "url": "cpuclass.js",
+    "version": 1,
+    "context": "page",
+    "checksum": 1531359185
+  },
+  "95559_submit": {
+    "identifier": "95559_submit",
+    "url": "95559_submit.js",
+    "version": 2,
+    "context": "page",
+    "checksum": -331171485
+  },
+  "cebpay": {
+    "identifier": "cebpay",
+    "url": "cebpay.js",
+    "version": 1,
+    "context": "page",
+    "checksum": 1897929979
+  },
+  "_poco_upload": {
+    "identifier": "_poco_upload",
+    "url": "poco_upload.js",
+    "version": "1",
+    "context": "page",
+    "checksum": 2052739852
+  },
+  "_tipzap_player": {
+    "identifier": "_tipzap_player",
+    "url": "_tipzap_player.js",
+    "version": "1",
+    "context": "page",
+    "checksum": "-1390932746"
+  }
+}
