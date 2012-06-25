@@ -14,7 +14,7 @@
 //   lastUpdate
 
 // Can be used for debugging.
-var defaultServer = "http://settings.np-activex.googlecode.com/hg/";
+var defaultServer = chrome.extension.getURL('settings/');
 var server=localStorage.updateServer || defaultServer;
 
 function ObjectWithEvent() {

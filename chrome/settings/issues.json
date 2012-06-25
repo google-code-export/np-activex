@@ -1,0 +1,26 @@
+{
+  "i_ecitic": {
+    "identifier": "i_ecitic",
+    "type": "wild",
+    "value": "https://*.ecitic.com/*",
+    "description": "中信银行控件存在安全问题，将不再提供支持",
+    "issueId": "55",
+    "url": ""
+  },
+  "i_msxml": {
+    "identifier": "i_msxml",
+    "type": "clsid",
+    "value": "{550dda30-0541-11d2-9ca9-0060b0ec3d39}",
+    "description": "MS xml data loader is not supported now.",
+    "issueId": "87",
+    "url": ""
+  },
+  "y_ccb": {
+    "identifier": "y_ccb",
+    "type": "wild",
+    "value": "https://*.ccb.com.cn/*",
+    "description": "建行只需安装官方的Firefox控件即可使用普通U盾支付",
+    "issueId": "-1",
+    "url": "http://www.ccb.com/cn/jump/download.htm"
+  }
+}

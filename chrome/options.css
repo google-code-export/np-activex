@@ -15,6 +15,7 @@ body > div {
 .itemline.newline:not(.editing) {
   display:none;
 }
+
 div[property=status] {
   width: 75px
 }
@@ -42,14 +43,6 @@ div[property=script] {
 #ruleCmds button {
   width: 100px;
   margin: 4px 8px 3px 8px;
-}
-
-#tbServer, #tbServerStatus {
-  float: left;
-}
-
-#tbServer {
-  width: 600px;
 }
 
 #share {
