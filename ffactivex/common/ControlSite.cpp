@@ -825,18 +825,21 @@ CControlSiteSecurityPolicy *CControlSite::GetDefaultControlSecurityPolicy()
 
 HRESULT STDMETHODCALLTYPE CControlSite::GetTypeInfoCount(/* [out] */ UINT __RPC_FAR *pctinfo)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
 
 HRESULT STDMETHODCALLTYPE CControlSite::GetTypeInfo(/* [in] */ UINT iTInfo, /* [in] */ LCID lcid, /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppTInfo)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
 
 HRESULT STDMETHODCALLTYPE CControlSite::GetIDsOfNames(/* [in] */ REFIID riid, /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames, /* [in] */ UINT cNames, /* [in] */ LCID lcid, /* [size_is][out] */ DISPID __RPC_FAR *rgDispId)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
@@ -997,6 +1000,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::OnShowWindow(/* [in] */ BOOL fShow)
 
 HRESULT STDMETHODCALLTYPE CControlSite::RequestNewObjectLayout(void)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
@@ -1389,6 +1393,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::LockInPlaceActive(/* [in] */ BOOL fLock)
 
 HRESULT STDMETHODCALLTYPE CControlSite::GetExtendedControl(/* [out] */ IDispatch __RPC_FAR *__RPC_FAR *ppDisp)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
@@ -1465,6 +1470,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::TransformCoords(/* [out][in] */ POINTL _
 
 HRESULT STDMETHODCALLTYPE CControlSite::TranslateAccelerator(/* [in] */ MSG __RPC_FAR *pMsg, /* [in] */ DWORD grfModifiers)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
@@ -1477,6 +1483,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::OnFocus(/* [in] */ BOOL fGotFocus)
 
 HRESULT STDMETHODCALLTYPE CControlSite::ShowPropertyFrame(void)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
@@ -1533,6 +1540,7 @@ HRESULT STDMETHODCALLTYPE CControlSite::OnDataAvailable(DWORD grfBSCF,
                                                         FORMATETC __RPC_FAR *pformatetc, 
                                                         STGMEDIUM __RPC_FAR *pstgmed)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
   

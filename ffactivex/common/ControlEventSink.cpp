@@ -267,18 +267,21 @@ CControlEventSink::InternalInvoke(DISPID dispIdMember, REFIID riid, LCID lcid, W
 
 HRESULT STDMETHODCALLTYPE CControlEventSink::GetTypeInfoCount(/* [out] */ UINT __RPC_FAR *pctinfo)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
 
 HRESULT STDMETHODCALLTYPE CControlEventSink::GetTypeInfo(/* [in] */ UINT iTInfo, /* [in] */ LCID lcid, /* [out] */ ITypeInfo __RPC_FAR *__RPC_FAR *ppTInfo)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
 
 HRESULT STDMETHODCALLTYPE CControlEventSink::GetIDsOfNames(/* [in] */ REFIID riid, /* [size_is][in] */ LPOLESTR __RPC_FAR *rgszNames, /* [in] */ UINT cNames, /* [in] */ LCID lcid, /* [size_is][out] */ DISPID __RPC_FAR *rgDispId)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
