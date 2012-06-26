@@ -518,6 +518,11 @@ CAxHost::CreateControl(bool subscribeToEvents)
 	document->m_contained.Init(instance, pHtmlLib);
 	Site->SetInnerWindow(document, HTMLContainerDeleter);
 
+	BSTR url;
+	document->m_contained.get_LocationURL(&url);
+	Site->SetUrl(url);
+	SysFreeString(url);
+	
 	// Create the object
 	HRESULT hr;
 	hr = Site->Create(ClsID, *Props(), CodeBaseUrl);

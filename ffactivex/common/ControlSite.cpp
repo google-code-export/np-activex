@@ -969,9 +969,20 @@ HRESULT STDMETHODCALLTYPE CControlSite::SaveObject(void)
 
 HRESULT STDMETHODCALLTYPE CControlSite::GetMoniker(/* [in] */ DWORD dwAssign, /* [in] */ DWORD dwWhichMoniker, /* [out] */ IMoniker __RPC_FAR *__RPC_FAR *ppmk)
 {
-    return E_NOTIMPL;
+	if (!ppmk) {
+		return E_INVALIDARG;
+	}
+
+	if (dwWhichMoniker != OLEWHICHMK_CONTAINER) {
+		return E_FAIL;
+	}
+
+	return CreateURLMoniker(NULL, url, ppmk);
 }
 
+void CControlSite::SetUrl(BSTR url) {
+	this->url = url;
+}
 
 HRESULT STDMETHODCALLTYPE CControlSite::GetContainer(/* [out] */ IOleContainer __RPC_FAR *__RPC_FAR *ppContainer)
 {
