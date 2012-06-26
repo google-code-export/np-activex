@@ -131,6 +131,7 @@ HRESULT STDMETHODCALLTYPE CControlSiteIPFrame::EnableModeless(/* [in] */ BOOL fE
 
 HRESULT STDMETHODCALLTYPE CControlSiteIPFrame::TranslateAccelerator(/* [in] */ LPMSG lpmsg, /* [in] */ WORD wID)
 {
+	ATLTRACE("Not implemnted");
     return E_NOTIMPL;
 }
 
