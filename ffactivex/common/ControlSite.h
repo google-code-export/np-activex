@@ -39,7 +39,7 @@
 #define CONTROLSITE_H
 
 #include "IOleCommandTargetImpl.h"
-
+#include <atlstr.h>
 #include "PropertyList.h"
 
 // Temoporarily removed by bug 200680. Stops controls misbehaving and calling
@@ -118,7 +118,8 @@ private:
     unsigned m_bSafeForScriptingObjectsOnly:1;
     // Return the default security policy object
     static CControlSiteSecurityPolicy *GetDefaultControlSecurityPolicy();
-
+	// The URL for creating Moniker
+	CString url;
 	friend class CAxHost;
 
 protected:
@@ -246,7 +247,7 @@ END_OLECOMMAND_TABLE()
 	virtual HRESULT GetControlSize(LPSIZEL size);
 	// Set the control size, in pixels.
 	virtual HRESULT SetControlSize(const LPSIZEL size, LPSIZEL out);
-
+	void SetUrl(BSTR url);
 	void SetInnerWindow(IUnknown *unk, void (*Deleter)(IUnknown *unk)) {
 		m_spInner = unk;
 		m_spInnerDeallocater = Deleter;
