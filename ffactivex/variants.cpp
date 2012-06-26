@@ -248,7 +248,7 @@ NPVar2Variant(const NPVariant *npvar, VARIANT *var, NPP instance)
 
 	case NPVariantType_Bool:
 		var->vt = VT_BOOL;
-		var->ulVal = npvar->value.boolValue;
+		var->boolVal = npvar->value.boolValue ? VARIANT_TRUE : VARIANT_FALSE;
 		break;
 
 	case NPVariantType_Int32:
