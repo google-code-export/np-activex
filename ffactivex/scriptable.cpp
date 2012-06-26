@@ -257,7 +257,7 @@ bool Scriptable::InvokeID(DISPID id,  const NPVariant *args, uint32_t argCount, 
 	}
 
 	if (FAILED(rc)) {
-
+		np_log(instance, 0, "Invoke failed: 0x%08x, dispid: 0x%08x", rc, id);
 		return false;
 	}
 
@@ -273,7 +273,8 @@ bool Scriptable::HasMethod(NPIdentifier name)  {
 
 bool Scriptable::HasProperty(NPIdentifier name) {
 	static NPIdentifier classid = NPNFuncs.getstringidentifier("classid");
-	if (name == classid) {
+	static NPIdentifier readyStateId = NPNFuncs.getstringidentifier("readyState");
+	if (name == classid || name == readyStateId) {
 		return true;
 	}
 	if (invalid) return false;
@@ -288,6 +289,7 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 	
 	
 	static NPIdentifier classid = NPNFuncs.getstringidentifier("classid");
+	static NPIdentifier readyStateId = NPNFuncs.getstringidentifier("readyState");
 	if (name == classid) {
 		CAxHost *host = (CAxHost*)this->host;
 		if (this->disp == NULL) {
@@ -310,6 +312,9 @@ bool Scriptable::GetProperty(NPIdentifier name, NPVariant *result) {
 			STRINGZ_TO_NPVARIANT(cstr, *result);
 			return true;
 		}
+	} else if (name == readyStateId) {
+		INT32_TO_NPVARIANT(4, *result);
+		return true;
 	}
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET);
 	if (-1 == id) {
