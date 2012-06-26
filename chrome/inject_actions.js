@@ -146,7 +146,7 @@ function process(obj) {
     return;
   }
 
-  if (obj.type != "" || !obj.hasAttribute("classid"))
+  if ((obj.type != "" && obj.type != "application/x-oleobject") || !obj.hasAttribute("classid"))
     return;
   if (getClsid(obj).toLowerCase() == FLASH_CLSID) {
     return;
