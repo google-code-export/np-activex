@@ -184,6 +184,7 @@ Variant2NPVar(const VARIANT *var, NPVariant *npvar, NPP instance)
 		break;
 
 	case VT_UI4:
+	case VT_UINT:
 		INT32_TO_NPVARIANT((INT32)GETVALUE(var, ulVal), (*npvar));
 		break;
 
