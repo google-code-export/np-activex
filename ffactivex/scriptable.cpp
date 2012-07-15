@@ -43,8 +43,8 @@ NPClass Scriptable::npClass = {
 	/* allocate */		Scriptable::_Allocate,
 	/* deallocate */	Scriptable::_Deallocate,
 	/* invalidate */	Scriptable::_Invalidate,
-	/* hasMethod */		NULL, //Scriptable::_HasMethod,
-	/* invoke */		NULL, //Scriptable::_Invoke,
+	/* hasMethod */		Scriptable::_HasMethod,
+	/* invoke */		Scriptable::_Invoke,
 	/* invokeDefault */	NULL,
 	/* hasProperty */	Scriptable::_HasProperty,
 	/* getProperty */	Scriptable::_GetProperty,
@@ -165,7 +165,7 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 	LPOLESTR oleName = A2W(npname);
 
 	disp->GetIDsOfNames(IID_NULL, &oleName, 1, 0, &dID);
-	return dID;
+	//return dID;
 #if 0
 	int funcInv;
 	if (FindElementInvKind(disp, dID, &funcInv)) {
@@ -278,7 +278,7 @@ bool Scriptable::HasProperty(NPIdentifier name) {
 		return true;
 	}
 	if (invalid) return false;
-
+	
 	DISPID id = ResolveName(name, INVOKE_PROPERTYGET | INVOKE_PROPERTYPUT);
 	return (id != -1) ? true : false;
 }
