@@ -266,8 +266,7 @@ FakeDispatcher::~FakeDispatcher(void)
 	if (extended) {
 		delete extended;
 	}
-	
-	DispatchLog(3, "Release");
+
 	NPNFuncs.releaseobject(npObject);
 	typeLib->Release();
 }
