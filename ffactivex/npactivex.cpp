@@ -346,6 +346,7 @@ static bool FillProperties(CAxHost *host, NPP instance) {
 			NPNFuncs.evaluate(instance, window, &str, &value);
 			if (NPVARIANT_IS_BOOLEAN(value) && NPVARIANT_TO_BOOLEAN(value)) {
 				// The embed is supported by chrome. Fallback automatically.
+				np_log(instance, 1, "This control has a valid embed element %s", mimetype.GetString());
 				return false;
 			}
 		}
