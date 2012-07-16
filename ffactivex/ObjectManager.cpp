@@ -78,9 +78,9 @@ ObjectManager* ObjectManager::GetManager(NPP npp) {
 		return NULL;
 	if (NPVARIANT_IS_OBJECT(obj)) {
 		NPObject *manager = NPVARIANT_TO_OBJECT(obj);
-		ScriptBase *script = GetInternalObject(npp, manager);
-		if (script)
-			return dynamic_cast<ObjectManager*>(script->host);
+		CHost *host = GetInternalObject(npp, manager);
+		if (host)
+			return dynamic_cast<ObjectManager*>(host);
 	}
 	return NULL;
 }

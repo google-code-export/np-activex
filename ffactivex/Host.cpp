@@ -132,15 +132,15 @@ NPP CHost::ResetNPP(NPP newNPP) {
 	return ret;
 }
 
-ScriptBase *CHost::GetInternalObject(NPP npp, NPObject *embed_element)
+CHost *CHost::GetInternalObject(NPP npp, NPObject *embed_element)
 {
 	NPVariantProxy var;
-	if (!NPNFuncs.getproperty(npp, embed_element, NPNFuncs.getstringidentifier("object"), &var))
+	if (!NPNFuncs.getproperty(npp, embed_element, NPNFuncs.getstringidentifier("__npp_instance__"), &var))
 		return NULL;
-	if (NPVARIANT_IS_OBJECT(var)) {
-		ScriptBase *obj = static_cast<ScriptBase*>(NPVARIANT_TO_OBJECT(var));
-		NPNFuncs.retainobject(obj);
-		return obj;		
+	if (NPVARIANT_IS_INT32(var)) {
+		return (CHost*)((NPP)var.value.intValue)->pdata;		
+	} else if (NPVARIANT_IS_DOUBLE(var)) {
+		return (CHost*)((NPP)((int32)var.value.doubleValue))->pdata;
 	}
 	return NULL;
 }
@@ -148,5 +148,5 @@ ScriptBase *CHost::GetInternalObject(NPP npp, NPObject *embed_element)
 ScriptBase *CHost::GetMyScriptObject() {
 	NPObjectProxy embed;
 	NPNFuncs.getvalue(instance, NPNVPluginElementNPObject, &embed);
-	return GetInternalObject(instance, embed);
+	return GetInternalObject(instance, embed)->lastObj;
 }
