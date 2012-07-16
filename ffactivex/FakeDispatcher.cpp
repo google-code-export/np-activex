@@ -50,9 +50,7 @@ FakeDispatcher::FakeDispatcher(NPP npInstance, ITypeLib *typeLib, NPObject *obje
 	typeLib->AddRef();
 	NPNFuncs.retainobject(object);
 	
-	ScriptBase *base = ObjectManager::GetInternalObject(npInstance, object);
-	if (base)
-		internalObj = dynamic_cast<CAxHost*>(base->host);
+	internalObj = (CAxHost*)ObjectManager::GetInternalObject(npInstance, object);
 
 #ifdef DEBUG
 	name[0] = 0;

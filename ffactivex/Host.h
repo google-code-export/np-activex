@@ -44,7 +44,7 @@ public:
 	NPP GetInstance() {
 		return instance;
 	}
-	static ScriptBase *GetInternalObject(NPP npp, NPObject *embed_element);
+	static CHost *GetInternalObject(NPP npp, NPObject *embed_element);
 	
 	NPObject *RegisterObject();
 	void UnRegisterObject();
