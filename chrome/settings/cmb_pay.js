@@ -53,8 +53,8 @@
         }
       } (window[fncName]);
     }
-    patchLoginSwitch('onCreditCardLoginTypeChange');
-    patchLoginSwitch('onEALoginTypeChange');
+    patchLoginSwitch('changeCreditCardLoginType');
+    patchLoginSwitch('changeEALoginType');
     patchLoginSwitch('showLoginEntry');
 
     CallbackCheckClient = function() {};
