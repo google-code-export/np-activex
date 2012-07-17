@@ -71,7 +71,7 @@ bool Scriptable::find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id
 		}
 		info->ReleaseFuncDesc(fDesc);
 	}
-#if 0
+
 	if (!found && (invKind & ~INVOKE_FUNC)) {
 
 		VARDESC *vDesc;
@@ -121,7 +121,6 @@ bool Scriptable::find_member(ITypeInfoPtr info, TYPEATTR *attr, DISPID member_id
 			baseInfo->ReleaseTypeAttr(baseAttr);
 		}
 	}
-#endif
 	return found;
 }
 
