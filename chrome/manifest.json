@@ -1,6 +1,7 @@
 ﻿{
   "name": "ActiveX for Chrome",
   "version": "1.4.9.2",
+  "manifest_version": 2,
   "description": "__MSG_plug_desp__",
   "permissions": [
     "<all_urls>",
@@ -8,7 +9,11 @@
     "webRequestBlocking",
     "webRequest"
   ],
+  "content_security_policy": "script-src 'self' https://connect.facebook.net https://apis.google.com; object-src 'self'",
   "default_locale": "en",
+  "background": {
+    "page": "background.html"
+  },
   "background_page": "background.html",
   "content_scripts": [
     {
@@ -29,7 +34,7 @@
     "48": "icon48.png",
     "128": "icon128.png" 
   },
-  "minimum_chrome_version": "17.0.963.46",
+  "minimum_chrome_version": "17.0.963.0",
   "page_action": {
     "default_icon": "icon16.png"
   },
@@ -37,5 +42,10 @@
   "plugins": [{
     "path": "npactivex.dll",
     "public": true
-  }]
+  }],
+  "web_accessible_resources": [
+    "notifybar.css",
+    "notifybar.js",
+    "notifybar.html"
+  ]
 }
