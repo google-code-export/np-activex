@@ -53,20 +53,11 @@
       <div></div>
       <div i18n="donate_share">
       </div>
-      <div id="share"></div>
+      <script src="share.js"></script>
       <div></div>
       <div id="hint" style="display:none">
         <a id="hintonfirst" href="options.html" i18n="donate_gotooptions"></a>
       </div>
-      <script>
-        if (chrome.extension.getBackgroundPage().firstRun) {
-          document.getElementById('hint').style.display = '';
-          chrome.extension.getBackgroundPage().firstRun = false;
-        }
-        $(document).ready(function() {
-          $('#share').load('share.html');
-        });
-      </script>
     </div>
   </body>
 </html>

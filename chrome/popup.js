@@ -115,7 +115,3 @@ $(document).ready(function() {
 });
 
 $(document).ready(showEnableBtns);
-
-$(window).load(function() {
-  $('#share').load('share.html');
-});
