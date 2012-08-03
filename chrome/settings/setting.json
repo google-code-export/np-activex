@@ -133,7 +133,7 @@
     "identifier": "s_bugu",
     "title": "布谷CNTV",
     "type": "wild",
-    "value": "http://bugu.cntv.cn/*",
+    "value": "http://*.cntv.cn/*",
     "keyword": "bugu",
     "testUrl": "http://bugu.cntv.cn/live_cctv3/index.shtml",
     "userAgent": "ie9",
