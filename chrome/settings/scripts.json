@@ -46,7 +46,7 @@
     "url": "cmb_pay.js",
     "version": "4",
     "context": "page",
-    "checksum": "-961013249"
+    "checksum": 273360363
   },
   "_bugu_patch": {
     "identifier": "_bugu_patch",
@@ -179,13 +179,13 @@
     "url": "_tipzap_player.js",
     "version": "1",
     "context": "page",
-    "checksum": "-1390932746"
+    "checksum": -1390932746
   },
   "_cloud_zz": {
     "identifier": "_cloud_zz",
     "url": "_cloudzz.js",
     "version": "1",
     "context": "page",
-    "checksum": "1098936038"
+    "checksum": 1098936038
   }
 }
