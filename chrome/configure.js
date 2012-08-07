@@ -549,7 +549,7 @@ ActiveXConfig.prototype = {
         } else {
           var message = 'Hashcode mismatch!!';
           message += ' script: ' + remote.identifier;
-          messsge += ' actual: ' + hash;
+          message += ' actual: ' + hash;
           message += ' expected: ' + remote.checksum;
           console.log(message);
         }
