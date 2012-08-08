@@ -164,7 +164,7 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 	LPOLESTR oleName = A2W(npname);
 
 	disp->GetIDsOfNames(IID_NULL, &oleName, 1, 0, &dID);
-	//return dID;
+	return dID;
 #if 0
 	int funcInv;
 	if (FindElementInvKind(disp, dID, &funcInv)) {
@@ -192,13 +192,13 @@ DISPID Scriptable::ResolveName(NPIdentifier name, unsigned int invKind) {
 		disp->GetTypeInfo(0, LOCALE_SYSTEM_DEFAULT, &info);
 		if (!info) {
 
-			return -1;
+			return dID;
 		}
 
 		TYPEATTR *attr;
 		if (FAILED(info->GetTypeAttr(&attr))) {
 
-			return -1;
+			return dID;
 		}
 
 		found = find_member(info, attr, dID, invKind);
