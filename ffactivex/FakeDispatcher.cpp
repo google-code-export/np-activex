@@ -213,8 +213,12 @@ HRESULT STDMETHODCALLTYPE FakeDispatcher::QueryInterface(
 			TYPEATTR *attr;
 			typeInfo->GetTypeAttr(&attr);
 			dualType = attr->wTypeFlags;
-			*ppvObject = static_cast<FakeDispatcher*>(this);
-			AddRef();
+			if (!(dualType & TYPEFLAG_FDISPATCHABLE)) {
+				hr = E_NOINTERFACE;
+			} else {
+				*ppvObject = static_cast<FakeDispatcher*>(this);
+				AddRef();
+			}
 			typeInfo->ReleaseTypeAttr(attr);
 		}
 	} else {
