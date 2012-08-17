@@ -4,6 +4,7 @@
 
 var FLASH_CLSID = '{d27cdb6e-ae6d-11cf-96b8-444553540000}';
 var typeId = "application/x-itst-activex";
+var updating = false;
 
 function executeScript(script) {
   var scriptobj = document.createElement("script");
@@ -55,6 +56,7 @@ function getLinkDest(url) {
 
 var hostElement = null;
 function enableobj(obj) {
+  updating = true;
   // We can't use classid directly because it confuses the browser.
   obj.setAttribute("clsid", getClsid(obj));
   obj.removeAttribute("classid");
@@ -98,6 +100,7 @@ function enableobj(obj) {
   }
 
   log("Enabled object, id: " + obj.id + " clsid: " + getClsid(obj));
+  updating = false;
   return obj;
 }
 
@@ -179,9 +182,11 @@ function process(obj) {
   }
 }
 
-function replaceDocument() {
-  var s = document.querySelectorAll('object[classid]');
-  log("found " + s.length + " object(s) on page");
+function replaceSubElements(obj) {
+  var s = obj.querySelectorAll('object[classid]');
+  if (obj.tagName == 'OBJECT' && obj.hasAttribute('classid')) {
+    s.push(obj);
+  }
   for (var i = 0; i < s.length; ++i) {
     process(s[i]);
   }
@@ -233,3 +238,12 @@ function setUserAgent() {
   }
 }
 
+function onSubtreeModified(e) {
+  if (updating) {
+    return;
+  }
+  if (e.nodeType == e.TEXT_NODE) {
+    return;
+  }
+  replaceSubElements(e.srcElement);
+}
