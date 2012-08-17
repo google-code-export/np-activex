@@ -1,15 +1,6 @@
 var setting = loadLocalSetting();
-var updateSession = new UpdateSession();
+var updateSession = new ObjectWithEvent();
 setting.cache.listener = updateSession;
-
-updateSession.bind('success', function() {
-  setting.misc.lastUpdate = Date.now();
-});
-
-updateSession.bind('complete', function() {
-  setting.update();
-  console.log('Update completed');
-});
 
 startListener();
 registerRequestListener();
@@ -21,10 +12,12 @@ var debug = chrome.i18n.getMessage("@@extension_id") != default_id;
 if (debug && firstRun) {
   if (confirm("Debugging mode. Disable tracking?")) {
     setting.misc.tracking = false;
+    setting.misc.logEnabled = true;
   }
 }
+
 window.setTimeout(function() {
-  setting.updateConfig(updateSession);
+  setting.loadDefaultConfig()
   if (firstRun || firstUpgrade) {
     open('donate.html');
   }
