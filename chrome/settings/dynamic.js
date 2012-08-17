@@ -11,7 +11,7 @@
       return new XMLHttpRequest();
     var hiddenDiv = document.getElementById(hiddenDivId);
     if (!hiddenDiv) {
-      if (!document.body) document.body=document.createElement("body");
+      if (!document.body) return null;
       hiddenDiv = document.createElement("div");
       hiddenDiv.id = hiddenDivId;
       hiddenDiv.setAttribute("style", "width:0px; height:0px");
@@ -23,6 +23,9 @@
     obj.setAttribute("style", "width:0px; height:0px");
     obj.setAttribute("dynamic", "");
     hiddenDiv.appendChild(obj);
+    if (obj.object === undefined) {
+      throw new Error('Dynamic create failed ' + progid)
+    }
     return obj.object
   }
   //console.log("ActiveXObject declared");
