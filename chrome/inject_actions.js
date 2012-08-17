@@ -85,7 +85,7 @@ function enableobj(obj) {
     if (obj.form && scriptConfig.formid) {
       var form = obj.form.name;
       command += "document.all." + form + "." + obj.id;
-      command + " = document.all." + obj.id + ';\n';
+      command += " = document.all." + obj.id + ';\n';
       log('Set form[obj.id]: form: ' + form + ', object: ' + obj.id)
     }
 

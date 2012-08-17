@@ -32,8 +32,7 @@ ActiveXConfig: {
   version:        version
   rules:          object of user-defined rules, propertied by identifiers
   defaultRules:   ojbect of default rules
-  scripts:        mapping of workaround scripts, by identifiers. metadatas
-  localScripts:   metadatas of local scripts.
+  scripts:        mapping of workaround scripts, by identifiers.
   order:          the order of rules
   cache:          to accerlerate processing
   issues:         The bugs/unsuppoted sites that we have accepted.
@@ -57,9 +56,6 @@ ActiveXConfig: {
 }                 
  */
 
-// Update per 5 hours.
-var DEFAULT_INTERVAL = 1000 * 3600 * 5;
-
 function ActiveXConfig(input)
 {
   var settings;
@@ -68,8 +64,8 @@ function ActiveXConfig(input)
       version: 3,
       rules: {},
       defaultRules: {},
+      scriptContents: {},
       scripts: {},
-      localScripts: {},
       order: [],
       notify: [],
       issues: [],
@@ -91,7 +87,6 @@ function ActiveXConfig(input)
 }
 
 var settingKey = 'setting';
-var scriptPrefix = 'script_';
 
 clsidPattern = /[^0-9A-F][0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}[^0-9A-F]/;
 
@@ -103,18 +98,6 @@ var agents = {
   ip5: "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3",
   ipad5: "Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
 };
-
-function stringHash(str) {
-  var hash = 0;
-  if (!str)
-    return hash;
-  for (var i = 0; i < str.length; i++) {
-    ch = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + ch;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  return hash;
-}
 
 function getUserAgent(key) {
   // This script is always run under sandbox, so useragent should be always
@@ -172,7 +155,7 @@ ActiveXConfig.convertVersion = function(setting) {
         rule.type = 'regex';
         rule.value = url.substr(2);
       } else {
-        rule.type == 'wild';
+        rule.type = 'wild';
         rule.value = url;
       }
       ret.addCustomRule(rule, 'convert');
@@ -240,7 +223,6 @@ ActiveXConfig.prototype = {
     }
     checkIdentifierMatches(this, "rules");
     checkIdentifierMatches(this, "defaultRules");
-    checkIdentifierMatches(this, "localScripts");
     checkIdentifierMatches(this, "scripts");
     checkIdentifierMatches(this, "issues");
     var newOrder = [];
@@ -306,50 +288,34 @@ ActiveXConfig.prototype = {
       this.defaultRules[i] = newRules[i];
     }
   },
-  updateConfig: function(session) {
-    session.startUpdate();
-    console.log('Start updating');
-
-    var updated = {
-      issues: false,
-      setting: false,
-      scripts: false
-    };
+  loadDefaultConfig: function() {
 
     var setting = this;
-    session.updateFile({
-      url: 'setting.json',
+    $.ajax({
+      url: '/settings/setting.json',
       dataType: "json",
       success: function(nv, status, xhr) {
         console.log('Update default rules');
-        updated.setting = true;
         setting.updateDefaultRules(nv);
-        if (updated.setting && updated.scripts) {
-          setting.updateAllScripts(session);
-        }
         setting.update();
       }
     });
 
-    session.updateFile({
-      url: 'scripts.json',
+    $.ajax({
+      url: '/settings/scripts.json',
       dataType: "json",
       success: function(nv, status, xhr) {
-        updated.scripts = true;
         console.log('Update scripts');
         setting.scripts = nv;
-        if (updated.setting && updated.scripts) {
-          setting.updateAllScripts(session);
-        }
+        setting.loadAllScripts();
         setting.update();
       }
     });
 
-    session.updateFile({
-      url: 'issues.json',
+    $.ajax({
+      url: '/settings/issues.json',
       dataType: "json",
       success: function(nv, status, xhr) {
-        console.log('Update issues');
         setting.issues = nv;
         setting.update();
       }
@@ -473,100 +439,11 @@ ActiveXConfig.prototype = {
       var name = items[i];
       var val = '// ';
       val += items[i] + '\n';
-      val += this.getScriptContent(name);
+      val += this.scriptsContents[name]
       val += '\n\n';
       ret[this.scripts[name].context] += val;
     }
     return ret;
-  },
-
-  getScriptContent: function(scriptid) {
-    this.updateScript(scriptid, false);
-    var local = this.localScripts[scriptid];
-
-    if (!local) {
-      // The script not found.
-      return "";
-    }
-
-    var id = scriptPrefix + scriptid;
-    return localStorage[id];
-  },
-
-  updateAllScripts: function(session) {
-    console.log('updateAllScripts');
-    var scripts = {};
-    for (var i = 0; i < this.order.length; ++i) {
-      if (this.order[i].status == 'disabled') {
-        continue;
-      }
-      var rule = this.getItem(this.order[i]);
-      var script = rule.script;
-      if (!script) {
-        continue;
-      }
-      var items = script.split(' ');
-      for (var j = 0; j < items.length; ++j) {
-        scripts[items[j]] = true;
-      }
-    }
-    for (var i in scripts) {
-      this.updateScript(i, true, session);
-    }
-  },
-
-  updateScript: function(id, async, session) {
-    var remote = this.scripts[id];
-    var local = this.localScripts[id];
-    if (!remote || remote.updating) {
-      return;
-    }
-    if (local && local.checksum == remote.checksum) {
-      return;
-    }
-
-    remote.updating = true;
-    var setting = this;
-
-    var config = {
-      url: remote.url + "?hash=" + remote.checksum,
-      async: async,
-      complete: function() {
-        delete remote.updating;
-      },
-      error: function() {
-        console.log('Update script ' + remote.identifier + ' failed');
-      },
-      context: this,
-      success: function(nv, status, xhr) {
-        delete remote.updating;
-        var hash = stringHash(nv);
-        if (hash == remote.checksum) {
-          localStorage[scriptPrefix + id] = nv;
-          setting.localScripts[id] = remote;
-          setting.save();
-          console.log('script updated ', id);
-        } else {
-          var message = 'Hashcode mismatch!!';
-          message += ' script: ' + remote.identifier;
-          message += ' actual: ' + hash;
-          message += ' expected: ' + remote.checksum;
-          console.log(message);
-        }
-      },
-      // Don't evaluate this.
-      dataType: "text"
-    };
-
-    if (!UpdateSession && !session) {
-      // Should run update from background
-      throw "Not valid session";
-    }
-    if (session) {
-      session.updateFile(config);
-    } else {
-      UpdateSession.updateFile(config);
-    }
   },
 
   convertUrlWildCharToRegex: function(wild) {
@@ -693,8 +570,11 @@ ActiveXConfig.prototype = {
       // Don't include cache in localStorage.
       var cache = this.cache;
       delete this.cache;
+      var scripts = this.scriptsContents;
+      delete this.scriptsContents
       localStorage[settingKey] = JSON.stringify(this);
       this.cache = cache;
+      this.scriptsContents = scripts;
     }
   },
 
@@ -717,8 +597,23 @@ ActiveXConfig.prototype = {
     } else {
       return this.defaultRules[identifier];
     }
-  }
+  },
 
+  loadAllScripts: function() {
+    this.scriptsContents = {}
+    setting = this
+    for (var i in this.scripts) {
+      var item = this.scripts[i];
+      $.ajax({
+        url:'/settings/' + item.url,
+        datatype: 'text',
+        context: item,
+        success: function(nv, status, xhr) {
+          setting.scriptsContents[this.identifier] = nv;
+        }
+      })
+    }
+  }
 };
 
 function loadLocalSetting() {
