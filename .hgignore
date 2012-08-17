@@ -20,3 +20,5 @@ glob:*.orig
 glob:chrome/chrome.zip
 glob:*.dll
 output/*
+Tools/upload.bat
+*.pyc
