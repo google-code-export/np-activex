@@ -19,15 +19,15 @@ function insertTabInfo(tab) {
 
   var title = tab.title;
   if (!title) {
-    title = "Tab " + tab.id;
+    title = 'Tab ' + tab.id;
   }
 
   $('<a>').attr('href', '#')
   .attr('tabid', tab.id)
   .text(title)
   .click(function(e) {
-    loadTabInfo(parseInt($(e.target).attr('tabid')));
-  }).appendTo(ul);
+        loadTabInfo(parseInt($(e.target).attr('tabid')));
+      }).appendTo(ul);
 }
 
 var uls = {};
@@ -44,7 +44,7 @@ $(document).ready(function() {
     for (var i in backgroundPage.tabStatus) {
       insertTabInfo({id: i});
     }
-    
+
     $('#tracking').change(function() {
       var tabStatus = backgroundPage.tabStatus[currentTab];
       if (tabStatus) {
@@ -56,8 +56,8 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-  $("#beforeSubmit").click(function() {
-    var link = $("#submitLink");
+  $('#beforeSubmit').click(function() {
+    var link = $('#submitLink');
     if (beforeSubmit.checked) {
       link.show();
     } else {
@@ -78,7 +78,7 @@ function loadTabInfo(tabId) {
     currentTab = tabId;
     uls[tabId].addClass('selected');
     var s = backgroundPage.generateLogFile(tabId);
-    $("#text").val(s);
+    $('#text').val(s);
 
     tracking.checked = backgroundPage.tabStatus[tabId].tracking;
   }

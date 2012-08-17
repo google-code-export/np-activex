@@ -2,7 +2,7 @@
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
 
-/* 
+/*
 Rule: {
   identifier:     an unique identifier
   title:          description
@@ -23,11 +23,11 @@ Issue: {
   value:          pattern, correspond to type
   description:    The description of this issue
   issueId:        Issue ID on issue tracking page
-  url:            optional, support page for issue tracking. 
+  url:            optional, support page for issue tracking.
                   Use code.google.com if omitted.
 }
 
-ServerSide: 
+ServerSide:
 ActiveXConfig: {
   version:        version
   rules:          object of user-defined rules, propertied by identifiers
@@ -36,15 +36,15 @@ ActiveXConfig: {
   order:          the order of rules
   cache:          to accerlerate processing
   issues:         The bugs/unsuppoted sites that we have accepted.
-  misc:{          
+  misc:{
     lastUpdate:   last timestamp of updating
     logEnabled:   log
     tracking:     Allow GaS tracking.
     verbose:      verbose level of logging
   }
-}                 
+}
 
-PageSide: 
+PageSide:
 ActiveXConfig: {
   pageSide:       Flag of pageSide.
   pageScript:     Helper script to execute on context of page
@@ -53,7 +53,7 @@ ActiveXConfig: {
   clsidRules:     If page is not matched or disabled. valid CLSID rules
   logEnabled:     log
   verbose:        verbose level of logging
-}                 
+}
  */
 
 function ActiveXConfig(input)
@@ -78,7 +78,7 @@ function ActiveXConfig(input)
       }
     };
     input = defaultSetting;
-  } 
+  }
 
   settings = ActiveXConfig.convertVersion(input);
   settings.removeInvalidItems();
@@ -91,19 +91,23 @@ var settingKey = 'setting';
 clsidPattern = /[^0-9A-F][0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}[^0-9A-F]/;
 
 var agents = {
-  ie9: "Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)",
-  ie8: "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; WOW64; Trident/4.0)",
-  ie7: "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; WOW64;)",
-  ff7win: "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:7.0.1) Gecko/20100101 Firefox/7.0.1", 
-  ip5: "Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3",
-  ipad5: "Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3"
+  ie9: 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)',
+  ie8: 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0; WOW64; Trident/4.0)',
+  ie7: 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.0; WOW64;)',
+  ff7win: 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:7.0.1)' +
+      ' Gecko/20100101 Firefox/7.0.1',
+  ip5: 'Mozilla/5.0 (iPhone; CPU iPhone OS 5_0 like Mac OS X)' +
+      ' AppleWebKit/534.46 (KHTML, like Gecko) Version/5.1' +
+      ' Mobile/9A334 Safari/7534.48.3',
+  ipad5: 'Mozilla/5.0 (iPad; CPU OS 5_0 like Mac OS X) AppleWebKit/534.46' +
+      '(KHTML, like Gecko) Version/5.1 Mobile/9A334 Safari/7534.48.3'
 };
 
 function getUserAgent(key) {
   // This script is always run under sandbox, so useragent should be always
   // correct.
   if (!key || !(key in agents)) {
-    return "";
+    return '';
   }
   var current = navigator.userAgent;
   var wow64 = current.indexOf('WOW64') >= 0;
@@ -133,7 +137,7 @@ ActiveXConfig.convertVersion = function(setting) {
       } else {
         return {
           pattern: pattern,
-          title: "Rule"
+          title: 'Rule'
         };
       }
     }
@@ -150,7 +154,7 @@ ActiveXConfig.convertVersion = function(setting) {
       var pattern = parsePattern(urls[i]);
       rule.title = pattern.title;
       var url = pattern.pattern;
-      
+
       if (url.substr(0, 2) == 'r/') {
         rule.type = 'regex';
         rule.value = url.substr(2);
@@ -190,26 +194,26 @@ ActiveXConfig.prototype = {
 
   createRule: function() {
     return {
-      title: "Rule",
-      type: "wild",
-      value: "",
-      userAgent: "",
-      scriptItems: "",
-    }
+      title: 'Rule',
+      type: 'wild',
+      value: '',
+      userAgent: '',
+      scriptItems: ''
+    };
   },
 
-  removeInvalidItems : function() {
+  removeInvalidItems: function() {
     if (this.pageSide) {
       return;
     }
     function checkIdentifierMatches(item, prop) {
-      if (typeof item[prop] != "object") {
+      if (typeof item[prop] != 'object') {
         console.log('reset ', prop);
         item[prop] = {};
       }
       for (var i in item[prop]) {
         var ok = true;
-        if (typeof item[prop][i] != "object") {
+        if (typeof item[prop][i] != 'object') {
           ok = false;
         }
         if (ok && item[prop][i].identifier != i) {
@@ -221,10 +225,10 @@ ActiveXConfig.prototype = {
         }
       }
     }
-    checkIdentifierMatches(this, "rules");
-    checkIdentifierMatches(this, "defaultRules");
-    checkIdentifierMatches(this, "scripts");
-    checkIdentifierMatches(this, "issues");
+    checkIdentifierMatches(this, 'rules');
+    checkIdentifierMatches(this, 'defaultRules');
+    checkIdentifierMatches(this, 'scripts');
+    checkIdentifierMatches(this, 'issues');
     var newOrder = [];
     for (var i = 0; i < this.order.length; ++i) {
       if (this.getItem(this.order[i])) {
@@ -272,7 +276,7 @@ ActiveXConfig.prototype = {
 
     var newOrder = [];
     for (var i = 0; i < this.order.length; ++i) {
-      if (this.order[i].position == 'custom' || 
+      if (this.order[i].position == 'custom' ||
           (!deleteAll && !ruleToDelete[this.order[i].identifier])) {
         newOrder.push(this.order[i]);
       }
@@ -293,7 +297,7 @@ ActiveXConfig.prototype = {
     var setting = this;
     $.ajax({
       url: '/settings/setting.json',
-      dataType: "json",
+      dataType: 'json',
       success: function(nv, status, xhr) {
         console.log('Update default rules');
         setting.updateDefaultRules(nv);
@@ -303,7 +307,7 @@ ActiveXConfig.prototype = {
 
     $.ajax({
       url: '/settings/scripts.json',
-      dataType: "json",
+      dataType: 'json',
       success: function(nv, status, xhr) {
         console.log('Update scripts');
         setting.scripts = nv;
@@ -314,7 +318,7 @@ ActiveXConfig.prototype = {
 
     $.ajax({
       url: '/settings/issues.json',
-      dataType: "json",
+      dataType: 'json',
       success: function(nv, status, xhr) {
         setting.issues = nv;
         setting.update();
@@ -328,7 +332,7 @@ ActiveXConfig.prototype = {
     ret.version = this.version;
     ret.verbose = this.misc.verbose;
     ret.logEnabled = this.misc.logEnabled;
-    ret.pageRule = this.getFirstMatchedRule({href:href});
+    ret.pageRule = this.getFirstMatchedRule({href: href});
     if (!ret.pageRule) {
       ret.clsidRules = this.cache.clsidRules;
     } else {
@@ -398,7 +402,7 @@ ActiveXConfig.prototype = {
   },
 
   isRuleMatched: function(rule, object, id) {
-    if (rule.type == "wild" || rule.type == "regex" ) {
+    if (rule.type == 'wild' || rule.type == 'regex') {
       var regex;
       if (id >= 0) {
         regex = this.cache.regex[id];
@@ -411,7 +415,7 @@ ActiveXConfig.prototype = {
       if (object.href && regex.test(object.href)) {
         return true;
       }
-    } else if (rule.type == "clsid") {
+    } else if (rule.type == 'clsid') {
       if (object.clsid) {
         var v1 = clsidPattern.exec(rule.value.toUpperCase());
         var v2 = clsidPattern.exec(object.clsid.toUpperCase());
@@ -425,8 +429,8 @@ ActiveXConfig.prototype = {
 
   getScripts: function(script) {
     var ret = {
-      page: "",
-      extension: ""
+      page: '',
+      extension: ''
     };
     if (!script) {
       return ret;
@@ -439,7 +443,7 @@ ActiveXConfig.prototype = {
       var name = items[i];
       var val = '// ';
       val += items[i] + '\n';
-      val += this.scriptsContents[name]
+      val += this.scriptsContents[name];
       val += '\n\n';
       ret[this.scripts[name].context] += val;
     }
@@ -451,12 +455,12 @@ ActiveXConfig.prototype = {
       function escapeRegex(str, star) {
         if (!star) star = '*';
         var escapeChars = /([\.\\\/\?\{\}\+\[\]])/g;
-        return str.replace(escapeChars, "\\$1").replace('*', star);
+        return str.replace(escapeChars, '\\$1').replace('*', star);
       }
 
       wild = wild.toLowerCase();
-      if (wild == "<all_urls>") {
-        wild = "*://*/*";
+      if (wild == '<all_urls>') {
+        wild = '*://*/*';
       }
       var pattern = /^(.*?):\/\/(\*?[^\/\*]*)\/(.*)$/i;
       // pattern: [all, scheme, host, page]
@@ -467,7 +471,7 @@ ActiveXConfig.prototype = {
       var scheme = parts[1];
       var host = parts[2];
       var page = parts[3];
-      
+
       var regex = '^' + escapeRegex(scheme, '[^:]*') + ':\\/\\/';
       regex += escapeRegex(host, '[^\\/]*') + '/';
       regex += escapeRegex(page, '.*');
@@ -490,11 +494,11 @@ ActiveXConfig.prototype = {
 
   // Please remember to call update() after all works are done.
   addDefaultRule: function(rule, position) {
-    console.log("Add new default rule: ", rule);
+    console.log('Add new default rule: ', rule);
     var custom = null;
     if (rule.type == 'clsid') {
       for (var i in this.rules) {
-        var info = {href: "not-a-URL-/", clsid: rule.value};
+        var info = {href: 'not-a-URL-/', clsid: rule.value};
         if (this.isRuleMatched(this.rules[i], info, -1)) {
           custom = this.rules[i];
           break;
@@ -544,7 +548,7 @@ ActiveXConfig.prototype = {
       listener: (this.cache || {}).listener
     };
     for (var i = 0; i < this.order.length; ++i) {
-      if (this.order[i].status == 'custom' || this.order[i].status == 'enabled') {
+      if (['custom', 'enabled'].indexOf(this.order[i].status) >= 0) {
         var rule = this.getItem(this.order[i]);
         var cacheId = this.cache.validRules.push(rule) - 1;
 
@@ -552,7 +556,7 @@ ActiveXConfig.prototype = {
           this.cache.clsidRules.push(rule);
         } else if (rule.type == 'wild') {
           this.cache.regex[cacheId] =
-          this.convertUrlWildCharToRegex(rule.value);
+              this.convertUrlWildCharToRegex(rule.value);
         } else if (rule.type == 'regex') {
           this.cache.regex[cacheId] = new RegExp('^' + rule.value + '$', 'i');
         }
@@ -566,12 +570,12 @@ ActiveXConfig.prototype = {
   },
 
   save: function() {
-    if (location.protocol == "chrome-extension:") {
+    if (location.protocol == 'chrome-extension:') {
       // Don't include cache in localStorage.
       var cache = this.cache;
       delete this.cache;
       var scripts = this.scriptsContents;
-      delete this.scriptsContents
+      delete this.scriptsContents;
       localStorage[settingKey] = JSON.stringify(this);
       this.cache = cache;
       this.scriptsContents = scripts;
@@ -579,7 +583,7 @@ ActiveXConfig.prototype = {
   },
 
   createIdentifier: function() {
-    var base =  'custom_' + Date.now() + "_" + this.order.length + "_";
+    var base = 'custom_' + Date.now() + '_' + this.order.length + '_';
     var ret;
     do {
       ret = base + Math.round(Math.random() * 65536);
@@ -600,18 +604,18 @@ ActiveXConfig.prototype = {
   },
 
   loadAllScripts: function() {
-    this.scriptsContents = {}
-    setting = this
+    this.scriptsContents = {};
+    setting = this;
     for (var i in this.scripts) {
       var item = this.scripts[i];
       $.ajax({
-        url:'/settings/' + item.url,
+        url: '/settings/' + item.url,
         datatype: 'text',
         context: item,
         success: function(nv, status, xhr) {
           setting.scriptsContents[this.identifier] = nv;
         }
-      })
+      });
     }
   }
 };
@@ -619,9 +623,9 @@ ActiveXConfig.prototype = {
 function loadLocalSetting() {
   var setting = undefined;
   if (localStorage[settingKey]) {
-    try{ 
+    try {
       setting = JSON.parse(localStorage[settingKey]);
-    } catch (e){
+    } catch (e) {
       setting = undefined;
     }
   }

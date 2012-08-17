@@ -2,8 +2,8 @@
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
 
-var controlLogFName="__npactivex_log";
-var controlLogEvent="__npactivex_log_event__";
+var controlLogFName = '__npactivex_log';
+var controlLogEvent = '__npactivex_log_event__';
 
 var config = null;
 var port = null;
@@ -122,12 +122,12 @@ function showNotifyBar(request) {
   var barurl = chrome.extension.getURL('notifybar.html');
   if (document.body.tagName == 'BODY') {
     var iframe = document.createElement('iframe');
-    iframe.frameBorder=0;
+    iframe.frameBorder = 0;
     iframe.src = barurl;
-    iframe.height = "35px";
-    iframe.width = "100%";
-    iframe.style.top = "0px";
-    iframe.style.left = "0px";
+    iframe.height = '35px';
+    iframe.width = '100%';
+    iframe.style.top = '0px';
+    iframe.style.left = '0px';
     iframe.style.zIndex = '2000';
     iframe.style.position = 'fixed';
     notifyBar.iframe = iframe;
@@ -156,18 +156,19 @@ function dismissNotifyBar() {
 }
 
 chrome.extension.onRequest.addListener(
-  function(request, sender, sendResponse) {
-  if (self == top && request.command == 'NotifyUser') {
-    showNotifyBar(request);
-    sendResponse({});
-  } else if (self == top && request.command == 'DismissNotificationPage') {
-    dismissNotifyBar();
-    sendResponse({});
-  }
-});
+    function(request, sender, sendResponse) {
+      if (self == top && request.command == 'NotifyUser') {
+        showNotifyBar(request);
+        sendResponse({});
+      } else if (self == top && request.command == 'DismissNotificationPage') {
+        dismissNotifyBar();
+        sendResponse({});
+      }
+    });
 
 chrome.extension.sendRequest(
-  {command:"Configuration", href:location.href, top: self == top}, loadConfig);
+    {command: 'Configuration', href: location.href, top: self == top},
+    loadConfig);
 
-window.addEventListener("beforeload", onBeforeLoading, true);
-document.addEventListener("DOMSubtreeModified", onSubtreeModified, true);
+window.addEventListener('beforeload', onBeforeLoading, true);
+document.addEventListener('DOMSubtreeModified', onSubtreeModified, true);

@@ -7,14 +7,15 @@ var USE_RECORD_GAP = 3 * 60 * 1000; // 3 minutes
 var _gaq = window._gaq || [];
 
 _gaq.push(['_setAccount', 'UA-28870762-4']);
-_gaq.push(['_trackPageview', location.href.replace(/\?.*$/, "")]);
+_gaq.push(['_trackPageview', location.href.replace(/\?.*$/, '')]);
 
 function initGAS() {
   var setting = chrome.extension.getBackgroundPage().setting;
   if (setting.misc.tracking) {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    var ga = document.createElement('script');
+    ga.type = 'text/javascript'; ga.async = true;
     ga.src = 'https://ssl.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0];
+    var s = document.getElementsByTagName('script')[0];
     s.parentNode.insertBefore(ga, s);
   } else {
     // dummy it. Non-debug && non-track
@@ -63,7 +64,7 @@ function trackUse(identifier) {
   }
 }
 
-var urlHistory = {}
+var urlHistory = {};
 function trackNotUse(url) {
   if (!trackCheckSpan(urlHistory, url)) {
     return;

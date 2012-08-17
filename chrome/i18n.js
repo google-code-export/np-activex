@@ -7,8 +7,8 @@ function loadI18n() {
   var spans = document.querySelectorAll('[i18n]');
   for (var i = 0; i < spans.length; ++i) {
     var obj = spans[i];
-    v = $$(obj.getAttribute("i18n"));
-    if (v == "")
+    v = $$(obj.getAttribute('i18n'));
+    if (v == '')
       v = obj.getAttribute('i18n');
     if (obj.tagName == 'INPUT') {
       obj.value = v;
@@ -16,6 +16,6 @@ function loadI18n() {
       obj.innerText = v;
     }
   }
-  document.removeEventListener("DOMContentLoaded", loadI18n, false);
+  document.removeEventListener('DOMContentLoaded', loadI18n, false);
 }
-document.addEventListener("DOMContentLoaded", loadI18n, false);
+document.addEventListener('DOMContentLoaded', loadI18n, false);

@@ -11,7 +11,7 @@ function toggleRule(e) {
   var index = line.attr('row');
   var item = setting.order[index];
   if (item.position == 'default') {
-    if (item.status == 'enabled') { 
+    if (item.status == 'enabled') {
       item.status = 'disabled';
       trackDisable(item.identifier);
     } else if (item.status == 'disabled') {
@@ -25,52 +25,52 @@ function toggleRule(e) {
   save();
 }
 
-var settingProps = [ {
-  header: "",
-  property: "status",
+var settingProps = [{
+  header: '',
+  property: 'status',
   type: 'button',
-  caption: "",
+  caption: '',
   events: {
     command: toggleRule,
     update: setStatus,
     createNew: setStatusNew
   }
 }, {
-  header: $$("title"),
-  property: "title",
-  type: "input"
+  header: $$('title'),
+  property: 'title',
+  type: 'input'
 }, {
-  header: $$("mode"),
-  property: "type",
-  type: "select",
-  option: "static",
+  header: $$('mode'),
+  property: 'type',
+  type: 'select',
+  option: 'static',
   options: [
-    {value: "wild", text: $$("WildChar")},
-    {value: "regex", text: $$("RegEx")},
-    {value: "clsid", text: $$("CLSID")}
+    {value: 'wild', text: $$('WildChar')},
+    {value: 'regex', text: $$('RegEx')},
+    {value: 'clsid', text: $$('CLSID')}
   ]
 }, {
-  header: $$("pattern"),
-  property: "value",
-  type: "input"
+  header: $$('pattern'),
+  property: 'value',
+  type: 'input'
 }, {
-  header: $$("user_agent"),
-  property: "userAgent",
-  type: "select",
-  option: "static",
+  header: $$('user_agent'),
+  property: 'userAgent',
+  type: 'select',
+  option: 'static',
   options: [
-    {value: "", text: "Chrome"},
-    {value: "ie9", text: "MSIE9"},
-    {value: "ie8", text: "MSIE8"},
-    {value: "ie7", text: "MSIE7"},
-    {value: "ff7win", text: "Firefox 7"},
-    {value: "ip5", text: "iPhone"},
-    {value: "ipad5", text: "iPad"}
+    {value: '', text: 'Chrome'},
+    {value: 'ie9', text: 'MSIE9'},
+    {value: 'ie8', text: 'MSIE8'},
+    {value: 'ie7', text: 'MSIE7'},
+    {value: 'ff7win', text: 'Firefox 7'},
+    {value: 'ip5', text: 'iPhone'},
+    {value: 'ipad5', text: 'iPad'}
   ]
 }, {
-  header: $$("helper_script"),
-  property: "script",
-  type: "input"
+  header: $$('helper_script'),
+  property: 'script',
+  type: 'input'
 }
 ];
 
@@ -111,8 +111,8 @@ function refresh() {
 // Main setting
 $(document).ready(function() {
   table = new List({
-    props: settingProps, 
-    main: $('#tbSetting'), 
+    props: settingProps,
+    main: $('#tbSetting'),
     lineEvents: {
       update: setReadonly
     },
@@ -195,17 +195,11 @@ $(document).ready(function() {
   });
   table.init();
   updateSession.bind('update', refresh);
-  updateSession.bind('updating', showUpdatingState);
-  updateSession.bind('progress', showUpdatingState);
-  updateSession.bind('complete', showUpdatingState);
 });
 
 window.onbeforeunload = function() {
   updateSession.unbind('update', refresh);
-  updateSession.unbind('updating', showUpdatingState);
-  updateSession.unbind('progress', showUpdatingState);
-  updateSession.unbind('complete', showUpdatingState);
-}
+};
 
 function setStatusNew(e) {
   with (e.data) {
@@ -236,7 +230,7 @@ function setStatus(e) {
 }
 
 function showTime(time) {
-  var never = 'Never'
+  var never = 'Never';
   if (time == 0) {
     return never;
   }
@@ -261,25 +255,11 @@ function showTime(time) {
     return [day, 'day'];
   }
   var disp = getDelta(delta);
-  var v1 = Math.floor(disp[0]); 
-  return  v1 + ' ' + disp[1] + (v1 != 1 ? 's' : '') + " ago";
-}
-
-function showUpdatingState(e) {
-  if (updateSession.status == 'stop') {
-    $('#lastUpdate').text(showTime(setting.misc.lastUpdate));
-  } else {
-    $('#lastUpdate').text($$("update_progress") + updateSession.finish + '/' + updateSession.total);
-  }
+  var v1 = Math.floor(disp[0]);
+  return v1 + ' ' + disp[1] + (v1 != 1 ? 's' : '') + ' ago';
 }
 
 $(document).ready(function() {
-  showUpdatingState({});
-  $('#doUpdate').click(function() {
-    setting.updateConfig(updateSession);
-    trackManualUpdate();
-  });
-
   $('#log_enable').change(function(e) {
     setting.misc.logEnabled = e.target.checked;
     save();
@@ -302,7 +282,7 @@ $(document).ready(function() {
 $(window).load(function() {
   if (background.firstUpgrade) {
     background.firstUpgrade = false;
-    alert($$("upgrade_show"));
+    alert($$('upgrade_show'));
   }
   $('#follow').html('<iframe width="136" height="24" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0" scrolling="no" border="0" src="http://widget.weibo.com/relationship/followbutton.php?language=zh_cn&width=136&height=24&uid=2356524070&style=2&btn=red&dpc=1"></iframe>');
 });

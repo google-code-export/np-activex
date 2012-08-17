@@ -11,19 +11,20 @@ function loadConfig(_resp) {
 
 function openPopup() {
   var url = chrome.extension.getURL('popup.html?tabid=' + config.tabId);
-  var windowConfig = 'height=380,width=560,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no';
+  var windowConfig = 'height=380,width=560,toolbar=no,menubar=no,' +
+      'scrollbars=no,resizable=no,location=no,status=no';
   window.open(url, 'popup', windowConfig);
   dismiss();
 }
 
 function blockSite() {
   chrome.extension.sendRequest(
-    {command: "BlockSite", site: config.sitePattern});
+      {command: 'BlockSite', site: config.sitePattern});
   dismiss();
 }
 
 function dismiss() {
-  chrome.extension.sendRequest({command: "DismissNotification"});
+  chrome.extension.sendRequest({command: 'DismissNotification'});
 }
 
 function init() {
@@ -36,4 +37,4 @@ function init() {
   $('#block').text(config.blockMsg);
 }
 
-chrome.extension.sendRequest({command: "GetNotification"}, loadConfig);
+chrome.extension.sendRequest({command: 'GetNotification'}, loadConfig);
