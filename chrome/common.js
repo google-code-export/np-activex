@@ -16,7 +16,7 @@ var MAX_LOG = 400;
 
 (function getVersion() {
   $.ajax('manifest.json', {
-    success: function (v){
+    success: function(v) {
       v = JSON.parse(v);
       version = v.version;
       trackVersion(version);
@@ -33,33 +33,33 @@ function startListener() {
     initPort(port);
   });
   chrome.extension.onRequest.addListener(
-    function(request, sender, sendResponse) {
-      if (!sender.tab) {
-        console.error('Request from non-tab');
-      } else if (request.command == 'Configuration') {
-        var config = setting.getPageConfig(request.href);
-        sendResponse(config);
-        if (request.top) {
-          resetTabStatus(sender.tab.id);
-          var dummy = {href: request.href, clsid: 'NULL', urldetect: true};
-          if (!config.pageRule &&
-              setting.getFirstMatchedRule(
+      function(request, sender, sendResponse) {
+        if (!sender.tab) {
+          console.error('Request from non-tab');
+        } else if (request.command == 'Configuration') {
+          var config = setting.getPageConfig(request.href);
+          sendResponse(config);
+          if (request.top) {
+            resetTabStatus(sender.tab.id);
+            var dummy = {href: request.href, clsid: 'NULL', urldetect: true};
+            if (!config.pageRule &&
+                setting.getFirstMatchedRule(
                 dummy, setting.defaultRules)) {
-            detectControl(dummy, sender.tab.id, 0);
+              detectControl(dummy, sender.tab.id, 0);
+            }
           }
+        } else if (request.command == 'GetNotification') {
+          getNotification(request, sender, sendResponse);
+        } else if (request.command == 'DismissNotification') {
+          chrome.tabs.sendRequest(
+              sender.tab.id, {command: 'DismissNotificationPage'});
+          sendResponse({});
+        } else if (request.command == 'BlockSite') {
+          setting.blocked.push({type: 'wild', value: request.site});
+          setting.update();
+          sendResponse({});
         }
-      } else if (request.command == 'GetNotification') {
-        getNotification(request, sender, sendResponse);
-      } else if (request.command == 'DismissNotification') {
-        chrome.tabs.sendRequest(
-          sender.tab.id, {command:'DismissNotificationPage'});
-        sendResponse({});
-      } else if (request.command = "BlockSite") {
-        setting.blocked.push({type:"wild", value:request.site});
-        setting.update();
-        sendResponse({});
       }
-    }
   );
 }
 
@@ -67,8 +67,8 @@ var blocked = {};
 function notifyUser(request, tabId) {
   var s = tabStatus[tabId];
   if (s.notify && (s.urldetect || s.count > s.actived)) {
-    console.log("Notify the user on tab ", tabId);
-    chrome.tabs.sendRequest(tabId, {command: "NotifyUser", tabid: tabId}, null);
+    console.log('Notify the user on tab ', tabId);
+    chrome.tabs.sendRequest(tabId, {command: 'NotifyUser', tabid: tabId}, null);
   }
 }
 
@@ -85,8 +85,8 @@ function resetTabStatus(tabId) {
     urldetect: 0,
     notify: true,
     issueId: null,
-    logs: {"0":[]},
-    objs: {"0":[]},
+    logs: {'0': []},
+    objs: {'0': []},
     frames: 1,
     tracking: false
   };
@@ -108,7 +108,7 @@ function initPort(port) {
       delete request.command;
       resp(request, tabId, frameId);
     } else {
-      console.error("Unknown command " + request.command);
+      console.error('Unknown command ' + request.command);
     }
   });
   port.onDisconnect.addListener(function() {
@@ -183,7 +183,7 @@ function showTabStatus(tabId) {
   }
 
   var status = tabStatus[tabId];
-  var title = "";
+  var title = '';
   var iconPath = greenIcon;
   if (!status.count && !status.urldetect) {
     chrome.pageAction.hide(tabId);
@@ -248,7 +248,7 @@ responseCommands.Log = function(request, tabId, frameId) {
   } else if (logs.length == MAX_LOG) {
     logs.push('More logs clipped');
   }
-}
+};
 
 function generateLogFile(tabId) {
   var status = tabStatus[tabId];
@@ -282,7 +282,7 @@ function generateLogFile(tabId) {
   ret += '\n---------------- End of log ---------------\n';
   ret += stringHash(ret);
   if (frameCount == 0) {
-    return "No log for tab " + tabId;
+    return 'No log for tab ' + tabId;
   }
   return ret;
 }

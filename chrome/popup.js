@@ -34,17 +34,17 @@ $(document).ready(function() {
 
 $(document).ready(function() {
   $('#issue_view').hide();
-  if (tabInfo.error != 0) {
+  if (tabInfo.error !== 0) {
     var errorid = tabInfo.issueId;
     var issue = setting.issues[errorid];
     $('#issue_content').text(issue.description);
     var url = issue.url;
     if (!url) {
-      var issueUrl = "http://code.google.com/p/np-activex/issues/detail?id=";
+      var issueUrl = 'http://code.google.com/p/np-activex/issues/detail?id=';
       url = issueUrl + issue.issueId;
     }
     $('#issue_track').click(function() {
-      chrome.tabs.create({url:url});
+      chrome.tabs.create({url: url});
       window.close();
     });
     $('#issue_view').show();
@@ -84,23 +84,23 @@ function showEnableBtns() {
       var sitepattern = info.href.replace(/([^:]*:\/\/[^\/]*).*/, '$1/*');
 
       var btn1 = $('<button>').addClass('customRule').
-      text($$('add_rule_site', site)).click(function() {
-        var rule = setting.createRule();
-        rule.type = 'wild';
-        rule.value = sitepattern;
-        setting.addCustomRule(rule, 'popup');
-        refresh();
-      });
+          text($$('add_rule_site', site)).click(function() {
+            var rule = setting.createRule();
+            rule.type = 'wild';
+            rule.value = sitepattern;
+            setting.addCustomRule(rule, 'popup');
+            refresh();
+          });
 
       var clsid = info.clsid;
       var btn2 = $('<button>').addClass('customRule').
-      text($$('add_rule_clsid')).click(function() {
-        var rule = setting.createRule();
-        rule.type = 'clsid';
-        rule.value = clsid;
-        setting.addCustomRule(rule, 'popup');
-        refresh();
-      });
+          text($$('add_rule_clsid')).click(function() {
+            var rule = setting.createRule();
+            rule.type = 'clsid';
+            rule.value = clsid;
+            setting.addCustomRule(rule, 'popup');
+            refresh();
+          });
       list.append(btn1).append(btn2);
     }
   }

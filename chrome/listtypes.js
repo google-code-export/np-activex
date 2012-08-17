@@ -8,7 +8,7 @@ List.types.input = function(p, prop) {
   var input = this.input = $('<input></input>').addClass('valinput');
   this.label = $('<span></span>').addClass('valdisp');
   this.label.click(function(e) {
-    setTimeout(function(){
+    setTimeout(function() {
       input.focus();
     }, 10);
   });
@@ -53,7 +53,7 @@ List.types.select = function(p, prop) {
     }
   });
   this.label.click(function(e) {
-    setTimeout(function(){
+    setTimeout(function() {
       input.focus();
     }, 10);
   });
@@ -63,13 +63,13 @@ List.types.select = function(p, prop) {
 List.types.select.prototype.loadOptions = function(options) {
   this.options = options;
   this.mapping = {};
-  this.input.html("");
+  this.input.html('');
   for (var i = 0; i < options.length; ++i) {
     this.mapping[options[i].value] = options[i].text;
-    var o = $('<option></option>').val(options[i].value).text(options[i].text)
+    var o = $('<option></option>').val(options[i].value).text(options[i].text);
     this.input.append(o);
   }
-}
+};
 
 List.types.select.prototype.__defineGetter__('value', function() {
   return this.input.val();

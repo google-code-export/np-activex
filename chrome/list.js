@@ -6,7 +6,7 @@
  prop = {
    header,        // String
    property,      // String
-   events,        // 
+   events,        //
    type,          // checkbox, select, input.type, button
    extra          // depend on type
  }
@@ -50,7 +50,7 @@ function List(config) {
         list.splice(b, 0, tmp);
       }
     }
-  };
+  }
   if (!config.insert) {
     config.insert = function(id, newItem) {
       config.getItems().splice(id, 0, newItem);
@@ -85,7 +85,7 @@ function List(config) {
 }
 
 List.ids = {
-  noline: -1,
+  noline: -1
 };
 
 List.types = {};
@@ -100,7 +100,7 @@ List.prototype = {
       this.headergroup = $('<div class="headers"></div>');
       for (var i = 0; i < props.length; ++i) {
         var header = $('<div class="header"></div>').
-        attr('property', props[i].property).html(props[i].header);
+            attr('property', props[i].property).html(props[i].header);
         headergroup.append(header);
       }
       this.scrolls = $('<div>').addClass('listscroll');
@@ -123,7 +123,7 @@ List.prototype = {
   editNewLine: function() {
     this.startEdit(this.lines[this.lines.length - 1]);
   },
-  updatePropDisplay : function(line, prop) {
+  updatePropDisplay: function(line, prop) {
     var name = prop.property;
     obj = $('[property=' + name + ']', line);
     var ctrl = obj[0].listdata;
@@ -163,7 +163,7 @@ List.prototype = {
         var valueobj = new List.types[prop.type](ctrl, prop);
 
         var data = {list: this, line: line, prop: prop};
-        for (var e in prop.events)  {
+        for (var e in prop.events) {
           ctrl.bind(e, data, prop.events[e]);
         }
         ctrl.bind('change', function(e) {
@@ -276,7 +276,7 @@ List.prototype = {
   finishEdit: function(line) {
     var list = this;
     function doFinishEdit() {
-      with(list) {
+      with (list) {
         if (line[0].contains(document.activeElement)) {
           return;
         }
@@ -287,7 +287,7 @@ List.prototype = {
 
           if (line.hasClass('newline')) {
             $(list).trigger('updating');
-            if(!config.insert(id, newval)) {
+            if (!config.insert(id, newval)) {
               line.removeClass('newline');
               list.selectLine(line);
               $(list).trigger('add', id);
@@ -317,7 +317,7 @@ List.prototype = {
   },
 
   addNewLine: function() {
-    with(this) {
+    with (this) {
       var line = $('.newline', contents);
       if (!line.length) {
         line = createLine().addClass('newline');
@@ -388,7 +388,7 @@ List.prototype = {
   },
   selectLine: function(id) {
     var line = id;
-    if (typeof id == "number") {
+    if (typeof id == 'number') {
       line = this.getLine(id);
     } else {
       id = Number(line.attr('row'));

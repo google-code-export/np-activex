@@ -7,7 +7,7 @@ var handler = chrome.webRequest;
 
 function onBeforeSendHeaders(details) {
   var rule = setting.getFirstMatchedRule(
-    {href: details.url}, setting.cache.userAgent);
+      {href: details.url}, setting.cache.userAgent);
 
   if (!rule || !(rule.userAgent in agents)) {
     return {};
@@ -26,12 +26,12 @@ function registerRequestListener() {
     return;
   }
   var filters = {
-    urls: ["<all_urls>"],
-    types: ["main_frame", "sub_frame", "xmlhttprequest"]
+    urls: ['<all_urls>'],
+    types: ['main_frame', 'sub_frame', 'xmlhttprequest']
   };
-  try{ 
+  try {
     handler.onBeforeSendHeaders.addListener(
-    onBeforeSendHeaders, filters, ["requestHeaders", "blocking"]);
+        onBeforeSendHeaders, filters, ['requestHeaders', 'blocking']);
   } catch (e) {
     console.log('Your browser doesn\'t support webRequest');
   }

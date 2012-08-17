@@ -4,7 +4,7 @@
 
 function ObjectWithEvent() {
   this._events = {};
-};
+}
 
 ObjectWithEvent.prototype = {
   bind: function(name, func) {
