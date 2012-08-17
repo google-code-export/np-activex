@@ -2,10 +2,9 @@
 // Use of this source code is governed by a Mozilla-1.1 license that can be
 // found in the LICENSE file.
 
-replaceDocument();
+replaceSubElements(document);
 pageDOMLoaded = true;
 if (needNotifyBar) {
   showNotifyBar();
 }
 
-window.addEventListener('load', replaceDocument, false);
