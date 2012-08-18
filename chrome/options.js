@@ -284,6 +284,5 @@ $(window).load(function() {
     background.firstUpgrade = false;
     alert($$('upgrade_show'));
   }
-  $('#follow').html('<iframe width="136" height="24" frameborder="0" allowtransparency="true" marginwidth="0" marginheight="0" scrolling="no" border="0" src="http://widget.weibo.com/relationship/followbutton.php?language=zh_cn&width=136&height=24&uid=2356524070&style=2&btn=red&dpc=1"></iframe>');
 });
 

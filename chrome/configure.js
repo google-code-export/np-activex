@@ -88,7 +88,7 @@ function ActiveXConfig(input)
 
 var settingKey = 'setting';
 
-clsidPattern = /[^0-9A-F][0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}[^0-9A-F]/;
+clsidPattern = /[^0-9A-F][0-9A-F]{8}-([0-9A-F]{4}-){3}[0-9A-F]{12}[^0-9A-F]/;
 
 var agents = {
   ie9: 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)',
