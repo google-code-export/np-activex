@@ -94,7 +94,7 @@ function initShare() {
     _t = encodeURI(_t);
 
     var _u = 'http://share.v.t.qq.com/index.php?c=share&a=index&url=' + _url +
-        '&appkey=' + _appkey + '&pic=' + _pic + '&assname=' + _assname + 
+        '&appkey=' + _appkey + '&pic=' + _pic + '&assname=' + _assname +
         '&title=' + _t;
     window.open(_u, '', 'width=700, height=680, top=0, left=0, toolbar=no,' +
         ' menubar=no, scrollbars=no, location=yes, resizable=no, status=no');
