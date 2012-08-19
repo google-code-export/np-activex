@@ -99,12 +99,7 @@ NPObject *CHost::RegisterObject() {
 	if (!lastObj)
 		return NULL;
 	lastObj->host = this;
-	NPObjectProxy embed;
-	NPNFuncs.getvalue(instance, NPNVPluginElementNPObject, &embed);
-	NPVariant var;
-	OBJECT_TO_NPVARIANT(lastObj, var);
 	// It doesn't matter which npp in setting.
-	NPNFuncs.setproperty(instance, embed, NPNFuncs.getstringidentifier("object"), &var);
 	
 	return lastObj;
 }
