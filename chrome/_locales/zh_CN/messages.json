@@ -1,6 +1,9 @@
 ﻿{
+  "plug_name": {
+    "message": "ActiveX for Chrome 网银助手"
+  },
   "plug_desp": {
-    "message": "在Chrome中使用ActiveX控件"
+    "message": "在Chrome中使用网银、播放器、OA等ActiveX控件"
   },
   "wikicode": {
     "message": "zh-Hans"

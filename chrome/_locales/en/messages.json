@@ -1,4 +1,7 @@
 ﻿{
+  "plug_name": {
+    "message": "ActiveX for Chrome"
+  },
   "plug_desp": {
     "message": "Use ActiveX controls in your Chrome"
   },
