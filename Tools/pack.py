@@ -2,6 +2,8 @@ import subprocess
 import tempfile
 import shutil
 import os
+import codecs
+import json
 import zipfile
 
 class Packer:
@@ -32,6 +34,16 @@ class Packer:
       else:
         self.processfile(os.path.join(path, f))
 
+  def compact_json(self, src, dst):
+    print 'Compacting json file ', src
+    with open(src) as s:
+      sval = s.read()
+    if sval[:3] == codecs.BOM_UTF8:
+      sval = sval[3:].decode('utf-8')
+    val = json.loads(sval, 'utf-8')
+    with open(dst, 'w') as d:
+      json.dump(val, d, separators=(',', ':'))
+
   def processfile(self, path):
     src = os.path.join(self.input_path, path)
     dst = os.path.join(self.tmppath, path)
@@ -45,6 +57,8 @@ class Packer:
           op = self.copyfile
         else:
           op = self.compilefile
+      elif ext == '.json':
+        op = self.compact_json
       elif ext in ['.swp', '.php']:
         pass
       else:

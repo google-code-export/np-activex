@@ -81,7 +81,7 @@ function initShare() {
     var _pic = encodeURI(pic);
     var _t = '';
     var metainfo = document.getElementsByTagName('meta');
-    for (var metai = 0; metai < metainfo.length; metai) {
+    for (var metai = 0; metai < metainfo.length; metai++) {
       if ((new RegExp('description', 'gi')).test(
           metainfo[metai].getAttribute('name'))) {
         _t = metainfo[metai].attributes['content'].value;
