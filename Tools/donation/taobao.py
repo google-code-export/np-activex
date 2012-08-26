@@ -35,10 +35,7 @@ class TaobaoBackground:
     print 'increment permit ', f
 
   def start_stream(self):
-    if self.config.sandbox:
-      site = 'stream.api.tbsandbox.com'
-    else:
-      site = 'stream.api.taobao.com'
+    site = self.config.stream_site
 
     data = {}
     data['app_key'] = self.config.appinfo.appkey
@@ -102,7 +99,6 @@ class TaobaoAx:
   def __init__(self, configParser, logger):
     self.session = None
     self.sessionTs = 0
-    self.sandbox = False
     self.freq = 30
     self.configParser = configParser
     self._tradefields = 'buyer_nick,num_iid,status,pay_time,tid,payment,seller_rate,has_buyer_message,buyer_message,buyer_email,receiver_name'
@@ -112,11 +108,16 @@ class TaobaoAx:
     cp = self.configParser
     self.session = cp.get('taobao', 'session')
     self.sessionTs = cp.getfloat('taobao', 'expire')
-    self.username = cp.get('taobao', 'username').decode('utf-8')
-    self.password = cp.get('taobao', 'username')
     self.sessionTime = datetime.fromtimestamp(self.sessionTs)
 
-    self.sandbox = cp.getboolean('taobao', 'sandbox')
+    appkey = cp.get('taobao', 'appkey')
+    secret = cp.get('taobao', 'appsecret')
+    self.appinfo = top.appinfo(appkey, secret)
+    self.site = cp.get('taobao', 'appsite')
+    self.authurl = cp.get('taobao', 'auth_url')
+    self.tokenurl = cp.get('taobao', 'token_url')
+    self.stream_site = cp.get('taobao', 'stream_site')
+
     self.freq = cp.getint('taobao', 'freq');
     if self.sessionTime > datetime.now():
       print 'loaded session ', self.session
@@ -125,28 +126,19 @@ class TaobaoAx:
     cp = self.configParser
     cp.set('taobao', 'session', self.session)
     cp.set('taobao', 'expire', self.sessionTs)
-    cp.set('taobao', 'sandbox', self.sandbox)
     cp.set('taobao', 'freq', self.freq);
     o = open(configfile, 'w')
     cp.write(o)
     o.close()
 
   def get_auth_code(self):
-    if self.sandbox:
-      url = "https://oauth.tbsandbox.com/authorize?response_type=code&redirect_uri=urn:ietf:wg:oauth:2.0:oob&client_id="
-    else:
-      url = "https://oauth.taobao.com/authorize?response_type=code&redirect_uri=urn:ietf:wg:oauth:2.0:oob&client_id="
-
-    url += str(self.appinfo.appkey)
+    url = self.authurl + str(self.appinfo.appkey)
     webbrowser.open(url)
     return raw_input("session authentication reqired:\n")
 
   def request_session(self):
     authcode = self.get_auth_code()
-    if self.sandbox:
-      authurl = 'https://oauth.tbsandbox.com/token'
-    else:
-      authurl = 'https://oauth.taobao.com/token'
+    authurl = self.tokenurl
     request = {}
     request['client_id'] = self.appinfo.appkey
     request['client_secret'] = self.appinfo.secret
@@ -172,12 +164,6 @@ class TaobaoAx:
       self.session = None
 
     self.read_config()
-    if not self.sandbox:
-      self.appinfo = top.appinfo('21102481','87c47feed7b389bb0b41dd3e099dd1c1')
-      self.site = 'gw.api.taobao.com'
-    else:
-      self.appinfo = top.appinfo('1021102481', 'sandboxed7b389bb0b41dd3e099dd1c1')
-      self.site = 'gw.api.tbsandbox.com'
 
     if self.session == None or self.sessionTime < datetime.now():
       self.request_session()
