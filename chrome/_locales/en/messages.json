@@ -157,7 +157,10 @@
     "message": "Open log after closing this page to submitt issues"
   },
   "donate_label": {
-    "message": "ActiveX for Chrome is abosolutely free to use. However, it did take us a lot of time and energy. We would apprieciete it if you could offer us some financial fund.\n Now we support PayPal and AliPay."
+    "message": "ActiveX for Chrome is abosolutely free to use. However, it did take us a lot of time and energy. We would apprieciete it if you could offer us some financial fund.\n Now we support PayPal and Taobao."
+  },
+  "taobao_donate": {
+    "message": "Donate with Taobao.com"
   },
   "donate_record": {
     "message": "We will keep records of your donations here."
