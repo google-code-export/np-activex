@@ -5,9 +5,6 @@
       body {
         background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CCF), color-stop(0.4, white), to(white)) no-repeat
       }
-      #paymentoptions > * {
-        float: left;
-      }
       #main {
         margin: auto;
         width: 600px;
@@ -38,20 +35,21 @@
     <div id="main">
       <div id="header">ActiveX for Chrome -- <span i18n="donate"></span></div>
       <div i18n="donate_label"></div>
-      <div><a target="_blank" href="http://code.google.com/p/np-activex/wiki/Donations" i18n="donate_record"></a></div>
       <div id="paymentoptions">
         <form name="_xclick" target="_blank" action="https://www.paypal.com/cgi-bin/webscr" method="post">
           <input type="hidden" name="cmd" value="_xclick">
           <input type="hidden" name="business" value="qiuc12@gmail.com">
           <input type="hidden" name="item_name" value="ActiveX for Chrome">
+          <input type="hidden" name="item_number" value="npax">
           <input type="hidden" name="currency_code" value="USD">
+          <input type="hidden" name="notify_url" value="http://eagleonhill.oicp.net/editor/paypal.php">
+          <input type="hidden" name="charset" value="utf-8">
           <input type="hidden" name="amount" value="">
-          <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+          <input type="image" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
         </form>
-        <a target="_blank" href="http://item.taobao.com/item.htm?id=18573312489">
-          <img src="http://a.tbcdn.cn/tbsp/img/header/logo.png" border="0" alt="淘宝"></img>
-        </a>
+        <a target="_blank" href="http://item.taobao.com/item.htm?id=18573312489" i18n="taobao_donate"></a>
       </div>
+      <div><a target="_blank" href="http://code.google.com/p/np-activex/wiki/Donations" i18n="donate_record"></a></div>
       <div></div>
       <div i18n="donate_share">
       </div>
