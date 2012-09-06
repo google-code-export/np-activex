@@ -218,5 +218,15 @@
     "testUrl": "https://web.cloudzz.com/RDWeb/Pages/en-US/default.aspx",
     "userAgent": "ie9",
     "script": "_cloud_zz dynamic ieevent none2block"
+  },
+  "s_95599_2": {
+    "identifier": "s_95599_2",
+    "title": "中国农业银行登录界面",
+    "type": "wild",
+    "value": "http://*.abchina.com/*",
+    "keyword": "abchina",
+    "testUrl": "http://www.abchina.com/cn/EBanking/Ebanklogin/PCustomerLogin/default.htm",
+    "userAgent": "ie9",
+    "script": ""
   }
 }
