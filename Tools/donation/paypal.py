@@ -39,8 +39,10 @@ def get_order(postdata):
   item = {}
   for field in fields:
     name, value = field.split('=')
-    value = urllib.unquote_plus(value).decode('utf-8')
+    value = urllib.unquote_plus(value)
     item[name] = value
+  for field in item:
+    item[field] = item[field].decode(item['charset'])
   return item
 
 def main():
@@ -68,8 +70,9 @@ def main():
   logger = Logger({'logfile': logfile})
   logger.log(logitem)
   logger.close()
-  print 'Received payment from %s, txn_id=%s, amount=$%.2f, date=%s' % (
-      logitem['name'], logitem['id'], logitem['amount'], item['payment_date'])
+  print u'Received payment from %s, txn_id=%s, amount=$%.2f, date=%s' % (
+      logitem['name'], logitem['id'], logitem['amount'], item['payment_date']
+      ).encode('utf-8')
 
 if __name__ == '__main__':
   main()
