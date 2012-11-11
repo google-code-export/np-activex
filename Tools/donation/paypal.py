@@ -27,8 +27,13 @@ def convert_order(item):
   value['actual_amount'] = gross - fee
   value['unit'] = 'USD'
   value['comment'] = ''
-  value['time'] = datetime.strptime(
-      item['payment_date'], '%H:%M:%S %b %d, %Y PDT') + timedelta(hours = 15)
+  try:
+    value['time'] = datetime.strptime(
+        item['payment_date'], '%H:%M:%S %b %d, %Y PDT') + timedelta(hours = 15)
+  except:
+    value['time'] = datetime.strptime(
+        item['payment_date'], '%H:%M:%S %b %d, %Y PST') + timedelta(hours = 16)
+
   value['method'] = 'paypal'
   value['id'] = item['txn_id']
   return value
@@ -70,9 +75,9 @@ def main():
   logger = Logger({'logfile': logfile})
   logger.log(logitem)
   logger.close()
-  print u'Received payment from %s, txn_id=%s, amount=$%.2f, date=%s' % (
+  print (u'Received payment from %s, txn_id=%s, amount=$%.2f, date=%s' % (
       logitem['name'], logitem['id'], logitem['amount'], item['payment_date']
-      ).encode('utf-8')
+      )).encode('utf-8')
 
 if __name__ == '__main__':
   main()

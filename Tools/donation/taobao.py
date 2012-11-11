@@ -251,7 +251,6 @@ class TaobaoAx:
     request.status = 'TRADE_FINISHED'
     request.rate_status = 'RATE_UNSELLER'
     request.start_created = datetime.now() - timedelta(days = 21)
-    request.end_created = datetime.now()
     request.page_size = 100
     request.type = 'guarantee_trade'
     return self._load_all_orders(request)
@@ -262,7 +261,6 @@ class TaobaoAx:
     request.fields = 'tid'
     request.status = 'WAIT_SELLER_SEND_GOODS'
     request.start_created = datetime.now() - timedelta(days = 5)
-    request.end_created = datetime.now()
     request.type = 'guarantee_trade'
     request.page_size = 100
     request.use_has_next = True

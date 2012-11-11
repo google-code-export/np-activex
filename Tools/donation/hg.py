@@ -55,7 +55,7 @@ class HGDonationLog:
       self._repo.hg_update(self._repo.hg_heads()[0], True)
 
       path = os.path.join(self._path, self._target)
-      print 'update donation log on wiki'
+      print 'update donation log on wiki at ', datetime.utcnow() + timedelta(hours=8)
       self.gen_file(path)
       print 'File generated'
       msg = 'Auto update from script'
@@ -64,14 +64,14 @@ class HGDonationLog:
         print 'No change, skipping update donation wiki'
         return
       else:
-        print diff
+        print diff.encode('utf-8')
       self._repo.hg_commit(msg, files = [self._target])
       print 'change committed'
       self._repo.hg_command('push')
       print 'repo pushed to server'
-      self.lastupdate = datetime.now()
+      self.lastupdate = datetime.utcnow() + timedelta(hours = 8)
     except Exception as ex:
-      print 'Update wiki failed: ', ex
+      print 'Update wiki failed: ', str(ex).encode('utf-8')
       traceback.print_exc()
 
 def main():
