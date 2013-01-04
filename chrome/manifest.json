@@ -1,6 +1,6 @@
 ﻿{
   "name": "__MSG_plug_name__",
-  "version": "1.4.9.7",
+  "version": "1.5.0.0",
   "manifest_version": 2,
   "description": "__MSG_plug_desp__",
   "permissions": [
@@ -14,7 +14,6 @@
   "background": {
     "page": "background.html"
   },
-  "background_page": "background.html",
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -34,7 +33,7 @@
     "48": "icon48.png",
     "128": "icon128.png" 
   },
-  "minimum_chrome_version": "17.0.963.0",
+  "minimum_chrome_version": "18.0.0.0",
   "page_action": {
     "default_icon": "icon16.png"
   },
@@ -43,6 +42,11 @@
     "path": "npactivex.dll",
     "public": true
   }],
+  "requirements": {
+    "plugins": {
+      "npapi": false
+    }
+  },
   "web_accessible_resources": [
     "notifybar.css",
     "notifybar.js",
