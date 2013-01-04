@@ -52,7 +52,7 @@ class HGDonationLog:
   def update_file(self):
     try:
       self._repo.hg_command('pull')
-      self._repo.hg_update(self._repo.hg_heads()[0], True)
+      self._repo.hg_update(self._repo.hg_heads()[0])
 
       path = os.path.join(self._path, self._target)
       print 'update donation log on wiki at ', datetime.utcnow() + timedelta(hours=8)
