@@ -1,3 +1,4 @@
+import sys
 import top.api as topapi
 import traceback
 import log
@@ -132,6 +133,8 @@ class TaobaoAx:
     o.close()
 
   def get_auth_code(self):
+    if len(sys.argv) > 1:
+      return sys.argv[1];
     url = self.authurl + str(self.appinfo.appkey)
     webbrowser.open(url)
     return raw_input("session authentication reqired:\n")
@@ -155,7 +158,7 @@ class TaobaoAx:
     #self.write_config()
 
     nick = unicode(urllib2.unquote(str(response['taobao_user_nick'])), 'utf-8')
-    print 'Login as ', nick
+    print 'Successfully logged in'
 
   def init(self):
     try:
@@ -173,7 +176,7 @@ class TaobaoAx:
     request.session = self.session
     request.tid = order['tid']
     result = request.getResponse()
-    print 'send good: ', order['payment'], order['buyer_nick']
+    print 'send good: ', order['payment'], order['buyer_nick'].encode("GBK")
 
   def rate_order(self, order):
     request = self.create_request(topapi.TraderateAddRequest)
@@ -183,7 +186,7 @@ class TaobaoAx:
     request.flag = 2
     request.result = 'good'
     request.getResponse()
-    print 'rate order: ', order['payment'], order['buyer_nick']
+    print 'rate order: ', order['payment'], order['buyer_nick'].encode("GBK")
 
   def memo_order(self, order):
     request = self.create_request(topapi.TradeMemoUpdateRequest)
