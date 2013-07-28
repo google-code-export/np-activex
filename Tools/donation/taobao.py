@@ -176,7 +176,8 @@ class TaobaoAx:
     request.session = self.session
     request.tid = order['tid']
     result = request.getResponse()
-    print 'send good: ', order['payment'], order['buyer_nick'].encode("GBK")
+    print 'send good: ', order['payment'], order['buyer_nick'].encode("UTF-8"),\
+        order['buyer_message'].encode("UTF-8")
 
   def rate_order(self, order):
     request = self.create_request(topapi.TraderateAddRequest)
@@ -186,7 +187,7 @@ class TaobaoAx:
     request.flag = 2
     request.result = 'good'
     request.getResponse()
-    print 'rate order: ', order['payment'], order['buyer_nick'].encode("GBK")
+    print 'rate order: ', order['payment'], order['buyer_nick'].encode("UTF-8")
 
   def memo_order(self, order):
     request = self.create_request(topapi.TradeMemoUpdateRequest)
