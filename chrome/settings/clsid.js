@@ -20,4 +20,4 @@
     this.setAttribute("type", "application/x-itst-activex");
     this.style.display = oldstyle;
   })
-})(HTMLObjectElement.prototype)
+})(HTMLObjectElement.prototype);
