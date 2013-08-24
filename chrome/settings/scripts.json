@@ -44,51 +44,11 @@
     "url": "map_id_name.js",
     "context": "extension"
   },
-  "_boc_md5": {
-    "identifier": "_boc_md5",
-    "url": "_boc_md5.js",
+  "boc_disable_fingerprint": {
+    "identifier": "boc_disable_fingerprint",
+    "url": "boc_disable_fingerprint.js",
     "context": "page"
-  },
-  "_boc_resources_zh_CN_CurCode": {
-    "identifier": "_boc_resources_zh_CN_CurCode",
-    "url": "_boc_resources_zh_CN_CurCode.js",
-    "context": "page"
-  },
-  "_boc_common": {
-    "identifier": "_boc_common",
-    "url": "_boc_common.js",
-    "context": "page"
-  },
-  "_boc_PageLimit": {
-    "identifier": "_boc_PageLimit",
-    "url": "_boc_PageLimit.js",
-    "context": "page"
-  },
-  "_boc_FormCheck.js": {
-    "identifier": "_boc_FormCheck.js",
-    "url": "_boc_FormCheck.js",
-    "context": "page"
-  },
-  "_boc_createElement": {
-    "identifier": "_boc_createElement",
-    "url": "_boc_createElement.js",
-    "context": "page"
-  },
-  "_boc_calendar": {
-    "identifier": "_boc_calendar",
-    "url": "_boc_calendar.js",
-    "context": "page"
-  },
-  "_boc_FormatMoneyShow": {
-    "identifier": "_boc_FormatMoneyShow",
-    "url": "_boc_FormatMoneyShow.js",
-    "context": "page"
-  },
-  "_boc_FormatMoneyBase": {
-    "identifier": "_boc_FormatMoneyBase",
-    "url": "_boc_FormatMoneyBase.js",
-    "context": "page"
-  },
+  }, 
   "ieidname": {
     "identifier": "ieidname",
     "url": "ieidname.js",

@@ -17,7 +17,7 @@
     "keyword": "boc",
     "testUrl": "https://ebs.boc.cn/BocnetClient/LoginFrame1.do?_locale=zh_CN",
     "userAgent": "ie9",
-    "script": "dynamic ieevent clsid _boc_md5 _boc_resources_zh_CN_CurCode _boc_common _boc_PageLimit _boc_FormCheck.js _boc_createElement _boc_FormatMoneyShow _boc_FormatMoneyBase"
+    "script": "dynamic ieevent clsid ieidname boc_disable_fingerprint"
   },
   "s_95599_1": {
     "identifier": "s_95599_1",
