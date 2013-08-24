@@ -264,7 +264,7 @@ class TaobaoAx:
     request.session = self.session
     request.fields = 'tid'
     request.status = 'WAIT_SELLER_SEND_GOODS'
-    request.start_created = datetime.now() - timedelta(days = 5)
+    request.start_created = datetime.now() - timedelta(days = 30)
     request.type = 'guarantee_trade'
     request.page_size = 100
     request.use_has_next = True
