@@ -351,6 +351,9 @@ class TaobaoAx:
 def main():
   cp = ConfigParser()
   cp.read(configfile)
+  if len(sys.argv) > 1 and sys.argv[1] == 'appkeyid':
+    print cp.get('taobao', 'appkey')
+    exit(0)
   logger = log.Logger({'logfile': cp.get('log', 'logfile')})
   instance = TaobaoAx(cp, logger)
   instance.read_config()
