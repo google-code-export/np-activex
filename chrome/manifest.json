@@ -1,6 +1,6 @@
 ﻿{
   "name": "__MSG_plug_name__",
-  "version": "1.5.0.2",
+  "version": "1.5.0.3",
   "manifest_version": 2,
   "description": "__MSG_plug_desp__",
   "permissions": [
