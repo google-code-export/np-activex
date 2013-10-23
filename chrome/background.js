@@ -20,5 +20,6 @@ window.setTimeout(function() {
   setting.loadDefaultConfig();
   if (firstRun || firstUpgrade) {
     open('donate.html');
+    open('options.html');
   }
 }, 1000);
