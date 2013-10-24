@@ -217,13 +217,7 @@ NPError OSCALL NP_GetEntryPoints(NPPluginFuncs* pFuncs)
  * MIME Type this plugin is registered to handle.
  */
 NPError OSCALL NP_Initialize(NPNetscapeFuncs* pFuncs)
-{
-#ifdef DEBUG
-	CString text;
-	text.Format(_T("NPActiveX Pid %d"), GetCurrentProcessId());
-	MessageBox(NULL, text, _T(""), MB_OK);
-#endif
-	
+{	
 	CoInitialize(NULL);
 	
 	InstallAtlThunkEnumeration();
