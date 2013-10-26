@@ -23,11 +23,11 @@
     "identifier": "s_95599_1",
     "title": "ABC中国农业银行",
     "type": "wild",
-    "value": "https://*.95599.cn/*",
+    "value": "*://*.95599.cn/*",
     "keyword": "95599",
     "testUrl": "https://easyabc.95599.cn/commbank/netBank/zh_CN/CommLogin.aspx",
     "userAgent": "ie9",
-    "script": "map_id_name"
+    "script": "map_id_name dynamic"
   },
   "s_cmbchina": {
     "identifier": "s_cmbchina",
