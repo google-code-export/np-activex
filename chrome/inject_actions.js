@@ -62,23 +62,12 @@ function enableobj(obj) {
   obj.removeAttribute('classid');
   checkParents(obj);
 
-  var newObj = obj.cloneNode(true);
-  newObj.type = typeId;
-  // Remove all script nodes. They're executed.
-  var scripts = newObj.getElementsByTagName('script');
-  for (var i = 0; i < scripts.length; ++i) {
-    scripts[i].parentNode.removeChild(scripts[i]);
-  }
+  obj.type = typeId;
   // Set codebase to full path.
-  var codebase = newObj.getAttribute('codebase');
+  var codebase = obj.getAttribute('codebase');
   if (codebase && codebase != '') {
-    newObj.setAttribute('codebase', getLinkDest(codebase));
+    obj.setAttribute('codebase', getLinkDest(codebase));
   }
-
-  newObj.activex_process = true;
-  obj.parentNode.insertBefore(newObj, obj);
-  obj.parentNode.removeChild(obj);
-  obj = newObj;
 
   if (obj.id) {
     var command = '';
@@ -122,8 +111,9 @@ function notify(data) {
 }
 
 function process(obj) {
-  if (obj.activex_process)
+  if (obj.activex_process) {
     return;
+  }
 
   if (onBeforeLoading.caller == enableobj ||
       onBeforeLoading.caller == process ||
@@ -150,8 +140,10 @@ function process(obj) {
   }
 
   if ((obj.type != '' && obj.type != 'application/x-oleobject') ||
-      !obj.hasAttribute('classid'))
+      !obj.hasAttribute('classid')) {
+    log('object with no clsid');
     return;
+  }
   if (getClsid(obj).toLowerCase() == FLASH_CLSID) {
     return;
   }
@@ -171,6 +163,7 @@ function process(obj) {
 
   var rule = config.shouldEnable({href: location.href, clsid: clsid});
   if (rule) {
+    log('Object activating');
     obj = enableobj(obj);
     notify({
       href: location.href,
@@ -180,6 +173,7 @@ function process(obj) {
     });
   } else {
     notify({href: location.href, clsid: clsid, actived: false});
+    log('Object not activated');
   }
 }
 
