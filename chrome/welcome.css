@@ -1,0 +1,53 @@
+body {
+  background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#CCF), color-stop(0.4, white), to(white)) no-repeat;
+  line-height: 160%;
+}
+a:link {text-decoration:none;}
+a:visited {text-decoration:none;}
+#main {
+  margin-left: auto;
+  margin-right: auto;
+  width: 950px;
+}
+#icon {
+  margin-top: 30px;
+  margin-left: auto;
+  margin-right: 50px;
+  background-image: url(/icon128.png);
+  width: 128px;
+  height: 128px;
+  display: inline-block;
+}
+#usagetext > *{
+  margin-bottom: 15px;
+}
+#welcome {
+  text-align: center;
+}
+#usage > *, #helpus > *{
+  float: left;
+  width: 400px;
+  margin: 15px;
+}
+#pa_tip_img {
+  background-image: url(/page-action.jpg);
+  width: 416px;
+  height: 265px;
+  position: relative;
+}
+#pa_tip_text {
+    left: 120px;
+    top: 135px;
+    position: relative;
+    font-size: large;
+    text-align: center;
+    width: 270px;
+}
+
+#paymentoptions > * {
+  margin-right: 20px;
+  float: left;
+}
+#helpus {
+  clear: both;
+}

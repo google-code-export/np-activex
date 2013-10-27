@@ -16,10 +16,13 @@ if (debug && firstRun) {
   }
 }
 
-window.setTimeout(function() {
-  setting.loadDefaultConfig();
-  if (firstRun || firstUpgrade) {
-    open('donate.html');
-    open('options.html');
+setting.loadDefaultConfig();
+chrome.runtime.onInstalled.addListener(function(details) {
+  var showwelcome = false;
+  if (details.reason == 'install') {
+    showwelcome = true;
   }
-}, 1000);
+  if (showwelcome) {
+    open('welcome.html');
+  }
+});

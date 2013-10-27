@@ -157,18 +157,33 @@
     "message": "Open log after closing this page to submitt issues"
   },
   "donate_label": {
-    "message": "ActiveX for Chrome is abosolutely free to use. However, it did take us a lot of time and energy. We would apprieciete it if you could offer us some financial fund.\n Now we support PayPal and Taobao."
+    "message": "Help us improve!"
   },
   "taobao_donate": {
     "message": "Donate with Taobao.com"
   },
   "donate_record": {
-    "message": "We will keep records of your donations here."
+    "message": "View donate history"
   },
   "donate": {
-    "message": "Donate us"
+    "message": "Donate"
   },
-  "donate_share": {
-    "message": "There's more you can do besides donation. Just click a button below to share this to your friends!"
+  "welcome_share": {
+    "message": "Recommend us to your friends!"
+  },
+  "welcome": {
+    "message": "Thanks for using ActiveX for Chrome"
+  },
+  "usage": {
+    "message": "ActiveX controls are only enabled by whitelist!\nClick the button on right of the address bar (if it's available) to activate it."
+  },
+  "usage_advanced": {
+    "message": "Advanced options"
+  },
+  "faq": {
+    "message": "FAQ"
+  },
+  "pa_tip_text": {
+    "message": "Click here to allow ActiveX controls"
   }
 }

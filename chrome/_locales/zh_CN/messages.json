@@ -157,18 +157,33 @@
     "message": "在此页面关闭时打开此日志以便汇报问题。"
   },
   "donate_label": {
-    "message": "ActiveX for Chrome是开源且完全免费使用的。但是，我们在开发过程中花费了大量的时间和精力。如果可以，希望您能够为我们提供一定的经济支持，以让我们能够更好地改进这个扩展。我们会对您的支持表示最忠心的感谢。支持使用PayPal及淘宝网支付。"
+    "message": "赞助我们，让我们做得更好！"
   },
   "taobao_donate": {
-    "message": "使用淘宝网捐助"
+    "message": "试下淘宝?"
   },
   "donate_record": {
-    "message": "我们会在这里记录所有的捐赠记录。"
+    "message": "赞助历史。"
   },
   "donate": {
     "message": "赞助我们"
   },
-  "donate_share": {
-    "message": "除了捐献，你还可以简单地按一下下面的按钮，分享给你需要的好友们。举手之劳，方便大众。"
+  "welcome_share": {
+    "message": "快向小伙伴们推荐我们吧！"
+  },
+  "welcome": {
+    "message": "感谢您使用ActiveX for Chrome"
+  },
+  "usage": {
+    "message": "为了您的浏览安全，只有指定的网站可以运行ActiveX控件。\n若当前网站在使用ActiveX控件时，请点击地址栏右边的按钮（见右图）开启相应的控件！"
+  },
+  "usage_advanced": {
+    "message": "高级设置"
+  },
+  "faq": {
+    "message": "常见问题"
+  },
+  "pa_tip_text": {
+    "message": "点这里开启对当前网站的支持"
   }
 }
