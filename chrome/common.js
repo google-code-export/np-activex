@@ -280,7 +280,6 @@ function generateLogFile(tabId) {
     }
   }
   ret += '\n---------------- End of log ---------------\n';
-  ret += stringHash(ret);
   if (frameCount == 0) {
     return 'No log for tab ' + tabId;
   }
