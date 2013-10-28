@@ -62,11 +62,30 @@ function enableobj(obj) {
   obj.removeAttribute('classid');
   checkParents(obj);
 
-  obj.type = typeId;
+  if (!scriptConfig.activate_inplace) {
+    log('Create replacement object');
+    var oldObj = obj;
+    obj = obj.cloneNode(true);
+    // Remove all script nodes. They're executed.
+    var scripts = obj.getElementsByTagName('script');
+    for (var i = 0; i < scripts.length; ++i) {
+      scripts[i].parentNode.removeChild(scripts[i]);
+    }
+  } else {
+    log('activate inplace');
+  }
+
   // Set codebase to full path.
   var codebase = obj.getAttribute('codebase');
   if (codebase && codebase != '') {
     obj.setAttribute('codebase', getLinkDest(codebase));
+  }
+  obj.activex_process = true;
+  obj.type = typeId;
+
+  if (!scriptConfig.activate_inplace) {
+    oldObj.parentNode.insertBefore(obj, oldObj);
+    obj.parentNode.removeChild(oldObj);
   }
 
   if (obj.id) {

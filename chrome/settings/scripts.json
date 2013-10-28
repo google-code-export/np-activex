@@ -59,6 +59,11 @@
     "url": "formid.js",
     "context": "extension"
   },
+  "activate_inplace": {
+    "identifier": "activate_inplace",
+    "url": "activate_inplace.js",
+    "context": "extension"
+  },
   "documentid": {
     "identifier": "documentid",
     "url": "documentid.js",
