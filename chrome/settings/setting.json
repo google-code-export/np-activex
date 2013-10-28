@@ -117,7 +117,7 @@
     "keyword": "95559",
     "testUrl": "https://pbank.95559.com.cn/personbank/common_logon.jsp",
     "userAgent": "",
-    "script": "none2block 95559_submit"
+    "script": "none2block 95559_submit activate_inplace"
   },
   "s_pptv": {
     "identifier": "s_pptv",

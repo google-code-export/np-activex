@@ -13,7 +13,8 @@ var logs = [];
 var scriptConfig = {
   none2block: false,
   formid: false,
-  documentid: false
+  documentid: false,
+  activate_inplace: false
 };
 function onControlLog(event) {
   var message = event.data;
