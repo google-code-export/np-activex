@@ -9,7 +9,7 @@
     "webRequestBlocking",
     "webRequest"
   ],
-  "content_security_policy": "script-src 'self' https://connect.facebook.net https://apis.google.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' https://connect.facebook.net https://apis.google.com https://ssl.google-analytics.com; object-src 'self'",
   "default_locale": "en",
   "background": {
     "page": "background.html"
