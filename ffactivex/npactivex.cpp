@@ -519,7 +519,7 @@ NPP_New(NPMIMEType pluginType,
 				delete host;
 				instance->pdata = NULL;
 				host = NULL;
-				return rc;
+				return NPERR_NO_ERROR;
 			}
 		}
 		if (host) {
